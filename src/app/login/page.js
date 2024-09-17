@@ -1,65 +1,94 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useForm } from "react-hook-form";
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm();
   const [users, setUsers] = useState([]);
-  const [showError, setShowError] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const router = useRouter();
 
+  // Fetch data from API (simulate fetching users)
   useEffect(() => {
     fetchData();
+    
+    // Check if credentials are stored in localStorage
+    const storedUsername = localStorage.getItem('username');
+    const storedPassword = localStorage.getItem('password');
+    
+    if (storedUsername && storedPassword) {
+      setValue('username', storedUsername);
+      setValue('password', storedPassword);
+      setRememberMe(true); // Automatically check the box if credentials are stored
+    }
   }, []);
 
   const fetchData = () => {
-    
     axios.get("http://localhost:3001/logindata")
-    .then(res => {
-      setUsers(res.data)
-      console.log(res.data)
-    })
-    
-    .catch(err => console.log(err)) 
+      .then(res => {
+        setUsers(res.data);
+      })
+      .catch(err => console.log(err));
   };
 
-  const validate = () => {
+  // Handle form submission
+  const onSubmit = (data) => {
+    const { username, password } = data;
+
     const validUser = users.find(
       (user) => user.username === username && user.password === password
     );
 
     if (validUser) {
-      setShowSuccess(true); 
-      setShowError(false); 
-      setUsername('');
-      setPassword('');
+      toast.success('Login Success!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      // Store credentials if "Remember Me" is checked
+      if (rememberMe) {
+        localStorage.setItem('username', username);
+        localStorage.setItem('password', password);
+      } else {
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+      }
+
       setTimeout(() => {
-        router.push('/dashboard'); 
-      }, 1000); 
+        router.push('/dashboard');
+      }, 3000);
     } else {
-      setShowError(true);
-      setShowSuccess(false); 
-      setUsername('');
-      setPassword('');
+      // Display an error if invalid credentials
+      setError("username", { type: "manual", message: "Invalid Username or Password" });
+      setError("password", { type: "manual", message: "Invalid Username or Password" });
+
+      toast.error('Invalid Credentials', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 
-  const close = () => {
-    setShowError(false);
-    setShowSuccess(false); 
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      validate();
-    }
+  const handleRememberMe = () => {
+    setRememberMe(!rememberMe);
   };
 
   return (
@@ -69,20 +98,37 @@ export default function Login() {
           <div>
             <img className="mx-auto" src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fskillcapital.41121682.png&w=640&q=75" alt="Logo" />
           </div>
-          <div className="login-form w-full rounded border-black h-[460px] mt-8 p-5">
-            <label className="text-sm">User Name</label>
-            <input type="text" required className="w-full border outline-none p-3 rounded mb-5" name="username" value={username} onChange={e => setUsername(e.target.value)} onKeyDown={handleKeyPress} // Handle Enter key press
-            />
-            <label className="text-sm">Password</label>
-            <input type="password" required className="w-full border outline-none p-3 rounded" name="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyPress} // Handle Enter key press
-            />
+          <div>
+            <form className="login-form w-full rounded border-black h-[460px] mt-8 p-5" onSubmit={handleSubmit(onSubmit)}>
+              <label className="text-sm">User Name</label>
+              <input
+                type="text"
+                className="w-full border outline-none p-3 rounded"
+                {...register('username', { required: "Username is required" })}
+              />
+              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
 
-            {username && password && (
-              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border" onClick={validate}>Login</button>
-            )}
+              <label className="text-sm">Password</label>
+              <input
+                type="password"
+                className="w-full border outline-none p-3 rounded"
+                {...register('password', { required: "Password is required" })}
+              />
+              {errors.password && <p className="text-red-500">{errors.password.message}</p>}
 
-            <input type="checkbox" className="scale-150 mt-8" /> <span className="text-sm align-center ml-2">Remember me</span>
-            <p className="mt-[90px] text-center opacity-50">©2024, All rights reserved</p>
+              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border">
+                Login
+              </button>
+
+              <input
+                type="checkbox"
+                className="scale-150 mt-8"
+                checked={rememberMe}
+                onChange={handleRememberMe}
+              /> <span className="text-sm align-center ml-2">Remember me</span>
+
+              <p className="mt-[90px] text-center opacity-50">©2024, All rights reserved</p>
+            </form>
           </div>
         </div>
       </div>
@@ -93,25 +139,7 @@ export default function Login() {
         </div>
         <div className="bg-[url('/images/loginpage.png')] bg-cover bg-center w-full h-[75vh]"></div>
       </div>
-
-      {showError && (
-        <div className="error-msg w-4/5 md:w-1/5 h-36 rounded-lg border bg-[#F4F6FA] absolute right-[40%]  top-[30%]  p-2 items-center shadow-xl border-b-8 border-b-[#E1264C]">
-          <p className="text-2xl text-center"> <FontAwesomeIcon icon={faTriangleExclamation} className="text-[#E1264C]" /> </p>
-          <p className="text-lg text-center mt-2"> Invalid Username or Password !! </p>
-          <button className="w-1/2 text-white p-1 mt-2 rounded-lg mx-auto align-center flex justify-center bg-[#E1264C]" onClick={close}> Try Again </button>
-        </div>
-      )}
-
-
-
-      {showSuccess && (
-        <div className="success-msg w-4/5 md:w-1/5 h-80 rounded-lg border bg-[#F4F6FA] absolute left-[10%] md:left-[35%] top-[25%] md:top-[30%] p-4 pt-12 items-center shadow-xl">
-          <p className="text-5xl text-center"> <FontAwesomeIcon icon={faCircleCheck} className="text-green-500" /> </p>
-          <p className="text-2xl text-center mt-5"> Successfully Logged In !! </p>
-          {/* <button className="w-1/2 text-white p-2 rounded-lg mx-auto align-center flex justify-center mt-12 bg-green-500" onClick={close}> OK </button> */}
-        </div>
-      )}
-
+      <ToastContainer />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash} from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
 import Kanban from "../kanban/page";
 import CreateLead from "../createlead/page";
 import LeadForm from "../leadform/page";
@@ -83,7 +83,6 @@ export default function DashBoard() {
     }
   };
 
-  // Function to filter records based on the selected filter and search term
   const filterRecords = (records) => {
     const today = new Date();
     let filteredRecords = records;
@@ -135,7 +134,6 @@ export default function DashBoard() {
         break;
     }
 
-    // Apply search filter based on the search term
     if (searchTerm) {
       filteredRecords = filteredRecords.filter(record =>
         record.name.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
@@ -242,12 +240,12 @@ export default function DashBoard() {
             
             <button
               className="w-32 border-2 rounded p-2"
-              onClick={() => setDisplayActivity(true)}
-              onDoubleClick={() => setDisplayActivity(false)}
+              onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}
             >
               Action
-              <span>
-                <FontAwesomeIcon icon={faChevronDown} />
+              <span className="ms-1">
+                { !displayActivity ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faXmark} /> }
+                {/* <FontAwesomeIcon icon={faChevronDown} /> */}
               </span>
             </button>
           </div>
@@ -283,7 +281,7 @@ export default function DashBoard() {
                 <th className="w-1/7 border-r-2 p-2">Phone</th>
                 <th className="w-1/7 border-r-2 p-2">Email</th>
                 <th className="w-1/7 border-r-2 p-2">Course</th>
-                <th className="w-1/7 border-r-2 p-2">Actions</th>
+                { displayActivity ? (<th className="w-1/7 border-r-2 p-2">Actions</th>) : '' }
               </tr>
             </thead>
             <tbody>
@@ -320,7 +318,7 @@ export default function DashBoard() {
           </table>):(<Kanban />) 
           }
         </div>
-        <div className="w-full h-7 flex justify-end text-sm gap-x-10 items-center">
+        { showKanban && (<div className="w-full h-7 flex justify-center text-sm gap-x-10 items-center">
           <div className="flex mr-14">
             <span
               className={`mr-2 ${
@@ -350,7 +348,7 @@ export default function DashBoard() {
               <FontAwesomeIcon icon={faChevronRight} />
             </span>
           </div>
-        </div>
+        </div>) }
         {/* ------- Delete Pop up ----------- */}
         { deletePopUp && (
           <div

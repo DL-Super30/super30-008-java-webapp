@@ -3,7 +3,8 @@
 import React,{useState,useEffect} from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown,faChevronLeft,faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown,faChevronLeft,faChevronRight,faTable,faChartBar,faPenToSquare,faTrash } from "@fortawesome/free-solid-svg-icons";
+import KanbanOppurtunity from "../kanbanOppurtunity/page";
 
 export default function Oppurtunities(){
 
@@ -13,6 +14,8 @@ export default function Oppurtunities(){
   const [pages, setPages] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState("All Leads");
   const [searchTerm, setSearchTerm] = useState(""); 
+  const [showKanban , setShowKanban] = useState(false);
+  const [displayActivity,setDisplayActivity] = useState(false);
  
   
 
@@ -63,7 +66,7 @@ export default function Oppurtunities(){
     let filteredRecords = records;
   
     switch (selectedFilter) {
-      case "Today's Opputunities":
+      case "Today's Oppurtunities":
         filteredRecords = filteredRecords.filter(record => {
           const recordDate = new Date(record.date);
           return recordDate.toDateString() === today.toDateString();
@@ -93,17 +96,17 @@ export default function Oppurtunities(){
           return recordDate >= startOfMonth && recordDate <= endOfMonth;
         });
         break;
-        case "visiting":
-        filteredRecords = filteredRecords.filter(record => record.status === "visiting");
-        break;
+        // case "visiting":
+        // filteredRecords = filteredRecords.filter(record => record.visitStatus === "visiting");
+        // break;
       case "visited":
-        filteredRecords = filteredRecords.filter(record => record.status === "visited");
+        filteredRecords = filteredRecords.filter(record => record.visitStatus === "visited");
         break;
       case "Demo Attended":
-        filteredRecords = filteredRecords.filter(record => record.status === "Demo Attended");
+        filteredRecords = filteredRecords.filter(record => record.visitStatus === "Demo Attended");
         break;
-      case "Lost Opputunity":
-        filteredRecords = filteredRecords.filter(record => record.status === "Lost Opputunity");
+      case "Lost Oppurtunity":
+        filteredRecords = filteredRecords.filter(record => record.visitStatus === "Lost Opputunity");
         break;
       default:
         break;
@@ -157,21 +160,27 @@ export default function Oppurtunities(){
                     </div>
                     <div className="gap-x-2 flex items-center">
                         <button className="w-44 p-1 bg-[#1B96FF] text-white rounded text-md">Create Oppurtunity <span><FontAwesomeIcon icon={faChevronDown} className="text-sm"/></span></button>
-                        <button className="w-36 p-1 border rounded">Action <span><FontAwesomeIcon icon={faChevronDown} className="text-sm"/></span></button>
+                        <button className="w-36 p-1 border rounded" onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}>Action <span><FontAwesomeIcon icon={faChevronDown} className="text-sm"/></span></button>
                     </div>
                 </div>
                 <div className="flex gap-x-4 mt-3 items-center">
                     <input type="search" className="border outline-none rounded w-72 p-1" placeholder="search" value={searchTerm} onChange={handleSearchChange}/>
                     <div className="w-2/5 flex justify-between items-center">
-                        <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'visiting' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("visiting")}>Visiting</button>
+                        <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'All Oppurtunities' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("All Oppurtunities")}>All Oppurtunities </button>
+                        {/* <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'visiting' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("visiting")}>Visiting</button> */}
                         <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'visited' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("visited")}>Visited</button>
                         <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'Demo Attended' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("Demo Attended")}>Demo Attended</button>
                         <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'Lost Oppurtunity' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("Lost Oppurtunity")}>Lost Oppurtunity</button>
-                        
+                    </div>
+                    <div className="flex">
+                      <button className={`w-36 p-1 border ${showKanban ? 'bg-white' : 'bg-[#1B96FF] text-white'}`} onClick={() => setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="text-lg" /> Table</button>
+                      <button className={`w-36 p-1 border ${showKanban ?  'bg-[#1B96FF] text-white' :'bg-white'}`} onClick={() => setShowKanban(true)}><FontAwesomeIcon icon={faChartBar} />Kanban</button>
                     </div>
                 </div>
                 
-                    <table className="w-full mt-2">
+                    {
+                      showKanban ? ( <KanbanOppurtunity />) : (
+                      <table className="w-full mt-2 border-2">
                         <thead className="border-2">
                         <tr>
                             <th className="w-1/7 border-r-2 p-1">Created on</th>
@@ -179,8 +188,10 @@ export default function Oppurtunities(){
                             <th className="w-1/7 border-r-2 p-1">Name</th>
                             <th className="w-1/7 border-r-2 p-1">Phone</th>
                             <th className="w-1/7 border-r-2 p-1">Stack</th>
-                            <th className="w-1/7 border-r-2 p-1">Course</th>
-                            <th className="w-1/7 border-r-2 p-1">Actions</th>
+                            <th className="w-1/7 p-1">Course</th>
+                            { displayActivity ? (
+                            <th className="w-1/7 border-l-2 p-1">Actions</th>
+                            ):'' }
                         </tr>
                         </thead>
                         <tbody>
@@ -195,8 +206,14 @@ export default function Oppurtunities(){
                                       <td className="w-1/7 text-center text-sm p-3">{d.phone}</td>
                                       <td className="w-1/7 text-center text-sm p-3 "><p className={`rounded-lg ${d.stack == "Life Skill" ? 'bg-[#FECACC]' : d.stack == "Study Abroad" ? "bg-[#9EF4E7]":d.stack =="HR" ? 'bg-[#94C3FC]':'' }`}>{d.stack}</p></td>
                                       <td className="w-1/7 text-center text-sm p-3 "><p className={`rounded-lg ${d.course == 'MERN' ? 'bg-red-300' : d.course == 'TOFEL' ? 'bg-[#96F7E2]' : d.course == 'AWS + Devops' ? 'bg-[#90C7FD]' : d.course == 'JFS' ? 'bg-green-300' : d.course =="PFS" ? 'bg-orange-300' : d.course == 'HR Business Partner' ? 'bg-[#92C6FB]': d.course =='HR Generalist' ? 'bg-red-300': d.course == 'HR Analytics' ?'bg-green-300': d.course == 'Spoken English' ? 'bg-red-300' : d.course =='Public Speaking' ? 'bg-[#92C6FB]': d.course == 'Communication Skills'? 'bg-red-300' : d.course == 'Soft Skills' ? 'bg-green-300' : d.course == 'Aptitude' ? 'bg-red-300' : d.course =='IELTS' ? 'bg-[#92C6FB]' : d.course == 'GRE' ? 'bg-green-300' : d.course == 'Azure + Devops' ? 'bg-green-300' : '' }`}>{d.course}</p></td>
-                                      <td className="w-1/7 text-center text-sm ">-</td>
-                                      
+                                      { displayActivity ? (
+                                      <td className="w-[200px] text-center text-sm ">
+                                        <div className="flex justify-center gap-x-2">
+                                          <button className="w-20 bg-lime-300 rounded-lg">Update <FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
+                                          <button className="w-20 bg-red-500 rounded-lg">Delete <FontAwesomeIcon icon={faTrash} className="text-sm"/></button>
+                                        </div>
+                                      </td>
+                                      ) : '' }                                      
                                     </tr>
                                   ))):(<tr>
                                     <td colSpan={6} className="text-center w-full h-96">
@@ -206,9 +223,11 @@ export default function Oppurtunities(){
                                   </tr>)
                             }
                         </tbody>
-                    </table>
-                    <div className="w-full h-7 flex justify-end text-sm gap-x-10 items-center">
-          <div className="flex mr-14">
+                    </table>)
+                    }
+                    <div className="w-full h-7 flex justify-center text-sm gap-x-10 items-center">
+          { showKanban ? '' :(
+            <div className="flex mr-14">
             <span
               className={`mr-2 ${
                 pageConfig.isPrevious ? "cursor-pointer" : "cursor-not-allowed"
@@ -237,6 +256,7 @@ export default function Oppurtunities(){
               <FontAwesomeIcon icon={faChevronRight} />
             </span>
           </div>
+          ) }
         </div>
                 
             </div>

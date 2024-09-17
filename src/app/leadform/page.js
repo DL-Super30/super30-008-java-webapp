@@ -22,7 +22,7 @@ export default function LeadForm({ onSubmit , closeForm }) {
         const leadData = {
             date: date,
             name,
-            phone,
+            phone : "+91 " + phone,
             email,
             status,
             course,
@@ -59,8 +59,8 @@ export default function LeadForm({ onSubmit , closeForm }) {
                         <p className="p-1 border-b-2 mt-1">+ 91 </p>
                     </div>
                     <div>
-                        <label className="ml-2 text-[#B9D1E5] text-lg">Phone</label><br />
-                        <input type="text" placeholder="Phone" className="border-b-2 p-1 mb-2 w-full outline-none" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        <label className="ml-2 text-[#B9D1E5] text-lg" >Phone</label><br />
+                        <input type="text" placeholder="Phone" className="border-b-2 p-1 mb-2 w-full outline-none" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value)} />
                     </div>
                     <div>
                         <label className="ml-2 text-[#B9D1E5] text-lg">Lead Source</label><br />

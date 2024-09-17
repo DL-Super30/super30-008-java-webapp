@@ -11,7 +11,6 @@ import { usePathname } from "next/navigation";
 
 export default function Navbar(){
     const pathName = usePathname();
-    console.log(pathName);
     const getLinkClass = (path) =>{
         return pathName === path ? 'border-b-4 border-b-rose-600 bg-pink-200 rounded-t-md' : 'bg-white'
     }
@@ -22,7 +21,7 @@ export default function Navbar(){
                 <h1 className="text-3xl mx-3 visible md:invisible"><FontAwesomeIcon icon={faBarsStaggered} onClick={e => setShowMenuIcon(true)}/></h1>
 
             <div className="items-center flex ">
-                <img src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fskillcapital.41121682.png&w=1920&q=75" />
+                <Link href={'/dashboard'}><img className="ml-[-120px]" src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fskillcapital.41121682.png&w=1920&q=75" /></Link>
             </div>
                 <div className="flex w-2/5 justify-evenly">
                 <Link href={'/dashboard'}><button className={`hover:border-b-2 hover:border-b-[#E4244B] p-2 ${getLinkClass('/dashboard')}`}>Home </button></Link>
@@ -34,8 +33,8 @@ export default function Navbar(){
             </div>
             
             <div className="flex items center w-36 justify-between mr-2">
-                <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faCalendarDays} /></h1>
-                <img src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FStars.684c7122.png&w=1920&q=75" className="w-8 hover:cursor-pointer"/>
+                <Link href={'/calender'}><h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faCalendarDays} /></h1></Link>
+                <Link href={'/aipage'}><img src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FStars.684c7122.png&w=1920&q=75" className="w-8 hover:cursor-pointer"/></Link>
                 <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faBell} /></h1>
                 <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faUser} /></h1>
 
