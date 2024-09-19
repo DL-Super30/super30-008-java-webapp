@@ -3,20 +3,22 @@ import axios from "axios";
 
 export default function LeadForm({ onClose }) {
   const [formData, setFormData] = useState({
+    id: "", // will be generated on submit
+    date: "", // will be set on submit
     name: "",
-    cc: "91",
     phone: "",
     email: "",
-    feeQuoted: "",
-    leadStatus: "Not Contacted",
-    leadSource: "",
-    stack: "",
+    status: "Not Contacted",
     course: "",
+    source: "",
+    stack: "",
+    fee: "",
     classMode: "",
-    followUpDate: "",
+    batchTimings: "",
+    nextFollowUp: "",
     description: "",
   });
-  
+
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState(""); // New state for success message
 
@@ -40,16 +42,20 @@ export default function LeadForm({ onClose }) {
     e.preventDefault();
     if (!validate()) return;
 
-    console.log("Submitting form data:", formData);
+    const id = Date.now().toString();
+    const currentDate = new Date().toLocaleDateString('en-GB'); // Formats as DD/MM/YYYY
+
+    const updatedFormData = { ...formData, id, date: currentDate.replace(/\//g, '-') };
+
+    console.log("Submitting form data:", updatedFormData);
 
     try {
-      const response = await axios.post("http://localhost:3000/leads", formData);
+      const response = await axios.post("http://localhost:3000/leads", updatedFormData);
       console.log("Server response:", response);
       if (response.status === 201) {
-        console.log("Lead created successfully");
-        setSuccessMessage("Lead created successfully!"); // Set success message
+        setSuccessMessage("Lead created successfully!");
         setTimeout(() => {
-          setSuccessMessage(""); // Clear message after 3 seconds
+          setSuccessMessage("");
           onClose(); // Close form after success message
         }, 3000);
       } else {
@@ -62,142 +68,234 @@ export default function LeadForm({ onClose }) {
       alert(`There was an error submitting the form: ${errorMessage}`);
     }
   };
-  
+
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4">Create Lead</h2>
-        
-        {/* Display success message */}
-        {successMessage && (
-          <div className="mb-4 p-4 bg-green-200 text-green-800 rounded">
-            {successMessage}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-          {/* Left Side Form Inputs */}
-          <div>
-            <label className="block text-sm">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Name"
-            />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-
-            <label className="block text-sm mt-2">Phone</label>
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Phone"
-            />
-            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
-
-            <label className="block text-sm mt-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Email"
-            />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-
-            <label className="block text-sm mt-2">Fee Quoted</label>
-            <input
-              type="text"
-              name="feeQuoted"
-              value={formData.feeQuoted}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Fee Quoted"
-            />
-          </div>
-
-          {/* Right Side Form Inputs */}
-          <div>
-            <label className="block text-sm">Lead Status</label>
-            <select
-              name="leadStatus"
-              value={formData.leadStatus}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[100vh] flex flex-col">
+        <div className="flex gap-4 items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <img
+            alt="header image"
+            width="44"
+            height="44"
+            className="w-10 h-9"
+            src="https://crm.skillcapital.ai/_next/static/media/employee_contact.2d215fd6.svg"
+          />
+          <h2 className="text-2xl font-semibold">Create Lead</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+          >
+            <svg
+              className="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
             >
-              <option value="Not Contacted">Not Contacted</option>
-              <option value="Attempted">Attempted</option>
-              <option value="Warm Lead">Warm Lead</option>
-              <option value="Cold Lead">Cold Lead</option>
-            </select>
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              ></path>
+            </svg>
+            <span className="sr-only">Close modal</span>
+          </button>
+        </div>
+        <div className="overflow-y-auto flex-1 p-6">
+          {successMessage && (
+            <div className="mb-4 p-4 bg-green-200 text-green-800 rounded">
+              {successMessage}
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Name"
+              />
+              {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+            </div>
 
-            <label className="block text-sm mt-2">Lead Source</label>
-            <input
-              type="text"
-              name="leadSource"
-              value={formData.leadSource}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Lead Source"
-            />
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Phone</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Phone"
+              />
+              {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+            </div>
 
-            <label className="block text-sm mt-2">Stack</label>
-            <input
-              type="text"
-              name="stack"
-              value={formData.stack}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Stack"
-            />
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Email"
+              />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            </div>
 
-            <label className="block text-sm mt-2">Next FollowUp</label>
-            <input
-              type="date"
-              name="followUpDate"
-              value={formData.followUpDate}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
-          </div>
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Fee Quoted</label>
+              <input
+                type="text"
+                name="fee"
+                value={formData.fee}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Fee Quoted"
+              />
+            </div>
 
-          {/* Description */}
-          <div className="col-span-2">
-            <label className="block text-sm">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="Description"
-            ></textarea>
-          </div>
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Batch Timings</label>
+              <select
+                name="batchTimings"
+                value={formData.batchTimings}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select</option>
+                <option value="7AM-8AM">7AM-8AM</option>
+                <option value="8AM-9AM">8AM-9AM</option>
+                <option value="9AM-10AM">9AM-10AM</option>
+                <option value="10AM-11AM">10AM-11AM</option>
+                <option value="11AM-12PM">11AM-12PM</option>
+                <option value="12PM-1PM">12PM-1PM</option>
+                <option value="1PM-2PM">1PM-2PM</option>
+                <option value="2PM-3PM">2PM-3PM</option>
+                <option value="3PM-4PM">3PM-4PM</option>
+                <option value="4PM-5PM">4PM-5PM</option>
+                <option value="5PM-6PM">5PM-6PM</option>
+                <option value="6PM-7PM">6PM-7PM</option>
+                <option value="7PM-8PM">7PM-8PM</option>
+                <option value="8PM-9PM">8PM-9PM</option>
+              </select>
+            </div>
 
-          {/* Buttons */}
-          <div className="col-span-2 flex justify-end gap-4 mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-500 text-white rounded"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-              Create
-            </button>
-          </div>
-        </form>
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Lead Status</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="Not Contacted">Not Contacted</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Qualified">Qualified</option>
+                <option value="Converted">Converted</option>
+                <option value="Lost">Lost</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Course</label>
+              <input
+                type="text"
+                name="course"
+                value={formData.course}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Course"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Source</label>
+              <input
+                type="text"
+                name="source"
+                value={formData.source}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Source"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Stack</label>
+              <input
+                type="text"
+                name="stack"
+                value={formData.stack}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                placeholder="Stack"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Class Mode</label>
+              <select
+                name="classMode"
+                value={formData.classMode}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select</option>
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="font-medium text-base">Next Follow-Up</label>
+              <input
+                type="date"
+                name="nextFollowUp"
+                value={formData.nextFollowUp}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div className="flex flex-col col-span-2">
+              <label className="font-medium text-base">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                rows="4"
+                placeholder="Description"
+              />
+            </div>
+
+            <div className="col-span-2 flex justify-end gap-4 mt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      </div>
-    
+    </div>
   );
 }

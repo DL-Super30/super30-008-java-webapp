@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 
-@keyframes spin {
+ @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
@@ -21,4 +21,120 @@
   height: 24px;
   animation: spin 1s linear infinite;
   margin-right: 8px;
+}
+/* Navbar Styles */
+.navbar {
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.logo Image {
+  width: 120px;
+  height: auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s, border-bottom 0.3s;
+}
+
+.nav-links a.active {
+  color: #6AB187;
+  border-bottom: 2px solid #6AB187;
+}
+
+.nav-links a:hover {
+  color: #6AB187;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 2px;
+  background-color: black;
+  position: relative;
+}
+
+.menu-icon::before, .menu-icon::after {
+  content: '';
+  width: 24px;
+  height: 2px;
+  background-color: black;
+  position: absolute;
+  left: 0;
+  transition: transform 0.3s;
+}
+
+.menu-icon::before {
+  top: -8px;
+}
+
+.menu-icon::after {
+  top: 8px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .nav-links {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.open {
+      display: flex;
+  }
+
+  .menu-toggle {
+      display: block;
+  }
+
+  .menu-icon {
+      transform: rotate(0deg);
+  }
+
+  .menu-icon::before {
+      transform: rotate(45deg);
+      top: 0;
+  }
+
+  .menu-icon::after {
+      transform: rotate(-45deg);
+      top: 0;
+  }
 }

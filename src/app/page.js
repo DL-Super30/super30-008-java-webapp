@@ -1,5 +1,6 @@
 // src/app/login/page.js
-"use client"
+"use client";
+
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useState } from "react";
@@ -9,39 +10,44 @@ export default function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [serverError, setServerError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
 
     const loginUser = async (data) => {
         setIsLoading(true);
         setServerError("");
 
-        setTimeout(async () => {
-            try {
-                const response = await fetch('http://localhost:3000/login');
+        try {
+            const response = await fetch('http://localhost:3000/login');
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch users from the server");
-                }
-
-                const users = await response.json();
-
-                const user = users.find(
-                    (user) => user.username === data.username && user.password === data.password
-                );
-
-                if (user) {
-                    console.log('Login successful:', user);
-                    router.replace('/dashboard');
-                } else {
-                    setServerError("Invalid username or password");
-                }
-            } catch (error) {
-                setServerError("Network error or server is down");
-                console.error('Error logging in:', error);
-            } finally {
-                setIsLoading(false);
+            if (!response.ok) {
+                throw new Error("Failed to fetch users from the server");
             }
-        }, 1000);
+
+            const users = await response.json();
+
+            const user = users.find(
+                (user) => user.username === data.username && user.password === data.password
+            );
+
+            if (user) {
+                console.log('Login successful:', user);
+
+                // Handle "Remember Me"
+                if (rememberMe) {
+                    localStorage.setItem('rememberedUser', JSON.stringify(user));
+                }
+
+                router.replace('/dashboard');
+            } else {
+                setServerError("Invalid username or password");
+            }
+        } catch (error) {
+            setServerError("Network error or server is down");
+            console.error('Error logging in:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -97,7 +103,12 @@ export default function LoginPage() {
                             </button>
                         </div>
                         <div className="flex gap-2 mt-8">
-                            <input type="checkbox" className="h-5 w-5" />
+                            <input 
+                                type="checkbox" 
+                                className="h-5 w-5" 
+                                checked={rememberMe}
+                                onChange={() => setRememberMe(prev => !prev)}
+                            />
                             <span className="font-normal text-sm text-gray-600">Remember Me</span>
                         </div>
                         <span className="text-gray-500 text-sm font-medium mt-24 text-center block">©2024, All rights reserved</span>
@@ -114,7 +125,6 @@ export default function LoginPage() {
                         src="/images/log.webp"
                         alt="the image"
                         width={1000}
-                        objectFit="cover"
                         height={1000}
                         className="h-full"
                     />

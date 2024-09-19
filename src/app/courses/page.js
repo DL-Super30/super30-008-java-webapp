@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function leads() {
   return (
     
-      <div className="lg:w-[70%]">
+      <div className="lg:w-[100%]">
         <div className="mx-5 my-2.5 py-2.5 shadow-lg border-2 bg-[#FFF] rounded-lg">
           <div className="mb-5">
             <div className="flex flex-wrap gap-3 justify-between items-center px-5 py-2">
@@ -47,6 +47,17 @@ export default function leads() {
                 </div>
               </div>
             </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto border-collapse">
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="border px-4 py-2">Course</th>
+                    <th className="border px-4 py-2">description</th>
+                    <th className="border px-4 py-2">Course Fee</th>
+                  </tr>
+                </thead>
+                </table>
+                </div>
 
           </div>
 
