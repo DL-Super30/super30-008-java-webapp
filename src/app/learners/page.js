@@ -12,6 +12,7 @@ export default function Learners(){
     const [pageConfig, setPageConfig] = useState({});
     const [pageDisplay, setPageDisplay] = useState(1); 
     const [displayActivity ,setDisplayActivity] = useState(false);
+    const [showKanban,setShowKanban] = useState(false);
 
 
     const recordsPerPage = 8;
@@ -91,12 +92,12 @@ export default function Learners(){
                         <button className="w-1/4 p-1 border">Completed</button>
                     </div>
                     <div>
-                        <button className="w-36 p-1 border bg-blue-400 text-white"><FontAwesomeIcon icon={faTable} />Table</button>
-                        <button className="w-36 p-1 border"><FontAwesomeIcon icon={faChartBar} />Kanban</button>
+                        <button className={`w-36 p-1 border  ${!showKanban ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() => setShowKanban(!showKanban)}><FontAwesomeIcon icon={faTable} />Table</button>
+                        <button className={`w-36 p-1 border ${showKanban ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() =>setShowKanban(!showKanban)}><FontAwesomeIcon icon={faChartBar} />Kanban</button>
                     </div>
                 </div>
-                <div>
-                    <table className="w-full border mt-3 rounded">
+                <div className="mt-5">
+                    { !showKanban ? (<table className="w-full border mt-3 rounded">
                         <thead className="border-2 bg-[#F8F8F8] ">
                             <tr className="">
                                 <th className="w-1/7 p-2">Created on</th>
@@ -127,21 +128,25 @@ export default function Learners(){
                                 </tr>
                             )) }
                         </tbody>
-                    </table>
+                    </table>) : (<LearnersKanban />) }
                 </div>
-                <div className="flex justify-end">
+                {
+                    !showKanban && (
+                        <div className="flex justify-center">
                     <div className="flex ">
                         <p className={`${pageConfig.isPrevious ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay-1)} ><FontAwesomeIcon icon={faChevronLeft} /></p>
                         {pages.map(page => (
-                            <p className={`mx-1 cursor-pointer ${pageDisplay == page ? 'font-bold' : ''} `} onClick={() =>handlePageChange(page)}>{page}</p>
+                            <p key={page} className={`mx-1 cursor-pointer ${pageDisplay == page ? 'font-bold' : ''} `} onClick={() =>handlePageChange(page)}>{page}</p>
                         ))}
                         <p className={`${pageConfig.isNext?'cursor-pointer' :'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay+1)}><FontAwesomeIcon icon={faChevronRight} /></p>
 
                     </div>
                 </div>
+                    )
+                }
             </div>
 
-            <LearnersKanban />
+           
         </div>
     )
 }

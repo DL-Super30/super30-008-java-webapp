@@ -123,7 +123,7 @@ export default function Courses() {
                             </tbody>
                         </table>
                     </div>
-                    <div className="justify-end flex mr-14 mt-2">
+                    <div className="justify-center flex mr-14 mt-2">
                         <p><FontAwesomeIcon icon={faChevronLeft} className={`text-sm ${pageConfig.isPrevious ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={() => handlePageChange(pageDisplay - 1)}/></p>
                         { pages.map((page) =>(
                             <p key={page} className={`mx-1 cursor-pointer ${page==pageDisplay ? 'font-semibold' : ''}`} onClick={() => handlePageChange(page)}>{page}</p>

@@ -26,6 +26,7 @@ export default function DashBoard() {
   const [leadId,setLeadId] = useState();
   const [showupdate ,setShowUpdate] = useState(false);
   const [selectStatus , setSelectStatus ]= useState("All Leads")
+  const [updateData, setUpdateData] = useState(null);
 
 
   const recordsPerPage = 10;
@@ -135,10 +136,13 @@ export default function DashBoard() {
     }
 
     if (searchTerm) {
-      filteredRecords = filteredRecords.filter(record =>
-        record.name.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
-      );
+      filteredRecords = filteredRecords.filter(record => {
+        const name = record.name ? record.name.toLowerCase() : "";
+        const phone = record.phone ? record.phone : "";
+        return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm);
+      });
     }
+    
 
     return filteredRecords;
   };
@@ -174,7 +178,7 @@ export default function DashBoard() {
 
   const showPop = (e ) =>{
     setLeadId(e)
-    setDeletePopUp(true)
+    setDeletePopUp(true);
 
   }
 
@@ -188,17 +192,11 @@ export default function DashBoard() {
       console.log(err);
     }
   }
-  const showUpdateScreen =async ( _updateLeadId) =>{
-    setShowUpdate(true)
-    try {
-      await fetch(`http://localhost:3001/signUpData/${leadId}`, { method: "PUT" });
-      
-      
-    } 
-    catch (err) {
-      console.log(err);
-    }
-  }
+  const showUpdateScreen = (data) => {
+    setShowUpdate(true);
+    setUpdateData(data);  // Store the data in state
+    
+  };
 
   const hideUpdateScreen = ( ) =>{
     setShowUpdate(false)
@@ -299,7 +297,7 @@ export default function DashBoard() {
                     {displayActivity && (
                       <td className="w-1/7 text-center text-sm ">
                       <div className="flex w-full gap-x-2 mx-auto justify-center">
-                        <button className=" bg-lime-200 rounded-lg w-2/5" onClick={() => showUpdateScreen(d.id)}>Update<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
+                        <button className=" bg-lime-200 rounded-lg w-2/5" onClick={() => showUpdateScreen(d)}>Update<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
                         <button className="btn bg-red-500 text-white rounded-lg w-2/5" onClick={() => showPop(d.id)}> delete <FontAwesomeIcon icon={faTrash} className="text-sm"/> </button>                 
                       </div>
                     </td>
@@ -387,7 +385,7 @@ export default function DashBoard() {
         }
         {
           showupdate && (
-           <UpdateLead hideUpdateScreen={hideUpdateScreen}/> 
+           <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={updateData}/> 
           )
         }
       </div>

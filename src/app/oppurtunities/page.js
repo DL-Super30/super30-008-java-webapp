@@ -30,12 +30,12 @@ export default function Oppurtunities(){
 
   const getLastRecords = async () => {
     try {
-      let response = await fetch(`http://localhost:3001/signUpData?_page=1&_per_page=1000`, { method: "GET" });
+      let response = await fetch(`http://localhost:3001/oppurtunities?_page=1&_per_page=1000`, { method: "GET" });
       const data = await response.json();
       const sortedRecords = data.data.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
-        return dateB - dateA; 
+        return dateB - dateA ; 
       });
       
       const filteredRecords = filterRecords(sortedRecords);
@@ -100,13 +100,13 @@ export default function Oppurtunities(){
         // filteredRecords = filteredRecords.filter(record => record.visitStatus === "visiting");
         // break;
       case "visited":
-        filteredRecords = filteredRecords.filter(record => record.visitStatus === "visited");
+        filteredRecords = filteredRecords.filter(record => record.status === "visited");
         break;
       case "Demo Attended":
-        filteredRecords = filteredRecords.filter(record => record.visitStatus === "Demo Attended");
+        filteredRecords = filteredRecords.filter(record => record.status === "Demo Attended");
         break;
       case "Lost Oppurtunity":
-        filteredRecords = filteredRecords.filter(record => record.visitStatus === "Lost Opputunity");
+        filteredRecords = filteredRecords.filter(record => record.status === "Lost Opputunity");
         break;
       default:
         break;
@@ -114,10 +114,13 @@ export default function Oppurtunities(){
 
     // Apply search filter based on the search term
     if (searchTerm) {
-      filteredRecords = filteredRecords.filter(record =>
-        record.name.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
-      );
+      filteredRecords = filteredRecords.filter(record => {
+        const name = record.name ? record.name.toLowerCase() : "";
+        const phone = record.phone ? record.phone : "";
+        return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm);
+      });
     }
+    
 
     return filteredRecords;
   };

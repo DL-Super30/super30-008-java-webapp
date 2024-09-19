@@ -71,8 +71,8 @@ export default function Login() {
       }, 3000);
     } else {
       // Display an error if invalid credentials
-      setError("username", { type: "manual", message: "Invalid Username or Password" });
-      setError("password", { type: "manual", message: "Invalid Username or Password" });
+      // setError("username", { type: "manual", message: "Invalid Username or Password" });
+      // setError("password", { type: "manual", message: "Invalid Username or Password" });
 
       toast.error('Invalid Credentials', {
         position: "top-right",
@@ -91,6 +91,12 @@ export default function Login() {
     setRememberMe(!rememberMe);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit(onSubmit)();
+    }
+  };
+
   return (
     <div className="flex-col md:flex-row flex w-full h-[100vh] md:relative">
       <div className="w-full md:w-1/2 p-0 md:p-5 bg-white">
@@ -106,7 +112,7 @@ export default function Login() {
                 className="w-full border outline-none p-3 rounded"
                 {...register('username', { required: "Username is required" })}
               />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+              {errors.username && <p className="text-red-500">Please Enter Username</p>}
 
               <label className="text-sm">Password</label>
               <input
@@ -114,9 +120,9 @@ export default function Login() {
                 className="w-full border outline-none p-3 rounded"
                 {...register('password', { required: "Password is required" })}
               />
-              {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+              {errors.password && <p className="text-red-500">Please Enter Password</p>}
 
-              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border">
+              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border" onKeyDown={() =>handleKeyPress(e)}>
                 Login
               </button>
 
