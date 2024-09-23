@@ -46,3 +46,7 @@ background-size: cover;
   font-family:__Inter_36bd41, __Inter_Fallback_36bd41;
   
 }
+.different{
+  overflow-y: hidden;
+  
+}

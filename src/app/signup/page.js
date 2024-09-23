@@ -13,7 +13,7 @@ export default function Signup(props) {
             <div className="w-[370px] h-[430px] m-auto mt-[80px] rounded-lg bg-white ">
                 <div className="w-full rounded-t-md h-[60px] bg-red-500 flex justify-between">
                     <h1 className="text-[24px] text-white ml-[30px] mt-[10px]">Start Now</h1>
-                    <button className='text-white mr-[15px] text-2xl'><FontAwesomeIcon icon={faXmark} onClick={() => setShowSignup(false)} /></button>
+                    <button className='text-white mr-[15px] text-2xl'><FontAwesomeIcon icon={faXmark} onClick={() => setShowSignup(false)} /></button>  
 
                 </div>
                 <div className='p-5'>

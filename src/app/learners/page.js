@@ -4,6 +4,7 @@ import { useEffect,useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard, faAngleDown,faTable,faChevronLeft,faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import Link from "next/link";
+import CreateLearner from "../createlearners/page";
 
 
 export default function Learner() {
@@ -11,6 +12,7 @@ export default function Learner() {
     const [pages,setPages]=useState([]);
     const [pageConfig,setPageConfig] = useState({});
     const [pageDisplay,setPageDisplay] = useState(1);
+    const [showCreateLearner,setShowCreateLearner] = useState(false)
 
     const recordesperPage=10;
 
@@ -69,15 +71,15 @@ export default function Learner() {
                     <select className="text-xl outline-none">
                         <option className="text-md">All Learner</option>
                         <option className="text-md">My Learner</option>
-                        <option className="text-md">Today's Learner</option>
-                        <option className="text-md">Yesterday's Learner</option>
+                        <option className="text-md">Todays Learner</option>
+                        <option className="text-md">Yesterdays Learner</option>
                         <option className="text-md">This week Learner</option>
                         <option className="text-md">Last Month Learner</option>
                     </select>
                 </div>
                 <div className=" flex items-center mr-5">
 
-                 <Link href={"/createlearners"}> <h1 className="text-center rounded-lg mr-[10px] w-52 p-2  border-2 text-white bg-blue-500 text-lg">Create Learner<FontAwesomeIcon icon={faAngleDown} className="mr-[-10px]" /></h1></Link>
+                 <button className="text-center rounded-lg mr-[10px] w-52 p-2  border-2 text-white bg-blue-500 text-lg" onClick={() => setShowCreateLearner(true)}>Create Learner<FontAwesomeIcon icon={faAngleDown} className="mr-[-10px]" /></button>
                     <h1 className="text-center rounded-lg w-36 border p-2 text-black  text-lg">Actions <FontAwesomeIcon icon={faAngleDown} className="mr-[-10px]" /></h1>
                 </div>
             </div>
@@ -125,7 +127,7 @@ export default function Learner() {
 
 
             </div>
-
+             { showCreateLearner && (<CreateLearner setShowCreateLearner={setShowCreateLearner}/>)}
 
         </div>
     )

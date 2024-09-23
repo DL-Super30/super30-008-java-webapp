@@ -15,7 +15,7 @@ export default function Opportunities() {
     const recordsperPage = 10;
 
     useEffect( () =>{   
-        fetchData();
+        fetchData()
     } ,[pageDisplay])
 
     const fetchData = async () =>{
