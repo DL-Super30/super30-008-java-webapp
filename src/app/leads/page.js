@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { faAngleDown, faAngleUp, faTable, faColumns, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import LeadForm from "../../components/leadForm";
+import LeadForm from "../../components/leadform";
 import UpdateLeadForm from "../../components/updateLead";
 
 export default function Leads() {

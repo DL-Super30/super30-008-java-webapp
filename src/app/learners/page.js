@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from "next/image";
 import { faAngleDown, faAngleUp, faTable, faColumns, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import LearnerForm from '@/components/learnerForm';
 
 export default function Learners() {
   const [activeLearnerStatus, setActiveLearnerStatus] = useState("All Learners");
@@ -12,6 +13,7 @@ export default function Learners() {
   const [learners, setLearners] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedLearnerIds, setSelectedLearnerIds] = useState([]);
+  const [showLearnerForm, setShowLearnerForm] = useState(false);
   
   useEffect(() => {
     async function fetchLearners() {
@@ -58,6 +60,9 @@ export default function Learners() {
   const handleLearnerStatusClick = (status) => {
     setActiveLearnerStatus(status);
   };
+  const toggleLearnerForm = () => {
+    setShowLearnerForm((prev) => !prev); // Toggle the state of Lead Form
+  };
 
   const handleCheckboxChange = (event, id) => {
     event.stopPropagation();
@@ -99,6 +104,7 @@ export default function Learners() {
             </div>
             <div className="flex gap-2">
               <button
+              onClick={toggleLearnerForm}
                 className="bg-teal-600 text-white text-sm rounded-lg border-black px-4 p-1 leading-6 gap-2"
               >
                 Create Learner
@@ -244,3 +250,4 @@ export default function Learners() {
     </div>
   );
 }
+{ showLearnerForm && <LeanerForm onClose={toggleLearnerForm} /> }
