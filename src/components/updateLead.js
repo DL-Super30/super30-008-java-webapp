@@ -11,8 +11,8 @@ export default function UpdateLeadForm({ lead, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/leads/${updatedLead.id}`, {
-        method: "PUT",
+      const response = await fetch(`http://localhost:3000/leads${updatedLead.id}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

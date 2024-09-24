@@ -1,116 +1,160 @@
-"use client";
-import { useState, useEffect } from 'react';
-import Image from "next/image";
-import { faAngleDown, faAngleUp, faTable, faColumns, faSearch, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import OpportunityForm from "../../components/opportunityform";
-// import UpdateOpportunityForm from "../../components/updateOpportunity"; // Import UpdateOpportunityForm component
+'use client'
+
+import { useState, useEffect } from 'react'
+import Image from "next/image"
+import { faAngleDown, faAngleUp, faTable, faColumns, faSearch, faPen, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import OpportunityForm from "../../components/OpportunityForm"
+import UpdateOpportunityForm from '@/components/updateOpportunity'
 
 export default function Opportunities() {
-  const [activeOpportunityStatus, setActiveOpportunityStatus] = useState("All Opportunities");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showOpportunityForm, setShowOpportunityForm] = useState(false);
-  const [view, setView] = useState("Table");
-  const [opportunities, setOpportunities] = useState([]);
-  const [showUpdateForm, setShowUpdateForm] = useState(false);
-  const [opportunityToUpdate, setOpportunityToUpdate] = useState(null);
+  const [activeOpportunityStatus, setActiveOpportunityStatus] = useState("All Opportunities")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showOpportunityForm, setShowOpportunityForm] = useState(false)
+  const [view, setView] = useState("Table")
+  const [opportunities, setOpportunities] = useState([])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedOpportunityIds, setSelectedOpportunityIds] = useState([])
+  const [showUpdateForm, setShowUpdateForm] = useState(false)
+  const [opportunityToUpdate, setOpportunityToUpdate] = useState(null)
 
-  // Fetch opportunities from API
   useEffect(() => {
     async function fetchOpportunities() {
       try {
-        const response = await fetch('http://localhost:3000/opportunities');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        setOpportunities(data);
+        const response = await fetch('http://localhost:3000/opportunities')
+        if (!response.ok) throw new Error('Network response was not ok')
+        const data = await response.json()
+        console.log("Fetched opportunities data:", data)
+        setOpportunities(data)
       } catch (error) {
-        console.error('Error fetching opportunities data:', error);
+        console.error('Error fetching opportunities data:', error)
       }
     }
-    fetchOpportunities();
-  }, []);
+    fetchOpportunities()
+  }, [])
 
-  // Filter opportunities based on status and search query
   const getFilteredOpportunities = () => {
-    let filtered = opportunities;
+    let filtered = opportunities
 
-    // Apply status filter
     if (activeOpportunityStatus !== "All Opportunities") {
-      filtered = filtered.filter(opportunity => opportunity.status === activeOpportunityStatus);
+      filtered = filtered.filter(opportunity => opportunity.Opportunitystatus === activeOpportunityStatus)
     }
 
-    // Apply search query filter
     if (searchQuery) {
       filtered = filtered.filter(opportunity =>
         opportunity.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      )
     }
 
-    return filtered;
-  };
+    return filtered
+  }
 
-  // Get the count of opportunities by status
   const getOpportunitiesCountByStatus = (status) => {
-    // This counts all opportunities, even if a status filter is applied
-    return opportunities.filter(opportunity => status === "All Opportunities" || opportunity.status === status).length;
-  };
+    if (status === "All Opportunities") {
+      return opportunities.length;
+    }
+    return opportunities.filter(opportunity => opportunity.Opportunitystatus === status).length;
+  }
+  
 
   const handleViewClick = (viewType) => {
-    setView(viewType);
-  };
+    setView(viewType)
+  }
 
   const handleOpportunityStatusClick = (status) => {
-    setActiveOpportunityStatus(status);
-  };
+    setActiveOpportunityStatus(status)
+  }
 
   const toggleOpportunityForm = () => {
-    setShowOpportunityForm(prev => !prev);
-  };
+    setShowOpportunityForm(prev => !prev)
+  }
 
   const handleDeleteOpportunity = async (opportunityId) => {
     try {
       const response = await fetch(`http://localhost:3000/opportunities/${opportunityId}`, {
         method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete opportunity");
-      setOpportunities(opportunities.filter((opportunity) => opportunity.id !== opportunityId)); // Update the opportunities after deletion
+      })
+      if (!response.ok) throw new Error("Failed to delete opportunity")
+      setOpportunities(opportunities.filter((opportunity) => opportunity.id !== opportunityId))
     } catch (error) {
-      console.error("Error deleting opportunity:", error);
+      console.error("Error deleting opportunity:", error)
     }
-  };
+  }
 
-  // Function to open the update form with the opportunity details
-  const handleEditOpportunity = (opportunity) => {
-    setOpportunityToUpdate(opportunity);
-    setShowUpdateForm(true);
-  };
+  const handleEditOpportunity = (opportunity, event) => {
+    // Check if the click event originated from the checkbox
+    if (event.target.type !== 'checkbox') {
+      setOpportunityToUpdate(opportunity)
+      setShowUpdateForm(true)
+    }
+  }
 
-  // Function to get opportunities by status (for Kanban view)
+  const handleUpdateFormClose = () => {
+    setShowUpdateForm(false)
+    setOpportunityToUpdate(null)
+  }
+
   const getOpportunitiesByStatus = (status) => {
-    return opportunities.filter(opportunity => opportunity.status === status);
-  };
+    return getFilteredOpportunities().filter(opportunity => 
+      opportunity.Opportunitystatus &&
+      opportunity.Opportunitystatus.toLowerCase() === status.toLowerCase()
+    )
+  }
 
-  // Function to format dates (for Kanban view)
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // Adjust format as needed
-  };
+    const date = new Date(dateString)
+    return date.toLocaleDateString()
+  }
 
-  // Function to get color by status (for Kanban view)
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev)
+  }
+
+  const handleDelete = async () => {
+    if (selectedOpportunityIds.length === 0) return
+
+    try {
+      const promises = selectedOpportunityIds.map(id =>
+        fetch(`http://localhost:3000/opportunities/${id}`, {
+          method: "DELETE",
+        })
+      )
+      await Promise.all(promises)
+
+      setOpportunities(opportunities.filter((opportunity) => !selectedOpportunityIds.includes(opportunity.id)))
+      setIsDropdownOpen(false)
+      setSelectedOpportunityIds([])
+    } catch (error) {
+      console.error("Error deleting Opportunities:", error)
+    }
+  }
+
+  const handleCheckboxChange = (event, id) => {
+    event.stopPropagation()
+    const isChecked = event.target.checked
+    setSelectedOpportunityIds((prevSelectedIds) => {
+      if (isChecked) {
+        return [...prevSelectedIds, id]
+      } else {
+        return prevSelectedIds.filter((selectedId) => selectedId !== id)
+      }
+    })
+  }
+
   const getColorByStatus = (status) => {
     switch (status) {
-      case 'Not Contacted':
-        return 'bg-red-200';
-      case 'Attempted':
-        return 'bg-yellow-200';
-      case 'Warm Opportunity':
-        return 'bg-green-200';
-      case 'Cold Opportunity':
-        return 'bg-blue-200';
+      case 'Visiting':
+        return 'bg-red-200'
+      case 'Visited':
+        return 'bg-yellow-200'
+      case 'Demo Attended':
+        return 'bg-green-200'
+      case 'Lost Opportunity':
+        return 'bg-blue-200'
       default:
-        return 'bg-gray-200';
+        return 'bg-gray-200'
     }
-  };
+  }
 
   return (
     <div className="lg:w-full">
@@ -126,14 +170,31 @@ export default function Opportunities() {
             <div className="flex gap-2">
               <button
                 onClick={toggleOpportunityForm}
-                className="bg-[#0176D3] text-white text-sm rounded-lg border-black px-4 p-1 leading-6 gap-2"
+                className="bg-teal-600 text-white text-sm rounded-lg border-black px-4 p-1 leading-6 gap-2"
               >
                 {showOpportunityForm ? "Close Opportunity Form" : "Create Opportunity"}{" "}
                 <FontAwesomeIcon icon={showOpportunityForm ? faAngleUp : faAngleDown} className="mt-2" />
               </button>
-              <button className="bg-white text-black text-sm rounded-md border border-neutral-400 px-4 p-1 leading-6 gap-2">
-                Actions <FontAwesomeIcon icon={faAngleDown} className="mt-2 ml-1" />
+              <button
+                onClick={toggleDropdown}
+                className="bg-blue-200 text-black-800 text-sm rounded-md border border-gray-300 px-4 p-1 leading-6 flex items-center gap-2"
+              >
+                Actions <FontAwesomeIcon icon={faAngleDown} className="ml-1" />
               </button>
+
+              {isDropdownOpen && (
+                <div className="absolute right-9 mt-8 w-30 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                  <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                    <button
+                      onClick={handleDelete}
+                      className="w-full text-center px-4 py-2 text-sm text-red-600 bg-red-100 hover:bg-red-200"
+                      role="menuitem"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -153,18 +214,18 @@ export default function Opportunities() {
                 />
               </div>
               <div className="inline-flex rounded-md shadow-sm">
-                {["All Opportunities", "Not Contacted", "Attempted", "Warm Opportunity", "Cold Opportunity"].map((status) => (
+                {["All Opportunities", "Visiting", "Visited", "Demo Attended", "Lost Opportunity"].map((status) => (
                   <button
                     key={status}
                     type="button"
                     className={`inline-flex gap-2 items-center px-4 py-1 text-sm font-normal border focus:border-transparent transition duration-700 ${activeOpportunityStatus === status
-                      ? "bg-[#0176D3] text-white border-[#0176D3]"
-                      : "bg-white text-black border-[#747474]"
+                        ? "bg-teal-600 text-white border-green-600"
+                        : "bg-white text-black-800 border-teal-300"
                       }`}
                     onClick={() => handleOpportunityStatusClick(status)}
                   >
                     {status}
-                    <p className="bg-rose-600 py-1 px-2.5 rounded-full">
+                    <p className="bg-yellow-100 py-1 px-2.5 rounded-full text-blue-800">
                       {getOpportunitiesCountByStatus(status)}
                     </p>
                   </button>
@@ -172,14 +233,14 @@ export default function Opportunities() {
               </div>
               <div className="inline-flex rounded-md shadow-sm">
                 <button
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-normal border rounded-s-lg ${view === "Table" ? "bg-[#0176D3] text-white" : "bg-white text-black border-[#747474]"}`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-normal border focus:border-transparent ${view === 'Table' ? 'bg-teal-600 text-white border-blue-600' : 'bg-white text-black-800 border-teal-300'}`}
                   onClick={() => handleViewClick("Table")}
                 >
                   <FontAwesomeIcon icon={faTable} />
                   Table
                 </button>
                 <button
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-normal border rounded-e-lg ${view === "Kanban" ? "bg-[#0176D3] text-white" : "bg-white text-black border-[#747474]"}`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-normal border focus:border-transparent ${view === 'Kanban' ? 'bg-teal-600 text-white border-blue-600' : 'bg-white text-black-800 border-teal-300'}`}
                   onClick={() => handleViewClick("Kanban")}
                 >
                   <FontAwesomeIcon icon={faColumns} />
@@ -188,113 +249,93 @@ export default function Opportunities() {
               </div>
             </div>
           </div>
-          {view === "Table" ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full table-auto border-collapse">
-                <thead>
-                  <tr className="bg-gray-200 text-left">
-                    <th className="border px-4 py-2">Created on</th>
-                    <th className="border px-4 py-2">Opportunity Status</th>
-                    <th className="border px-4 py-2">Name</th>
-                    <th className="border px-4 py-2">Phone</th>
-                    <th className="border px-4 py-2">Stack</th>
-                    <th className="border px-4 py-2">Course</th>
-                    <th className="border px-4 py-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getFilteredOpportunities().length > 0 ? (
-                    getFilteredOpportunities().map((opportunity) => (
-                      <tr key={opportunity.id} className="bg-white border">
-                        <td className="border p-2">{opportunity.date}</td>
-                        <td className="border px-4 py-2">{opportunity.status}</td>
-                        <td className="border px-4 py-2">{opportunity.name}</td>
-                        <td className="border px-4 py-2">{opportunity.phone}</td>
-                        <td className="border px-4 py-2">{opportunity.stack}</td>
-                        <td className="border px-4 py-2">{opportunity.course}</td>
-                        <td className="border px-4 py-2 flex gap-2">
-                          <button
-                            className="text-blue-500 p-1"
-                            onClick={() => handleEditOpportunity(opportunity)}
-                          >
-                            <FontAwesomeIcon icon={faPen} /> Edit
-                          </button>
-                          <button
-                            className="text-red-500 p-1"
-                            onClick={() => handleDeleteOpportunity(opportunity.id)}
-                          >
-                            <FontAwesomeIcon icon={faTrash} /> Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center p-4">No opportunities found</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="kanban-view">
-              <div className="w-[100%] overflow-auto px-5 h-full">
-                <div className="flex gap-3">
-                  {['Not Contacted', 'Attempted', 'Warm Opportunity', 'Cold Opportunity'].map((status) => (
-                    <div key={status} className="h-full grid gap-4">
-                      <div
-                        className={`${getColorByStatus(status)} border-t-4 rounded-t-md h-20 min-w-96 py-3 px-5`}
-                      >
-                        <h3 className="text-md font-medium text-black">{status}</h3>
-                      </div>
-                      <div className="bg-gray-200 h-[63vh] px-0.5 max-w-96 flex flex-col items-center justify-start rounded">
-                        {getOpportunitiesByStatus(status).length > 0 ? (
-                          getOpportunitiesByStatus(status).map((opportunity, index) => (
-                            <div
-                              key={index}
-                              className="bg-white p-4 m-2 rounded-md shadow-md border border-gray-300"
-                            >
-                              <h4 className="text-lg font-semibold">{opportunity.name}</h4>
-                              <p>Phone: {opportunity.phone}</p>
-                              <p>Stack: {opportunity.stack}</p>
-                              <p>Course: {opportunity.course}</p>
-                              <p>Created on: {formatDate(opportunity.created_on)}</p>
-                              <div className="mt-2 flex gap-2">
-                                <button
-                                  onClick={() => handleEditOpportunity(opportunity)}
-                                  className="bg-blue-500 text-white px-4 py-1 rounded"
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteOpportunity(opportunity.id)}
-                                  className="bg-red-500 text-white px-4 py-1 rounded"
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-center mt-4">No opportunities</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Conditionally render the OpportunityForm
-              {showOpportunityForm && <OpportunityForm />} */}
-
-              {/* Conditionally render the UpdateOpportunityForm */}
-              {/* {showUpdateForm && opportunityToUpdate && (
-                <UpdateOpportunityForm opportunity={opportunityToUpdate} onClose={() => setShowUpdateForm(false)} />
-              )} */}
-            </div>
-          )}
         </div>
+
+        {view === "Table" ? (
+          <div className="overflow-x-auto px-5 pb-5">
+            <table className="min-w-full border-collapse block md:table">
+              <thead className="block md:table-header-group">
+                <tr className="bg-green-100 text-gray-800 block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
+                  <th className="border px-2 py-2" style={{ width: '50px' }}>Checkbox</th>
+                  <th className="border px-4 py-2 font-medium text-center block md:table-cell">Name</th>
+                  <th className="border px-4 py-2 font-medium text-center block md:table-cell">Email</th>
+                  <th className="border px-4 py-2 font-medium text-center block md:table-cell">Phone</th>
+                  <th className="border px-4 py-2 font-medium text-center block md:table-cell">Status</th>
+                  <th className="border px-4 py-2 font-medium text-center block md:table-cell">Course</th>
+                </tr>
+              </thead>
+              <tbody className="block md:table-row-group">
+                {getFilteredOpportunities().map((opportunity) => (
+                  <tr key={opportunity.id} className="bg-white border cursor-pointer hover:bg-yellow-50 block md:table-row">
+                    <td className="border px-2 py-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedOpportunityIds.includes(opportunity.id)}
+                        onChange={(event) => handleCheckboxChange(event, opportunity.id)}
+                        onClick={(event) => event.stopPropagation()}
+                      />
+                    </td>
+                    <td className="p-3 text-gray-900 text-center block md:table-cell" onClick={(event) => handleEditOpportunity(opportunity, event)}>{opportunity.name}</td>
+                    <td className="p-3 text-gray-900 text-center block md:table-cell" onClick={(event) => handleEditOpportunity(opportunity, event)}>{opportunity.email}</td>
+                    <td className="p-3 text-gray-900 text-center block md:table-cell" onClick={(event) => handleEditOpportunity(opportunity, event)}>{opportunity.phone}</td>
+                    <td className="p-3 text-gray-900 text-center block md:table-cell" onClick={(event) => handleEditOpportunity(opportunity, event)}>{opportunity.Opportunitystatus}</td>
+                    <td className="p-3 text-gray-900 text-center block md:table-cell" onClick={(event) => handleEditOpportunity(opportunity, event)}>{opportunity.course}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="kanban-view">
+            <div className="w-full overflow-auto px-5 h-full">
+              <div className="flex gap-3">
+                {["Visiting", "Visited", "Demo Attended", "Lost Opportunity"].map((status) => (
+                  <div key={status} className="h-full grid gap-4 min-w-96">
+                    <div className={`${getColorByStatus(status)} border-t-4 rounded-t-md h-20 py-3 px-5`}>
+                      <h3 className="text-md font-medium text-black">{status}</h3>
+                    </div>
+                    <div className="bg-gray-200 px-0.5 flex flex-col items-center justify-start rounded">
+                      {getOpportunitiesByStatus(status).length > 0 ? (
+                        getOpportunitiesByStatus(status).map((opportunity) => (
+                          <div
+                            key={opportunity.id}
+                            className="bg-white p-4 m-2 rounded-md shadow-md border border-gray-300 cursor-pointer hover:bg-yellow-50 min-h-[140px] w-full flex items-center justify-between"
+                            onClick={(event) => handleEditOpportunity(opportunity, event)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedOpportunityIds.includes(opportunity.id)}
+                              onChange={(event) => handleCheckboxChange(event, opportunity.id)}
+                              onClick={(event) => event.stopPropagation()}
+                            />
+                            <div className="w-full ml-4">
+                              <h4 className="text-lg font-semibold truncate">{opportunity.name}</h4>
+                              <p className="truncate">Phone: {opportunity.phone}</p>
+                              <p className="truncate">Stack: {opportunity.stack}</p>
+                              <p className="truncate">Status: {opportunity.Opportunitystatus}</p>
+                              <p className="truncate">Course: {opportunity.course}</p>
+                              <p className="truncate">Next Follow-up: {formatDate(opportunity.nextFollowUp)}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 mt-2">No opportunities available</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showOpportunityForm && (
+          <OpportunityForm onClose={toggleOpportunityForm} />
+        )}
+        {showUpdateForm && (
+          <UpdateOpportunityForm Opportunity={opportunityToUpdate} onClose={handleUpdateFormClose} />
+        )}
       </div>
     </div>
-  );
+  )
 }

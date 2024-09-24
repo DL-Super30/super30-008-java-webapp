@@ -31,49 +31,49 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF6052', '#92B6F4'];
+  
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Top Overview Cards */}
       <div className="grid grid-cols-6 gap-4 mb-6 ">
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-8 h-8 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Not Contacted</p>
           <p className="text-xl font-bold">17</p>
           </div>
         </div>
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-10 h-10 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Warm Lead</p>
           <p className="text-xl font-bold">17</p>
           </div>
         </div>
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-10 h-10 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Attempted</p>
           <p className="text-xl font-bold">17</p>
           </div>
         </div>
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-10 h-10 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Registered</p>
           <p className="text-xl font-bold">17</p>
           </div>
         </div>
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-10 h-10 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Opportunity</p>
           <p className="text-xl font-bold">17</p>
           </div>
         </div>
         <div className="bg-white rounded-lg p-4 shadow-md flex">
-          <div><FontAwesomeIcon icon={faUserGroup} className="text-blue-500 w-10 h-10 p-2" /></div>
+          <div><FontAwesomeIcon icon={faUserGroup} className="text-teal-500 w-8 h-8 p-2" /></div>
           <div className="p-2">
           <p className="text-sm text-gray-500">Cold Lead</p>
           <p className="text-xl font-bold">17</p>

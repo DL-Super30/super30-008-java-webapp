@@ -5,17 +5,17 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const [serverError, setServerError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
 
     const loginUser = async (data) => {
         setIsLoading(true);
-        setServerError("");
 
         try {
             const response = await fetch('http://localhost:3000/login');
@@ -31,19 +31,43 @@ export default function LoginPage() {
             );
 
             if (user) {
-                console.log('Login successful:', user);
+                toast.success('Login successful!', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
 
                 // Handle "Remember Me"
                 if (rememberMe) {
                     localStorage.setItem('rememberedUser', JSON.stringify(user));
                 }
 
-                router.replace('/dashboard');
+                router.push('/dashboard');
             } else {
-                setServerError("Invalid username or password");
+                toast.error("Invalid username or password", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
         } catch (error) {
-            setServerError("Network error or server is down");
+            toast.error("Network error or server is down", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             console.error('Error logging in:', error);
         } finally {
             setIsLoading(false);
@@ -88,7 +112,6 @@ export default function LoginPage() {
                             />
                             {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
                         </div>
-                        {serverError && <div className="text-red-500 text-sm mt-4">{serverError}</div>}
                         <div className="mt-9">
                             <button 
                                 type="submit" 
@@ -130,6 +153,9 @@ export default function LoginPage() {
                     />
                 </div>
             </div>
+
+            {/* Toastify container */}
+            <ToastContainer />
         </div>
     );
 }
