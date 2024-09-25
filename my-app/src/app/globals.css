@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*{
+  font-family: __Inter_36bd41, __Inter_Fallback_36bd41;
+}
+:root {
+  --foreground-rgb: 0, 0, 0;
+  /* --background-start-rgb: 214, 219, 220; */
+  /* --background-end-rgb: 255, 255, 255; */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+.background-img{
+  background-image: url('https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fpinkcrm.d54abf0d.png&w=1920&q=75');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.fontcolor{
+  color: #042d60;
+}
+.fontcol{
+  color: #000000;
+}
+.loginclr{
+  background: rgb(251,174,112);
+background: linear-gradient(66deg, rgba(251,174,112,1) 18%, rgba(246,136,132,1) 38%, rgba(239,89,148,1) 71%);
+}
+.kesava{
+  overflow-y: scroll;
+}
