@@ -131,6 +131,8 @@ export default function Learners() {
               )}
             </div>
           </div>
+           {/* Render Lead Form */}
+           {showLearnerForm && <LearnerForm onClose={toggleLearnerForm} />}
 
           <div className="flex justify-between items-center px-5 py-2">
             <div className="flex flex-wrap gap-3 items-center">
@@ -246,8 +248,9 @@ export default function Learners() {
             </div>
           </div>
         )}
+        { showLearnerForm && <LearnerForm onClose={toggleLearnerForm} /> }
       </div>
     </div>
   );
 }
-{ showLearnerForm && <LeanerForm onClose={toggleLearnerForm} /> }
+
