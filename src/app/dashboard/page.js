@@ -1,135 +1,77 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
-import LeadsLineChart from '@/components/LeadsLineChart';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
-import DoughnutChart from '@/components/piechart';
-
-
-export default function DashBoard() {
-  const [leadsData, setLeadsData] = useState([]);
-  const [records,setRecords] = useState([])
-  
-
+"use client"
+import { useRouter } from "next/navigation";
+import Charts from '../../components/charts';
+import { useEffect, useState } from 'react';
+function Dashboard() {
+  const router = useRouter();
+  const [leadsByHour, setLeadsByHour] = useState([]);
+  const [leadsByStatus, setLeadsByStatus] = useState([]);
+  // useEffect(() => {
+  //   const savedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+  //   if (!savedToken) {
+  //     router.push('/');
+  //   }
+  // }, [router]);
   useEffect(() => {
-    const fetchLeads = async () => {
+    const fetchLeadsData = async () => {
       try {
-        const response = await fetch("http://localhost:3001/todayleads",{ method:'GET'});
-        const data = await response.json();
-        setLeadsData(data);
+        const response = await fetch('http://localhost:4000/api/leadstatus/todayLeadsOnHourly');
+        const result = await response.json();
+        const leads = result.data;
+        // Process leads by time
+        const processedLeadsByHour = processLeadsByHour(leads);
+        // Fetch lead status data
+        const statusResponse = await fetch('http://localhost:4000/api/leadstatus/getleadStatus');
+        const statusResult = await statusResponse.json();
+        const processedLeadsByStatus = processLeadsByStatus(statusResult.data);
+        setLeadsByHour(processedLeadsByHour);
+        setLeadsByStatus(processedLeadsByStatus);
       } catch (error) {
-        // console.error('Failed to fetch leads data:', error);
-        console.log(error)
+        console.error('Error fetching leads data:', error);
       }
     };
-
-    fetchLeads();
+    fetchLeadsData();
   }, []);
-
-  useEffect( () =>{
-    countData();
-
-  },[] )
-
-  const countData = async () =>{
-    try{
-      const result = await fetch("http://localhost:3001/signUpData");
-    const output = await result.json()
-    setRecords(output);
-    }
-    catch (err){
-        console.log(err)
-    }
-    
-  }
-
-  
-
-  // console.log(records.date);
-  
-  // console.log(date)
+  // Process leads to ensure 24-hour data in IST format
+  const processLeadsByHour = (leads) => {
+    const hoursInDay = Array.from({ length: 24 }, (_, i) => i); // 0 to 23
+    const leadsPerHour = hoursInDay.map((hour) => {
+      const leadForHour = leads.find(
+        (lead) => {
+          const localTime = new Date(lead.hour).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            hour12: false,
+          });
+          return parseInt(localTime) === hour;
+        }
+      );
+      return {
+        hour: hour.toString().padStart(2, '0') + ':00',
+        leadCount: leadForHour ? parseInt(leadForHour.leadCount) : 0,
+      };
+    });
+    return leadsPerHour;
+  };
+  // Process lead status for doughnut chart
+  const processLeadsByStatus = (leads) => {
+    const statusLabels = ['Not Contacted', 'Attempted', 'Warm Lead', 'Cold Lead'];
+    const statusData = statusLabels.map((status) => {
+      const lead = leads.find(lead => lead.leadStatus === status);
+      return lead ? parseInt(lead.leadCount) : 0;
+    });
+    return {
+      labels: statusLabels,
+      data: statusData,
+    };
+  };
   return (
-    <div className="h-[100vh] bg-[#F4F6FA] pt-14">
-      <div className="w-4/5 pt-5 flex gap-x-5 ml-5">
-        {/* {['Not Contacted', 'Warm Lead', 'Attempted', 'Registered', 'Opportunity', 'Cold Leads'].map((label, index) => (
-          <div key={index} className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>{label}</h1>
-              <h1 className="font-bold">{index * 10 + 1}</h1> 
-            </div>
-          </div>
-        ))} */}
-        <div className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>Not Contacted</h1>
-              <h1 className="font-bold">{records.filter(record => record.status === 'Not Contacted'  ).length  }</h1> 
-            </div>
-        </div>
-        <div className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>Attempted</h1>
-              <h1 className="font-bold">{records.filter(record => record.status === 'Attempted').length }</h1> 
-            </div>
-        </div>
-        <div className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>Warm Lead</h1>
-              <h1 className="font-bold">{records.filter(record => record.status === 'Warm Lead').length }</h1> 
-            </div>
-        </div>
-        {/* <div className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>Not Contacted</h1>
-              <h1 className="font-bold">{records.filter(record => record.status === 'Not Contacted').length }</h1> 
-            </div>
-        </div> */}
-        <div className="w-1/6 bg-white border rounded flex justify-center items-center gap-x-2 text-center h-16">
-            <div>
-              <h1>
-                <FontAwesomeIcon icon={faUserGroup} className="text-2xl text-[#3B2BBF]" />
-              </h1>
-            </div>
-            <div>
-              <h1>Cold Leads</h1>
-              <h1 className="font-bold">{records.filter(record => record.status === 'Cold Lead').length }</h1> 
-            </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row mt-12 p-5 justify-evenly">
-        <div className="w-full md:w-[65%] rounded">
-          <LeadsLineChart leadsData={leadsData} />
-        </div>
-        <div className="w-1/4  rounded">
-        <DoughnutChart />
-        </div>
+    <div className="min-h-screen bg-slate-100 pt-[100px]">
+      <div className="container mx-auto">
+        {/* <h1 className="text-center text-3xl font-bold mb-8">Leads Dashboard</h1> */}
+        <Charts leadsByHour={leadsByHour} leadsByStatus={leadsByStatus} />
       </div>
     </div>
   );
 }
+export default Dashboard;

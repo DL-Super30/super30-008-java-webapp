@@ -1,0 +1,185 @@
+'uses client'
+
+import { faAddressCard, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import React, { useState } from "react"
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+export default function CreateOpportunity(props){
+
+    const {setShowUpdate} = props;
+
+    const [name, setName] = useState("")
+    const [cc,setCc] = useState("+91")
+    const [phone , setPhone] = useState("")
+    const [email , setEmail] = useState("")
+    const [feeQuoted,setFeeQuoted] = useState(0)
+    const [batchTiming,setBatchTiming] = useState("")
+    const [leadStatus, setLeadStatus] = useState("")
+    const [stack,setStack] = useState("")
+    const [ClassMode,setClassMode] = useState("")
+    const [opportunityStatus, setOpportunityStatus] = useState("")
+    const [opportunitySatge, setOpportunitySatge] = useState("")
+    const [DemoAttendedStage,setDemoAttendedStage] = useState("")
+    const [visitedStage, setVisitedStage] = useState("")
+    const [lostOpportunityReason, setLostOpportunityReason] = useState("")
+    const [nextFollowUp,setNextFollowUp] = useState("")
+    const [leadSource,setLeadSource] = useState("")
+    const [course, setCourse] = useState("")
+    const [description, setDescription] = useState("")
+
+    const onSubmit =async () =>{
+        const data = {
+            name : name,
+            cc : cc,
+            phone : phone,
+            email : email,
+            feeQuoted : feeQuoted,
+            batchTiming : batchTiming,
+            leadStatus : leadStatus,
+            stack : stack,
+            ClassMode : ClassMode,
+            opportunityStatus : opportunityStatus,
+            opportunitySatge : opportunitySatge,
+            DemoAttendedStage : DemoAttendedStage,
+            visitedStage : visitedStage,
+            lostOpportunityReason : lostOpportunityReason,
+            nextFollowUp : nextFollowUp,
+            leadSource : leadSource,
+            course : course,
+            description : description
+        }
+        try{
+            await axios.post("http://localhost:4000/api/opportunity",data)
+            console.log("working")
+            toast.success('Oppurtunity is created !', {
+                position: "top-center",
+                autoClose: 1499,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                // transition: Bounce,
+                });
+                setTimeout(() => {
+                    setShowUpdate(false)
+                    window.location.reload()
+                },1500)
+            
+        }
+        catch (err) {
+            console.error(err)
+            toast.warn('please fill all fields !', {
+                position: "top-center",
+                autoClose: 1499,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                // transition: Bounce,
+                });
+        }
+    }
+
+
+    return (
+        <div className="absolute top-0 left-0 bg-black bg-opacity-50 w-full h-[100vh] pt-[80px]">
+            <ToastContainer />
+            <div className="w-3/4 h-[87vh] bg-[#F5EFFF] mx-auto rounded-md p-4">
+                <div className="bg-[#E5D9F2] h-14 w-full  font-bold flex justify-between p-3 text-xl rounded-t-md items-center">
+                    <div className="flex gap-x-4 ">
+                        <p className="bg-[#A594F9] text-white px-2  text-2xl rounded"><FontAwesomeIcon icon={faAddressCard}/></p>
+                        <h1>CreateOpportunity</h1>
+                    </div>
+                    <button className="text-2xl" onClick={() => setShowUpdate(false)}><FontAwesomeIcon icon={faXmark}/></button>
+                </div>
+                <div className="grid grid-cols-2 gap-4 h-[65vh] overflow-y-scroll mt-4 border-[#A594F9] border p-4 rounded-md">
+                    <div>
+                        <label className="ml-2 opacity-70">Name</label> <br></br>
+                        <input type="text" placeholder="name" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={name} onChange={(e) => setName(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">CC</label> <br></br>
+                        <input type="text" placeholder="CC" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={cc} onChange={(e) => setCc(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">Phone</label> <br></br>
+                        <input type="text" placeholder="Phone" maxLength={10} className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={phone} onChange={(e) => setPhone(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">Email</label> <br></br>
+                        <input type="text" placeholder="email" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">feeQuoted</label> <br></br>
+                        <input type="text" placeholder="feeQuoted" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={feeQuoted} onChange={(e) => setFeeQuoted(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">batchTiming</label> <br></br>
+                        <input type="text" placeholder="batchTiming" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">leadStatus</label> <br></br>
+                        <input type="text" placeholder="leadStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">stack</label> <br></br>
+                        <input type="text" placeholder="stack" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={stack} onChange={(e) => setStack(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">ClassMode</label> <br></br>
+                        <input type="text" placeholder="ClassMode" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">opportunityStatus</label> <br></br>
+                        <input type="text" placeholder="opportunityStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">opportunitySatge</label> <br></br>
+                        <input type="text" placeholder="opportunitySatge" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunitySatge} onChange={(e) => setOpportunitySatge(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">DemoAttendedStage</label> <br></br>
+                        <input type="text" placeholder="DemoAttendedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={DemoAttendedStage} onChange={(e) => setDemoAttendedStage(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">visitedStage</label> <br></br>
+                        <input type="text" placeholder="visitedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={visitedStage} onChange={(e) => setVisitedStage(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">lostOpportunityReason</label> <br></br>
+                        <input type="text" placeholder="lostOpportunityReason" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={lostOpportunityReason} onChange={(e) => setLostOpportunityReason(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">nextFollowUp</label> <br></br>
+                        <input type="datetime-local" placeholder="nextFollowUp" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={nextFollowUp} onChange={(e) => setNextFollowUp(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">leadSource</label> <br></br>
+                        <input type="text" placeholder="leadSource" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadSource} onChange={(e) => setLeadSource(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">course</label> <br></br>
+                        <input type="text" placeholder="course" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={course} onChange={(e) => setCourse(e.target.value)}></input>
+                    </div>
+                    <div>
+                        <label className="ml-2 opacity-70">description</label> <br></br>
+                        <input type="text" placeholder="description" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={description} onChange={(e) => setDescription(e.target.value)}></input>
+                    </div>
+                </div>
+                <div className="w-76 gap-x-2 flex justify-center mt-2">
+                    <button className="w-36 p-2 border rounded-md bg-[#F5EFFF] border-[#A594F9]" onClick={() => setShowUpdate(false)}>cancel</button>
+                    <button className="w-36 p-2 border bg-[#A594F9] rounded-md" onClick={onSubmit}>Create</button>
+                </div>
+
+
+            </div>
+        </div>
+    )
+}

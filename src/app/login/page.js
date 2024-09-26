@@ -9,72 +9,70 @@ import { useForm } from "react-hook-form";
 
 export default function Login() {
   const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm();
-  const [users, setUsers] = useState([]);
   const [rememberMe, setRememberMe] = useState(false);
-
   const router = useRouter();
 
-  // Fetch data from API (simulate fetching users)
+  // Check if credentials are stored in localStorage
   useEffect(() => {
-    fetchData();
-    
-    // Check if credentials are stored in localStorage
     const storedUsername = localStorage.getItem('username');
     const storedPassword = localStorage.getItem('password');
-    
+
     if (storedUsername && storedPassword) {
       setValue('username', storedUsername);
       setValue('password', storedPassword);
       setRememberMe(true); // Automatically check the box if credentials are stored
     }
-  }, []);
-
-  const fetchData = () => {
-    axios.get("http://localhost:3001/logindata")
-      .then(res => {
-        setUsers(res.data);
-      })
-      .catch(err => console.log(err));
-  };
+  }, [setValue]);
 
   // Handle form submission
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { username, password } = data;
 
-    const validUser = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (validUser) {
-      toast.success('Login Success!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+    try {
+      const response = await axios.post("http://localhost:4000/api/users/login", {
+        username,
+        password
       });
 
-      // Store credentials if "Remember Me" is checked
-      if (rememberMe) {
-        localStorage.setItem('username', username);
-        localStorage.setItem('password', password);
+      if (response.data.token) {
+        toast.success('Login Success!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        // Store credentials if "Remember Me" is checked
+        if (rememberMe) {
+          localStorage.setItem('username', username);
+          localStorage.setItem('password', password);
+        } else {
+          localStorage.removeItem('username');
+          localStorage.removeItem('password');
+        }
+
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 3000);
       } else {
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
+        toast.error('Invalid Credentials', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       }
-
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 3000);
-    } else {
-      // Display an error if invalid credentials
-      // setError("username", { type: "manual", message: "Invalid Username or Password" });
-      // setError("password", { type: "manual", message: "Invalid Username or Password" });
-
-      toast.error('Invalid Credentials', {
+    } catch (error) {
+      toast.error('Login failed. Please try again.', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -93,7 +91,7 @@ export default function Login() {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSubmit(onSubmit)();
+      handleSubmit(onSubmit);
     }
   };
 
@@ -111,6 +109,7 @@ export default function Login() {
                 type="text"
                 className="w-full border outline-none p-3 rounded"
                 {...register('username', { required: "Username is required" })}
+                onKeyDown={handleKeyPress}
               />
               {errors.username && <p className="text-red-500">Please Enter Username</p>}
 
@@ -119,10 +118,11 @@ export default function Login() {
                 type="password"
                 className="w-full border outline-none p-3 rounded"
                 {...register('password', { required: "Password is required" })}
+                onKeyDown={handleKeyPress}
               />
               {errors.password && <p className="text-red-500">Please Enter Password</p>}
 
-              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border" onKeyDown={() =>handleKeyPress(e)}>
+              <button className="w-full p-2 rounded-lg text-white font-bold login-btn justify-center flex mt-8 border">
                 Login
               </button>
 
@@ -143,7 +143,7 @@ export default function Login() {
           <h1 className="text-3xl text-center text-[#042d60] font-bold mt-8"> Seamlessly manage all learner data in a <br /> unified platform. </h1>
           <p className="text-md text-center text-[#042d60] px-5 mt-5"> Centralize customer data effortlessly. Streamline communication, sales, and support for seamless growth. </p>
         </div>
-        <div className="bg-[url('/images/loginpage.png')] bg-cover bg-center w-full h-[75vh]"></div>
+        <div className="bg-[url('/images/loginsvg.svg')] bg-cover bg-center w-full h-[75vh]"></div>
       </div>
       <ToastContainer />
     </div>

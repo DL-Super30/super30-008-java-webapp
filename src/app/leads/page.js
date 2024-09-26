@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
 import Kanban from "../kanban/page";
-import CreateLead from "../createlead/page";
-import LeadForm from "../leadform/page";
-import UpdateLead from "../updatelead/page";
+import CreateLead from "./createlead";
+import UpdateLead from "./updatelead";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 export default function DashBoard() {
@@ -30,6 +32,14 @@ export default function DashBoard() {
 
 
   const recordsPerPage = 10;
+  
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`
+  }
 
   useEffect(() => {
     getLastRecords();
@@ -42,12 +52,13 @@ export default function DashBoard() {
   const getLastRecords = async () => {
     try {
       let response = await fetch(
-        `http://localhost:3001/signUpData?_page=1&_per_page=1000`, 
+        'http://localhost:4000/api/leads?page=1&limit=10', 
         {
           method: "GET",
         }
       );
       const data = await response.json();
+      // console.log(data)
 
       const sortedRecords = data.data.sort((a, b) => {
         const dateA = new Date(a.date);
@@ -55,17 +66,12 @@ export default function DashBoard() {
         return dateB - dateA; 
       });
 
-      // Filter records based on the selected filter and search term
       const filteredRecords = filterRecords(sortedRecords);
 
-      // Calculate pagination
       const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
       const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage);
 
-      // console.log(sortedRecords);
-      // console.log(paginatedRecords);
-
-      // Update state with sorted and paginated records
+     
       setRecords(paginatedRecords);
       setPageConfig({
         isPrevious: pageDisplay > 1,
@@ -91,7 +97,7 @@ export default function DashBoard() {
     switch (selectedFilter) {
       case "Today's Leads":
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.date);
+          const recordDate = new Date(record.createdAt);
           return recordDate.toDateString() === today.toDateString();
         });
         break;
@@ -99,7 +105,7 @@ export default function DashBoard() {
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.date);
+          const recordDate = new Date(record.createdAt);
           return recordDate.toDateString() === yesterday.toDateString();
         });
         break;
@@ -107,7 +113,7 @@ export default function DashBoard() {
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - today.getDay());
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.date);
+          const recordDate = new Date(record.createdAt);
           return recordDate >= startOfWeek && recordDate <= today;
         });
         break;
@@ -115,32 +121,32 @@ export default function DashBoard() {
         const startOfMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
         const endOfMonth = new Date(today.getFullYear(), today.getMonth(), 0);
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.date);
+          const recordDate = new Date(record.createdAt);
           return recordDate >= startOfMonth && recordDate <= endOfMonth;
         });
         break;
         case "Not Contacted":
-        filteredRecords = filteredRecords.filter(record => record.status === "Not Contacted");
+        filteredRecords = filteredRecords.filter(record => record.leadStatus === "Not Contacted");
         break;
       case "Attempted":
-        filteredRecords = filteredRecords.filter(record => record.status === "Attempted");
+        filteredRecords = filteredRecords.filter(record => record.leadStatus === "Attempted");
         break;
       case "Warm Lead":
-        filteredRecords = filteredRecords.filter(record => record.status === "Warm Lead");
+        filteredRecords = filteredRecords.filter(record => record.leadStatus === "Warm Lead");
         break;
       case "Cold Lead":
-        filteredRecords = filteredRecords.filter(record => record.status === "Cold Lead");
+        filteredRecords = filteredRecords.filter(record => record.leadStatus === "Cold Lead");
         break;
       default:
         break;
     }
 
     if (searchTerm) {
-      filteredRecords = filteredRecords.filter(record => {
-        const name = record.name ? record.name.toLowerCase() : "";
-        const phone = record.phone ? record.phone : "";
-        return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm);
-      });
+        filteredRecords = filteredRecords.filter(record => {
+          const name = record.leadname ? record.leadname.toLowerCase() : "";
+          const phone = record.phone ? record.phone : "";
+          return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm);
+        });
     }
     
 
@@ -153,13 +159,11 @@ export default function DashBoard() {
     }
   };
 
-  // Function to handle filter changes
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
     setPageDisplay(1); 
   };
 
-  // Function to handle search input changes
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
     setPageDisplay(1); 
@@ -177,45 +181,60 @@ export default function DashBoard() {
   }
 
   const showPop = (e ) =>{
-    setLeadId(e)
+    setLeadId(e);
     setDeletePopUp(true);
 
   }
 
   const confirmDelete =async () =>{
     try {
-      await fetch(`http://localhost:3001/signUpData/${leadId}`, { method: "DELETE" });
-      getLastRecords();
-      setDeletePopUp(false)
+      
+      await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
+      toast.success(' Deleted Suucessfully !', {
+        position: "top-center",
+        autoClose: 1498,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+        });
+      setTimeout(() =>{
+        setDeletePopUp(false)
+        getLastRecords();
+      },2000)
     } 
     catch (err) {
-      console.log(err);
+      console.log(err); 
     }
   }
   const showUpdateScreen = (data) => {
     setShowUpdate(true);
-    setUpdateData(data);  // Store the data in state
+    setUpdateData(data); 
     
   };
 
   const hideUpdateScreen = ( ) =>{
     setShowUpdate(false)
+    
   }
 
   
 
 
   return (
-    <div className="w-full pt-[70px]">
-      <div className="w-[95%] h-auto mx-auto border-2 p-2 rounded">
-        <div className="flex items-center w-full justify-between">
-          <div className="flex w-60 justify-between">
+    <div className="w-full pt-[79px] h-auto bg-[#E5D9F2]">
+     <ToastContainer />
+      <div className="w-[95%] h-auto mx-auto border-2 border-[#CDC1FF] p-2 rounded ">
+        <div className="flex items-center w-full justify-between ">
+          <div className="flex w-72 gap-x-2 justify-between ">
             <FontAwesomeIcon
               icon={faAddressCard}
-              className="text-3xl bg-[#1B96FF] text-white p-2 rounded"
+              className="text-3xl bg-[#A594F9] text-white p-2 rounded"
             />
             <select
-              className="w-40 outline-none"
+              className="w-60 outline-none bg-[#E5D9F2] text-xl"
               value={selectedFilter}
               onChange={handleFilterChange}
             >
@@ -229,21 +248,20 @@ export default function DashBoard() {
           </div>
           <div className="w-72 flex justify-between">
           
-              <button className="w-32 rounded bg-[#1B96FF] p-2 text-white" onClick={() =>setShowCreateLead(true)}>
+              <button className="w-34 rounded bg-[#A594F9] p-2 text-white font-semibold" onClick={() =>setShowCreateLead(true)}>
                 Create Lead
                 <span>
-                  <FontAwesomeIcon icon={faChevronDown} />
+                  <FontAwesomeIcon icon={faChevronDown} className="ml-1"/>
                 </span>
               </button>
             
             <button
-              className="w-32 border-2 rounded p-2"
+              className={`w-32 border-2 border-[#A594F9] rounded p-2 bg-[#CDC1FF] font-semibold ${displayActivity ? 'text-red-500' : ''}`}
               onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}
             >
               Action
               <span className="ms-1">
                 { !displayActivity ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faXmark} /> }
-                {/* <FontAwesomeIcon icon={faChevronDown} /> */}
               </span>
             </button>
           </div>
@@ -251,27 +269,27 @@ export default function DashBoard() {
         <div className="mt-3 flex">
           <input
             type="search"
-            className="border p-1 rounded w-72 outline-none"
+            className="border border-[#A594F9] p-1 rounded-md w-72 outline-none bg-[#F5EFFF]"
             placeholder="Search by name or phone"
             value={searchTerm}
             onChange={handleSearchChange} />
           <div className="flex w-3/5 justify-evenly items-center border-lg ml-3">
-            <button className={`flex w-full p-1 border justify-center ${selectedFilter === 'All Leads' ? 'bg-blue-500 text-white ' : 'bg-white'}`} onClick={() =>handleStatusClick("All Leads")}>All leads </button>
-            <button className={`w-full border p-1 text-center flex justify-center ${selectedFilter === 'Not Contacted' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() =>handleStatusClick("Not Contacted")}>Not Contacted </button>
-            <button className={`w-full border p-1 text-center flex justify-center ${selectedFilter === 'Attempted' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() =>handleStatusClick("Attempted")}>Attempted </button>
-            <button className={`w-full border p-1 text-center flex justify-center ${selectedFilter === 'Warm Lead' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() =>handleStatusClick("Warm Lead")}>Warm Leads </button>
-            <button className={`w-full border p-1 text-center flex justify-center ${selectedFilter === 'Cold Lead' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() =>handleStatusClick("Cold Lead")}>Cold Leads </button>
+            <button className={`flex w-full p-1 border border-[#A594F9] justify-center rounded-l-md ${selectedFilter === 'All Leads' ? 'bg-[#A594F9] text-white ' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("All Leads")}>All leads </button>
+            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Not Contacted' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Not Contacted")}>Not Contacted </button>
+            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Attempted' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Attempted")}>Attempted </button>
+            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Warm Lead' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Warm Lead")}>Warm Leads </button>
+            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center rounded-r-md ${selectedFilter === 'Cold Lead' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Cold Lead")}>Cold Leads </button>
 
           </div>
-          <div className="w-60 border rounded ml-8">
-            <button className={`w-1/2 p-1 border ${showKanban ?  'bg-[#1B96FF] text-white' :'bg-white'}` } onClick={() =>setShowKanban(true)}><FontAwesomeIcon icon={faTable} className="text-xl" /> Table</button>
-            <button className={`w-1/2 p-1 border ${showKanban ? 'bg-white' : 'bg-[#1B96FF] text-white'}` } onClick={() =>setShowKanban(false)}><FontAwesomeIcon icon={faChartBar} /> Kanban</button>
+          <div className="w-60 border border-[#A594F9] rounded-md ml-8">
+            <button className={`w-1/2 p-1 rounded-l-md ${showKanban ?  'bg-[#A594F9] text-white' :'bg-[#CDC1FF]'}` } onClick={() =>setShowKanban(true)}><FontAwesomeIcon icon={faTable} className="text-xl" /> Table</button>
+            <button className={`w-1/2 p-1 rounded-r-md ${showKanban ? 'bg-[#CDC1FF]' : 'bg-[#A594F9] text-white'}` } onClick={() =>setShowKanban(false)}><FontAwesomeIcon icon={faChartBar} /> Kanban</button>
           </div>
         </div>
-        <div className="w-full h-auto border-2 mt-5">
+        <div className="w-full h-auto border-[#A594F9] border mt-5">
           {showKanban ? ( 
-           <table className="w-full">
-            <thead className="border-b-2">
+           <table className="w-full ">
+            <thead className="border border-[#A594F9] bg-[#CDC1FF]">
               <tr>
                 <th className="w-1/7 border-r-2 p-2">Created on</th>
                 <th className="w-1/7 border-r-2 p-2">Lead Status</th>
@@ -282,23 +300,24 @@ export default function DashBoard() {
                 { displayActivity ? (<th className="w-1/7 border-r-2 p-2">Actions</th>) : '' }
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-[#F5EFFF]">
               {showKanban && records && records.length > 0 ? (
                 records.map((d, i) => (
-                  <tr key={i} className="border-b">
+                  <tr key={i} className="border-b border-b-[#CDC1FF]">
                     <td className="w-1/7 text-center text-sm p-3">
-                      {new Date(d.date).toISOString().split("T")[0]}
+                      {formatDate(d.createdAt)}
                     </td>
-                    <td className="w-1/7 text-center text-sm p-3 "><p className={`rounded-lg ${d.status === "Not Contacted" ? 'bg-orange-300' : d.status === 'Attempted' ? 'bg-green-400' : d.status === 'Warm Lead' ? 'bg-yellow-300' : d.status === 'Cold Lead' ? 'bg-red-400' : ''} }`}>{d.status}</p></td>
-                    <td className="w-1/7 text-center text-sm p-3">{d.name}</td>
+                    <td className="w-[150px]"> <p className={`rounded-lg text-center ${d.leadStatus == 'Not Contacted' ? 'bg-orange-300' : d.leadStatus == 'Attempted' ? 'bg-green-400' : d.leadStatus == 'Warm Lead' ? 'bg-yellow-400' : d.leadStatus == 'Cold Lead' ? 'bg-red-400' : '' }`}>{d.leadStatus}</p> </td>
+                    {/* <td className="w-[200px] text-center text-sm p-3 "><p className={`rounded-lg ${d.leadStatus === "Not Contacted" ? 'bg-orange-200' : d.leadStatus === 'Attempted' ? 'bg-[#B0EBB4]' : d.leadStatus === 'Warm Lead' ? 'bg-[#FFDB5C]' : d.leadStatus === 'Cold Lead' ? 'bg-[#FA7070]' : ''} }`}>{d.status}</p></td> */}
+                    <td className="w-1/7 text-center text-sm p-3">{d.leadname}</td>
                     <td className="w-1/7 text-center text-sm p-3">{d.phone}</td>
                     <td className="w-1/7 text-center text-sm p-3">{d.email}</td>
                     <td className="w-1/7 text-center text-sm p-3"><p className={`rounded-lg ${d.course == 'MERN' ? 'bg-red-300' : d.course == 'TOFEL' ? 'bg-[#96F7E2]' : d.course == 'AWS + Devops' ? 'bg-[#90C7FD]' : d.course == 'JFS' ? 'bg-green-300' : d.course =="PFS" ? 'bg-orange-300' : d.course == 'HR Business Partner' ? 'bg-[#92C6FB]': d.course =='HR Generalist' ? 'bg-red-300': d.course == 'HR Analytics' ?'bg-green-300': d.course == 'Spoken English' ? 'bg-red-300' : d.course =='Public Speaking' ? 'bg-[#92C6FB]': d.course == 'Communication Skills'? 'bg-red-300' : d.course == 'Soft Skills' ? 'bg-green-300' : d.course == 'Aptitude' ? 'bg-red-300' : d.course =='IELTS' ? 'bg-[#92C6FB]' : d.course == 'GRE' ? 'bg-green-300' : d.course == 'Azure + Devops' ? 'bg-green-300' : '' }`}>{d.course}</p></td>
                     {displayActivity && (
                       <td className="w-1/7 text-center text-sm ">
                       <div className="flex w-full gap-x-2 mx-auto justify-center">
-                        <button className=" bg-lime-200 rounded-lg w-2/5" onClick={() => showUpdateScreen(d)}>Update<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
-                        <button className="btn bg-red-500 text-white rounded-lg w-2/5" onClick={() => showPop(d.id)}> delete <FontAwesomeIcon icon={faTrash} className="text-sm"/> </button>                 
+                        <button className=" bg-[#A6F6FF] rounded-lg w-2/5" onClick={() => showUpdateScreen(d)}>Edit<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
+                        <button className="btn bg-[#FF204E] text-white rounded-lg w-2/5" onClick={() => showPop(d.id)}> delete <FontAwesomeIcon icon={faTrash} className="text-sm"/> </button>                 
                       </div>
                     </td>
                     )}
@@ -306,9 +325,12 @@ export default function DashBoard() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center w-full h-96">
+                  <td colSpan={6} className="text-center w-full h-[60vh]">
                    
-                    <div>No Data Found</div>
+                    <div className="items-center">
+                      <img src="./images/nodata.svg" className="w-1/4 h-60 mx-auto"></img>
+                      <h1 className=" text-3xl text-center mt-3 ml-10">No Data Found</h1>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -316,8 +338,8 @@ export default function DashBoard() {
           </table>):(<Kanban />) 
           }
         </div>
-        { showKanban && (<div className="w-full h-7 flex justify-center text-sm gap-x-10 items-center">
-          <div className="flex mr-14">
+        {records.length>0 && showKanban && (<div className="w-full h-7 flex justify-center text-sm gap-x-10 items-center">
+          <div className="flex">
             <span
               className={`mr-2 ${
                 pageConfig.isPrevious ? "cursor-pointer" : "cursor-not-allowed"
@@ -353,7 +375,8 @@ export default function DashBoard() {
           id="deleteModal"
           className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-bold text-gray-800">Confirm Deletion</h2>
+           <img src="./images/delete.svg"></img>
+            <h2 className="text-lg font-bold text-red-800 mt-2 text-center">Confirm Deletion</h2>
 
             <p className="text-gray-600 mt-4">
               Are you sure you want to delete this item? This action cannot be
@@ -361,13 +384,13 @@ export default function DashBoard() {
             </p>
             <div className="flex justify-end mt-6">
               <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+                className="bg-[#E5D9F2] text-gray-700 px-4 py-2 rounded mr-2 border border-[#A594F9]"
                 onClick={() =>setDeletePopUp(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-[#A594F9] text-white px-4 py-2 rounded"
                 onClick={confirmDelete}
               >
                 Delete
@@ -380,7 +403,7 @@ export default function DashBoard() {
         {/* ------delete pop up ended ----------- */}
         {
           showCreateLead && (
-            <CreateLead closeForm={closeForm}/>
+            <CreateLead closeForm={closeForm} />
           )
         }
         {

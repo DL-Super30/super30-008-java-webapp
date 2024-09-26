@@ -65,7 +65,7 @@ export default function Courses() {
             // Apply search filter based on the search term
             if (searchTerm) {
               filteredRecords = filteredRecords.filter(record =>
-                record.course.toLowerCase().includes(searchTerm.toLowerCase())
+                record.course.toLowerCase().includes(searchTerm.toLowerCase()) || record.description.toLowerCase().includes(searchTerm.toLowerCase())
               );
             }
         
@@ -81,25 +81,25 @@ export default function Courses() {
 
     return (
         <>
-            <div className="pt-[70px] w-full h-[100vh] p-4">
-                <div className="w-full h-full border-2 rounded p-3">
+            <div className="pt-[70px] w-full h-[100vh] p-4 bg-[#E5D9F2]">
+                <div className="w-full h-full border-2 border-[#CDC1FF] rounded p-3">
                     <div className="flex justify-between">
                         <div className="flex items-center gap-x-3">
-                            <p><FontAwesomeIcon icon={faAddressCard} className="text-2xl bg-blue-400 text-white p-2 rounded"/></p>
+                            <p><FontAwesomeIcon icon={faAddressCard} className="text-2xl bg-[#A594F9] text-white p-2 rounded"/></p>
                             <h1 className="text-2xl">Courses</h1>
                         </div>
                         <div className="flex gap-x-2 items-center">
-                            <button className="w-36 p-1 bg-blue-500 text-white rounded " onClick={() => setShowCreateCourse(true)}>Create course</button>
-                            <button className="w-36 p-1 border rounded " onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}>Action { displayActivity ? <FontAwesomeIcon icon={faXmark} className="text-md ms-2"/> :<FontAwesomeIcon icon={faChevronDown} />  }  </button>
+                            <button className="w-36 p-1 bg-[#A594F9] text-white rounded font-semibold" onClick={() => setShowCreateCourse(true)}>Create course</button>
+                            <button className="w-36 p-1 border border-[#A594F9] bg-[#CDC1FF] rounded font-semibold" onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}>Action { displayActivity ? <FontAwesomeIcon icon={faXmark} className="text-md ms-2"/> :<FontAwesomeIcon icon={faChevronDown} />  }  </button>
                         </div>
                     </div>
                     <div>
-                        <input type="search" className="w-72 border mt-2 p-1 outline-none rounded" placeholder="search course" value={searchTerm} onChange={handleSearchChange}/>
+                        <input type="search" className="w-72 border border-[#A594F9] mt-2 p-1 px-3 outline-none rounded-md bg-[#F5EFFF]" placeholder="search course" value={searchTerm} onChange={handleSearchChange}/>
                     </div>
-                    <div className="w-full h-4/5 border mt-2" >
+                    <div className="w-full h-4/5 mt-2" >
                         <table className="w-full">
-                            <thead className="border">
-                                <tr className="bg-[#F8F8F8]">
+                            <thead className="border border-[#CDC1FF] bg-[#A594F9]">
+                                <tr className="">
                                     <th className="p-2 border-r-2">Course</th>
                                     <th className="p-2 border-r-2">Decription</th>
                                     <th className="p-2 border-r-2">Fee</th>
@@ -107,30 +107,41 @@ export default function Courses() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {records.map(record => (
-                                    <tr className="border-b" key={record.id}>
+                                { records && records.length >0 ?records.map(record => (
+                                    <tr className="border border-[#CDC1FF] bg-[#F5EFFF]" key={record.id}>
                                         <td className=" w-1/5 p-2 ps-5">{record.course}</td>
                                         <td className=" w-1/5 p-2 ps-5">{record.description}</td>
                                         <td className="text-center w-1/5 p-2">{record.fee}</td>
                                         { displayActivity ? (<td className="w-1/6 p-2">
                                         <div className="flex gap-x-3 mx-auto justify-center">
-                                            <button className="w-24 bg-lime-200 rounded-lg">Update</button>
+                                            <button className="w-24 bg-lime-200 rounded-lg">Edit</button>
                                             <button className="w-24 bg-red-400 rounded-lg">Delete</button>
                                         </div>
                                         </td>) : '' }
                                     </tr>
-                                ) )}
+                                ) ) : <tr className="bg-[#F5EFFF]">
+                                        <td colSpan={4} className="text-center w-full h-96">
+                                        <div className="items-center">
+                                            <img src="./images/nodata.svg" className="w-1/4 h-60 mx-auto"></img>
+                                            <h1 className=" text-3xl text-center mt-3 ml-10">No Data Found</h1>
+                                        </div>
+                                    </td>
+                                    </tr>}
                             </tbody>
                         </table>
                     </div>
-                    <div className="justify-center flex mr-14 mt-2">
-                        <p><FontAwesomeIcon icon={faChevronLeft} className={`text-sm ${pageConfig.isPrevious ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={() => handlePageChange(pageDisplay - 1)}/></p>
-                        { pages.map((page) =>(
-                            <p key={page} className={`mx-1 cursor-pointer ${page==pageDisplay ? 'font-semibold' : ''}`} onClick={() => handlePageChange(page)}>{page}</p>
-                        ))}
-                        <p><FontAwesomeIcon icon={faChevronRight} className={`text-sm ${pageConfig.isNext ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay + 1)}/></p>
+                    {
+                        records.length > 0 && (
+                            <div className="justify-center flex mt-2">
+                                <p><FontAwesomeIcon icon={faChevronLeft} className={`text-sm mr-4 ${pageConfig.isPrevious ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={() => handlePageChange(pageDisplay - 1)}/></p>
+                                { pages.map((page) =>(
+                                    <p key={page} className={`mx-1 cursor-pointer ${page==pageDisplay ? 'font-semibold' : ''}`} onClick={() => handlePageChange(page)}>{page}</p>
+                                ))}
+                                <p><FontAwesomeIcon icon={faChevronRight} className={`text-sm ml-4 ${pageConfig.isNext ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay + 1)}/></p>
 
-                    </div>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
             {

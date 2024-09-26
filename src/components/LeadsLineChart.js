@@ -24,7 +24,7 @@ ChartJS.register(
   Legend
 );
 
-const LeadsLineChart = ({ leadsData }) => {
+const LeadsLineChart = ({ leadsData,countData }) => {
   // Define the data for the chart
   const data = {
     labels: leadsData.map((dataPoint) => dataPoint.time), // Extracting time for X-axis
