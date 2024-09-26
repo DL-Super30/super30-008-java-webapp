@@ -66,12 +66,12 @@ export default function Learners() {
 
 
     return (
-        <div className="w-full p-5 h-[90vh] bg-blue-100">
-        <div className="bg-white">
+        <div className="bg-[#987070] w-full p-2.5 h-[91vh]">
+        <div className="bg-[#F1E5D1] rounded-md ">
             <div className=" p-4 flex justify-between items-center">
                 <div className="flex text-2xl ml-12">
-                    <p className="text-2xl bg-[#1B96FF] text-white py-1 rounded-md px-2"><FontAwesomeIcon icon={faAddressCard} /></p>
-                    <select className="outline-none ml-4 w-40">
+                    <p className="text-2xl bg-[#987070] text-white py-1 rounded-md px-2"><FontAwesomeIcon icon={faAddressCard} /></p>
+                    <select className="outline-none bg-[#F1E5D1] ml-4 w-40">
                         <option className="text-xl bg-gray-200">All Learners</option>
                         <option className="text-xl bg-gray-200">My Learners</option>
                         <option className="text-xl bg-gray-200">Today's Learners</option>
@@ -81,34 +81,34 @@ export default function Learners() {
                         <option className="text-xl bg-gray-200">Last Month Learners</option>
                     </select>
                 </div>
-                <div className="flex text-md mr-12">
-                    <button className="bg-[#0176D3] p-1 text-white w-40 rounded-md mr-8" onClick={() => setShowCreateLearner(true)}>Create Learner<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
-                    <button className={`text-black p-1 border border-black  w-40 rounded-md justify-end ${displayActions ? 'bg-red-400' : ``}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions{!displayActions ? (<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" />) : (<FontAwesomeIcon icon={faXmark} className="ms-1 text-md" />)}</button>
+                <div className="flex text-md mr-12 gap-x-4">
+                    <button className="bg-[#987070] p-1 text-white w-40 rounded-md " onClick={() => setShowCreateLearner(true)}>Create Learner<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
+                    <button className={`text-white p-1   w-40 rounded-md justify-end ${displayActions ? 'bg-[#987070] border border-[#DBB5B5]' : 'bg-[#DBB5B5]'}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions{!displayActions ? (<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" />) : (<FontAwesomeIcon icon={faXmark} className="ms-1 text-md" />)}</button>
                 </div>
             </div>
             <div className=" flex justify-between ">
                 <div >
-                    <input className="w-72 p-1 border border-green-900 rounded-md outline-none ml-5" type="search" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <input className="w-72 p-1 border-2 border-[#987070] bg-[#EEEEEE] rounded-md outline-none ml-5" type="search" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
                 <div>
-                    <button className="border border-green-900  w-40 p-1 rounded-l-lg ">Upcoming</button>
-                    <button className="border border-green-900  w-40 p-1 ">Ongoing</button>
-                    <button className="border border-green-900  w-40 p-1 ">On Hold</button>
-                    <button className="border border-green-900  w-40 p-1 rounded-r-lg ">Completed</button>
+                    <button className="border border-[#987070]  w-40 p-1 rounded-l-lg ">Upcoming</button>
+                    <button className="border border-[#987070]  w-40 p-1 ">Ongoing</button>
+                    <button className="border border-[#987070]  w-40 p-1 ">On Hold</button>
+                    <button className="border border-[#987070]  w-40 p-1 rounded-r-lg ">Completed</button>
 
                 </div>
                 <div className="mr-14 flex ">
-                    <button className={`border border-green-900 w-40 p-1 rounded-l-lg ${!showKanban ? 'bg-blue-500 text-white' : ''} `}  onClick={()=>setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="mr-1 text-md" />Table</button>
-                    <button className={`border border-green-900 w-40 p-1 rounded-r-lg ${showKanban ? 'bg-blue-500 text-white' : ''}`} onClick={()=>setShowKanban(true)}><FontAwesomeIcon icon={faSquarePollVertical} className="mr-1 text-md" />Kanban</button>
+                    <button className={`border border-green-900 w-40 p-1 rounded-l-lg ${!showKanban ? 'bg-[#987070] text-white' : ''} `}  onClick={()=>setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="mr-1 text-md" />Table</button>
+                    <button className={`border border-green-900 w-40 p-1 rounded-r-lg ${showKanban ? 'bg-[#987070]' : ''}`} onClick={()=>setShowKanban(true)}><FontAwesomeIcon icon={faSquarePollVertical} className="mr-1 text-md" />Kanban</button>
                 </div>
             </div>
 
-            <div className="p-12">
+            <div className="p-5">
                
                 { ! showKanban ? (
-                     <table className="w-full border">
+                     <table className="w-full border border-[#987070r">
                     <thead>
-                        <tr className="border-bottom border bg-blue-100">
+                        <tr className=" bg-[#987070] text-white">
                             <th className="p-2">Created on</th>
                             <th>Status</th>
                             <th>Name</th>
@@ -125,8 +125,8 @@ export default function Learners() {
                         {
                             filteredRecords.length > 0 ? (
                                 filteredRecords.map((d) => (
-                                    <tr key={d.id} className="border-b">
-                                        <td className="text-center p-1">-</td>
+                                    <tr key={d.id} className="border-b-[#987070] border-b bg-[#DBB5B5]">
+                                        <td className="text-center p-2">-</td>
                                         <td className="text-center p-1">-</td>
                                         <td className="text-center p-1">{d.name}</td>
                                         <td className="text-center p-1">{d.phone}</td>

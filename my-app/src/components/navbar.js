@@ -9,7 +9,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <div>
-      <nav className="w-full bg-[#f8f8f8] h-[65px]  border-2 border-gray-100 flex items-center justify-between">
+      <nav className="w-full bg-[#DBB5B5] bg-opacity-70 h-[65px] flex items-center justify-between">
         <div>
           <Link href={'/dashboard'}><img className="ml-36 w-[300px] h-[45px] pt-2 m-1" src="https://www.skillcapital.ai/images/logo.png"></img></Link>
         </div>
