@@ -4,7 +4,8 @@ import React, { useState,useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight,faChevronLeft, faXmark, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import CreateCourse from "../createcourse/page";
+// import CreateCourse from "../createcourse/page";
+import CreateCourse from "./createcourse";
 
 export default function Courses() {
 
@@ -15,6 +16,7 @@ export default function Courses() {
         const [searchTerm,setSearchTerm] = useState("")
         const [showCreateCourse,setShowCreateCourse] = useState(false);
         const [displayActivity,setDisplayActivity] = useState(false);
+        const [deletePopUp, setDeletePopUp] = useState(false)
 
         const recordsPerPage = 10;
 
@@ -81,7 +83,7 @@ export default function Courses() {
 
     return (
         <>
-            <div className="pt-[70px] w-full h-[100vh] p-4 bg-[#E5D9F2]">
+            <div className="p-4 w-full h-[91vh] p-4 bg-[#E5D9F2]">
                 <div className="w-full h-full border-2 border-[#CDC1FF] rounded p-3">
                     <div className="flex justify-between">
                         <div className="flex items-center gap-x-3">
@@ -92,6 +94,14 @@ export default function Courses() {
                             <button className="w-36 p-1 bg-[#A594F9] text-white rounded font-semibold" onClick={() => setShowCreateCourse(true)}>Create course</button>
                             <button className="w-36 p-1 border border-[#A594F9] bg-[#CDC1FF] rounded font-semibold" onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}>Action { displayActivity ? <FontAwesomeIcon icon={faXmark} className="text-md ms-2"/> :<FontAwesomeIcon icon={faChevronDown} />  }  </button>
                         </div>
+                        {
+                            displayActivity && (
+                                <div className="absolute top-[18.2%] right-[2%] w-36 bg-white">
+                                    <button className="w-36 border p-1">Update</button>
+                                    <button className="w-36 border p-1" onClick={() => setDeletePopUp(true)}>Delete</button>
+                                </div>
+                            )
+                        }
                     </div>
                     <div>
                         <input type="search" className="w-72 border border-[#A594F9] mt-2 p-1 px-3 outline-none rounded-md bg-[#F5EFFF]" placeholder="search course" value={searchTerm} onChange={handleSearchChange}/>
@@ -103,7 +113,7 @@ export default function Courses() {
                                     <th className="p-2 border-r-2">Course</th>
                                     <th className="p-2 border-r-2">Decription</th>
                                     <th className="p-2 border-r-2">Fee</th>
-                                    { displayActivity ? (<th className="p-2">Actions</th>) : '' }
+                                    {/* { displayActivity ? (<th className="p-2">Actions</th>) : '' } */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,18 +122,18 @@ export default function Courses() {
                                         <td className=" w-1/5 p-2 ps-5">{record.course}</td>
                                         <td className=" w-1/5 p-2 ps-5">{record.description}</td>
                                         <td className="text-center w-1/5 p-2">{record.fee}</td>
-                                        { displayActivity ? (<td className="w-1/6 p-2">
+                                        {/* { displayActivity ? (<td className="w-1/6 p-2">
                                         <div className="flex gap-x-3 mx-auto justify-center">
                                             <button className="w-24 bg-lime-200 rounded-lg">Edit</button>
                                             <button className="w-24 bg-red-400 rounded-lg">Delete</button>
                                         </div>
-                                        </td>) : '' }
+                                        </td>) : '' } */}
                                     </tr>
                                 ) ) : <tr className="bg-[#F5EFFF]">
                                         <td colSpan={4} className="text-center w-full h-96">
                                         <div className="items-center">
-                                            <img src="./images/nodata.svg" className="w-1/4 h-60 mx-auto"></img>
-                                            <h1 className=" text-3xl text-center mt-3 ml-10">No Data Found</h1>
+                                            <img src="./images/nodata.svg" className="w-44 h-60 mx-auto"></img>
+                                            <h1 className=" text-xl text-center mt-3 ml-10">No Data Found</h1>
                                         </div>
                                     </td>
                                     </tr>}
@@ -144,6 +154,36 @@ export default function Courses() {
                     }
                 </div>
             </div>
+                { deletePopUp && (
+                <div
+                id="deleteModal"
+                className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
+                <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                <img src="./images/delete.svg"></img>
+                    <h2 className="text-lg font-bold text-red-800 text-center mt-2 text-center">Confirm Deletion</h2>
+
+                    <p className="text-gray-600 mt-4 text-center">
+                    Are you sure you want to delete this item? This action cannot be
+                    undone.
+                    </p>
+                    <div className="flex justify-end mt-6">
+                    <button
+                        className="bg-[#E5D9F2] text-gray-700 px-4 py-2 rounded mr-2 border border-[#A594F9]"
+                        onClick={() =>setDeletePopUp(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="bg-[#A594F9] text-white px-4 py-2 rounded"
+                        // onClick={confirmDelete}
+                    >
+                        Delete
+                    </button>
+                    </div>
+                </div>
+                
+                </div>
+                )}
             {
                 showCreateCourse && <CreateCourse setShowCreateCourse={setShowCreateCourse}/>
             }

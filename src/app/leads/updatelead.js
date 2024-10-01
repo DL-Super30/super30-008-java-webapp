@@ -13,27 +13,29 @@ export default function UpdateLead(props) {
   const [cc , setCc] = useState("+ 91")
 
   const [formData, setFormData] = useState({
-    name: updateData.name || "",
+    name: updateData.leadname || "",
     cc:"+ 91",
     phone: updateData.phone || "",
     email: updateData.email || "",
     feeQuoted: 0,
-    batchTiming: "",
+    batchTiming: updateData.batchTiming || "",
     leadStatus: updateData.leadStatus || "",
-    stack: "",
-    ClassMode: "",
-    opportunityStatus: "",
+    stack: updateData.stack || "",
+    ClassMode: updateData.ClassMode ||"",
+    opportunityStatus: updateData.opportunityStatus || "",
     opportunityStage:updateData.opportunityStage || "",
-    DemoAttendedStage: "",
-    visitedStage: "",
-    lostOpportunityReason: "",
-    nextFollowUp: "",
+    DemoAttendedStage: updateData.DemoAttendedStage || "",
+    visitedStage: updateData.visitedStage || "",
+    lostOpportunityReason: updateData.lostOpportunityReason || "",
+    nextFollowUp: updateData.nextFollowUp || "",
     leadSource: updateData.leadSource || "",
-    course: "",
+    course: updateData.course || "",
     description: updateData.description || ""
   });
 
   const [records, setRecords] = useState([]);
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +51,7 @@ export default function UpdateLead(props) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/leads");
+      const response = await fetch(`${ApiUrl}/api/leads`);
       const data = await response.json();
       setRecords(data);
       // console.log(data);
@@ -69,7 +71,7 @@ export default function UpdateLead(props) {
       //   },
       //   body: JSON.stringify(formData),
       // });
-      await axios.post("http://localhost:4000/api/opportunity",formData)
+      await axios.post(`${ApiUrl}/api/opportunity`,formData)
 
       fetchData();
 
@@ -102,7 +104,7 @@ export default function UpdateLead(props) {
 
   const updateLead = async () => {
     try {
-      await fetch(`http://localhost:4000/api/leads/${updateData.id}`, {
+      await fetch(`${ApiUrl}/api/leads/${updateData.id}`, {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json',

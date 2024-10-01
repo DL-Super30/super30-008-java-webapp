@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function CreateOpportunity(props){
 
-    const {setShowUpdate} = props;
+    const {setShowCreateOpp} = props;
 
     const [name, setName] = useState("")
     const [cc,setCc] = useState("+91")
@@ -30,11 +30,14 @@ export default function CreateOpportunity(props){
     const [course, setCourse] = useState("")
     const [description, setDescription] = useState("")
 
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
     const onSubmit =async () =>{
         const data = {
             name : name,
             cc : cc,
-            phone : phone,
+            phone : "+ 91 "+ phone,
             email : email,
             feeQuoted : feeQuoted,
             batchTiming : batchTiming,
@@ -52,7 +55,7 @@ export default function CreateOpportunity(props){
             description : description
         }
         try{
-            await axios.post("http://localhost:4000/api/opportunity",data)
+            await axios.post(`${ApiUrl}/api/opportunity`,data)
             console.log("working")
             toast.success('Oppurtunity is created !', {
                 position: "top-center",
@@ -66,7 +69,7 @@ export default function CreateOpportunity(props){
                 // transition: Bounce,
                 });
                 setTimeout(() => {
-                    setShowUpdate(false)
+                    setShowCreateOpp(false)
                     window.location.reload()
                 },1500)
             
@@ -97,7 +100,7 @@ export default function CreateOpportunity(props){
                         <p className="bg-[#A594F9] text-white px-2  text-2xl rounded"><FontAwesomeIcon icon={faAddressCard}/></p>
                         <h1>CreateOpportunity</h1>
                     </div>
-                    <button className="text-2xl" onClick={() => setShowUpdate(false)}><FontAwesomeIcon icon={faXmark}/></button>
+                    <button className="text-2xl" onClick={() => setShowCreateOpp(false)}><FontAwesomeIcon icon={faXmark}/></button>
                 </div>
                 <div className="grid grid-cols-2 gap-4 h-[65vh] overflow-y-scroll mt-4 border-[#A594F9] border p-4 rounded-md">
                     <div>
@@ -118,15 +121,36 @@ export default function CreateOpportunity(props){
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">feeQuoted</label> <br></br>
-                        <input type="text" placeholder="feeQuoted" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={feeQuoted} onChange={(e) => setFeeQuoted(e.target.value)}></input>
+                        <input type="number" placeholder="feeQuoted" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={feeQuoted} onChange={(e) => setFeeQuoted(e.target.value)}></input>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">batchTiming</label> <br></br>
-                        <input type="text" placeholder="batchTiming" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}></input>
+                        {/* <input type="text" placeholder="batchTiming" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}></input> */}
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}>
+                            <option>7 - 8 AM</option>
+                            <option>8 - 9 AM</option>
+                            <option>9 - 10 AM</option>
+                            <option>10 - 11 AM</option>
+                            <option>11 - 12 PM</option>
+                            <option>12 - 1 PM</option>
+                            <option>1 - 2 PM</option>
+                            <option>2 - 3 PM</option>
+                            <option>3 - 4 PM</option>
+                            <option>4 - 5 PM</option>
+                            <option>5 - 6 PM</option>
+                            <option>6 - 7 PM</option>
+                            <option>7 - 8 PM</option>
+                        </select>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">leadStatus</label> <br></br>
-                        <input type="text" placeholder="leadStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}></input>
+                        {/* <input type="text" placeholder="leadStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}></input> */}
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}>
+                            <option>Not Contacted</option>
+                            <option>Attempted</option>
+                            <option>Warm Lead</option>
+                            <option>Cold Lead</option>
+                        </select>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">stack</label> <br></br>
@@ -134,11 +158,23 @@ export default function CreateOpportunity(props){
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">ClassMode</label> <br></br>
-                        <input type="text" placeholder="ClassMode" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}></input>
+                        {/* <input type="text" placeholder="ClassMode" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}></input> */}
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}>
+                            <option>HYD classroom</option>
+                            <option>Online</option>
+                            <option>International classroom</option>
+                        </select>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">opportunityStatus</label> <br></br>
-                        <input type="text" placeholder="opportunityStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}></input>
+                        {/* <input type="text" placeholder="opportunityStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}></input> */}
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}>
+                            <option>Select Opputunity status</option>
+                            <option>Visited</option>
+                            <option>Visiting</option>
+                            <option>Demo Attended</option>
+                            <option>Lost Oppurtunity</option>
+                        </select>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">opportunitySatge</label> <br></br>
@@ -174,7 +210,7 @@ export default function CreateOpportunity(props){
                     </div>
                 </div>
                 <div className="w-76 gap-x-2 flex justify-center mt-2">
-                    <button className="w-36 p-2 border rounded-md bg-[#F5EFFF] border-[#A594F9]" onClick={() => setShowUpdate(false)}>cancel</button>
+                    <button className="w-36 p-2 border rounded-md bg-[#F5EFFF] border-[#A594F9]" onClick={() => setShowCreateOpp(false)}>cancel</button>
                     <button className="w-36 p-2 border bg-[#A594F9] rounded-md" onClick={onSubmit}>Create</button>
                 </div>
 

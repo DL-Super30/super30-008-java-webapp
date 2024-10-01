@@ -34,8 +34,10 @@ body {
 
 .login-btn{
   opacity: 0.8;
-  background: rgb(228,147,48);
-  background: linear-gradient(120deg, rgba(228,147,48,0.9865196078431373) 21%, rgba(203,79,119,1) 62%);
+  /* background: rgb(228,147,48);
+  background: linear-gradient(120deg, rgba(228,147,48,0.9865196078431373) 21%, rgba(203,79,119,1) 62%); */
+  background: rgb(181,161,213);
+background: linear-gradient(120deg, rgba(181,161,213,0.9865196078431373) 11%, rgba(189,182,200,0.9865196078431373) 47%, rgba(128,127,213,1) 82%);
 }
 .login-form{
   box-shadow: 0px 0px 2px gray;

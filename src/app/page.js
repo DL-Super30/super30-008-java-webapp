@@ -32,7 +32,7 @@ export default function Home() {
     <div>
       <nav className=" flex-col md:flex-row flex justify-between p-3 items-center border-b-2">
         <div>
-          <img src="https://www.skillcapital.ai/images/logo.png" />
+          <img src="https://www.skillcapital.ai/images/logo.png" alt="logo" className="h-14 ml-12"/>
         </div>
         <div className="gap-x-4 mt-5 md:mt-0 w-full md:w-1/4 flex justify-end">
           <Link href={'/login'}><button className="w-20 md:w-28 p-1 md:p-2 rounded  border-2 hover:bg-[#E4244B] hover:text-white">Login</button></Link>

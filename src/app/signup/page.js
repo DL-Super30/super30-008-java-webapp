@@ -23,6 +23,9 @@ export default function SignUp(props) {
   
   const { handleClose, setShowSignUp } = props;
 
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
   const handleSubmit = async (e) => {
     e.preventDefault(); 
 
@@ -42,7 +45,7 @@ export default function SignUp(props) {
 
     const data = {
       leadname: leadname,
-      phone: phone,
+      phone: "+ 91" + phone,
       email: email,
       feeQuoted: feeQuoted,
       batchTiming: batchTiming,
@@ -52,8 +55,9 @@ export default function SignUp(props) {
       selectedClassMode: selectedClassMode,
     };
 
+
     try {
-      const response = await axios.post("http://localhost:4000/api/leads", data);
+      const response = await axios.post(`${ApiUrl}/api/leads`, data);
       console.log("Successfully submitted:", response.data);
 
       setLeadName('');

@@ -10,4 +10,4 @@ export default function NavbarWrapper(){
     if(pathName === '/login'  || pathName === '/') {return null};
     return <Navbar/>
 
-}
+}  

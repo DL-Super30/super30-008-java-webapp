@@ -4,6 +4,8 @@ import React from "react";
 import { useState,useEffect } from "react";
 
 export default function KanbanOppurtunity() {
+    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 
     const [records,setRecords] = useState([])
 
@@ -13,7 +15,7 @@ export default function KanbanOppurtunity() {
 
     const fetchData = async () =>{
         try{
-            const response = await fetch("http://localhost:3001/signUpData");
+            const response = await fetch(`${ApiUrl}/signUpData`);
             const data = await response.json()
             setRecords(data.reverse())
 

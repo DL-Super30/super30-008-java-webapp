@@ -12,16 +12,18 @@ function Dashboard() {
   //     router.push('/');
   //   }
   // }, [router]);
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const fetchLeadsData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/leadstatus/todayLeadsOnHourly');
+        const response = await fetch(`${ApiUrl}/api/leadstatus/todayLeadsOnHourly`);
         const result = await response.json();
         const leads = result.data;
         // Process leads by time
         const processedLeadsByHour = processLeadsByHour(leads);
         // Fetch lead status data
-        const statusResponse = await fetch('http://localhost:4000/api/leadstatus/getleadStatus');
+        const statusResponse = await fetch(`${ApiUrl}/api/leadstatus/getleadStatus`);
         const statusResult = await statusResponse.json();
         const processedLeadsByStatus = processLeadsByStatus(statusResult.data);
         setLeadsByHour(processedLeadsByHour);
@@ -43,7 +45,7 @@ function Dashboard() {
             hour: '2-digit',
             hour12: false,
           });
-          return parseInt(localTime) === hour;
+          return parseInt(localTime) === hour - 1;
         }
       );
       return {

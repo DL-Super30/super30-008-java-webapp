@@ -7,6 +7,7 @@ import {faBell } from '@fortawesome/free-regular-svg-icons';
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 
 export default function Navbar(){
@@ -14,10 +15,16 @@ export default function Navbar(){
     const getLinkClass = (path) =>{
         return pathName === path ? 'border-b-4 border-b-[#A594F9] bg-[#CDC1FF] rounded-t-md' : 'bg-[#F5EFFF]'
     }
+    const router = useRouter();
 
     const [showMenuIcon , setShowMenuIcon ]  = useState(false);
+    const [isLogout , setIsLogout] = useState(false)
+
+    const handleHomePage = () => {
+        router.replace('/')
+    }
     return (
-        <div className="w-full h-16 border-b-2 flex items-center justify-between fixed z-10 bg-[#F5EFFF] mb-5 navbar"> 
+        <div className="relative w-full h-16 border-b-2 flex items-center justify-between fixed z-10 bg-[#F5EFFF] navbar"> 
                 <h1 className="text-3xl mx-3 visible md:invisible"><FontAwesomeIcon icon={faBarsStaggered} onClick={e => setShowMenuIcon(true)}/></h1>
 
             <div className="items-center flex ">
@@ -32,13 +39,20 @@ export default function Navbar(){
                 
             </div>
             
-            <div className="flex items center w-36 justify-between mr-2">
-                <Link href={'/calender'}><h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faCalendarDays} /></h1></Link>
-                <Link href={'/aipage'}><img src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FStars.684c7122.png&w=1920&q=75" className="w-8 hover:cursor-pointer"/></Link>
-                <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faBell} /></h1>
-                <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faUser} /></h1>
+            <div className="flex items center w-36 justify-between mr-5">
+                <Link href={'/calender'}><button className="text-2xl "><FontAwesomeIcon icon={faCalendarDays} /></button></Link>
+                <Link href={'/aipage'}><img src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FAILogo1.a2708f70.gif&w=640&q=75" className="w-8 hover:cursor-pointer"/></Link>
+                {/* <h1 className="text-2xl hover:cursor-pointer"><FontAwesomeIcon icon={faBell} /></h1> */}
+                <button className="text-2xl " onClick={() => setIsLogout(!isLogout) } ><FontAwesomeIcon icon={faUser} /></button>
 
             </div>
+           {
+            isLogout && (
+                <div className="absolute top-[80%] right-0">
+                    <button className="w-24 p-2 border bg-white" onClick={handleHomePage}>Logout</button>
+                </div>
+            )
+           }
         </div>
     )
 }

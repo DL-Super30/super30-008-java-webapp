@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash, faXmark} from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash, faXmark, faLink} from "@fortawesome/free-solid-svg-icons";
 import Kanban from "../kanban/page";
 import CreateLead from "./createlead";
 import UpdateLead from "./updatelead";
@@ -29,6 +29,8 @@ export default function DashBoard() {
   const [showupdate ,setShowUpdate] = useState(false);
   const [selectStatus , setSelectStatus ]= useState("All Leads")
   const [updateData, setUpdateData] = useState(null);
+  const [selectedRows , setSelectedRows] = useState([]);
+  const [selectedLead, setSelectedLead] = useState(null);
 
 
   const recordsPerPage = 10;
@@ -50,9 +52,11 @@ export default function DashBoard() {
   },[])
 
   const getLastRecords = async () => {
+    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     try {
       let response = await fetch(
-        'http://localhost:4000/api/leads?page=1&limit=10', 
+        `${ApiUrl}/api/leads?page=1&limit=10`,
         {
           method: "GET",
         }
@@ -181,50 +185,137 @@ export default function DashBoard() {
   }
 
   const showPop = (e ) =>{
-    setLeadId(e);
-    setDeletePopUp(true);
-
-  }
-
-  const confirmDelete =async () =>{
-    try {
-      
-      await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
-      toast.success(' Deleted Suucessfully !', {
+    if(selectedRows.length == 0){
+      // alert("select atleast one !")
+      toast.warning('Please Select Atleast One ', {
         position: "top-center",
-        autoClose: 1498,
+        autoClose: 1500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "colored"
+        theme: "light",
+      });
+    }
+    else{
+      setLeadId(e);
+      setDeletePopUp(true);
+    }
+
+  }
+
+  const handleCheckBoxChange = (e,recordId) => {
+    e.stopPropagation();
+    setSelectedRows(prev =>{
+      if (prev.includes(recordId)){
+        return prev.filter(id => id !== recordId)
+      }
+      else{
+        return [...prev,recordId]
+      }
+    })
+  }
+
+  const confirmDelete =async () =>{
+    try {
+      
+      // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
+      await Promise.all(
+        selectedRows.map(id => fetch(`${ApiUrl}/api/leads/${id}`,{method : 'DELETE'}))
+      );
+      setSelectedRows([])
+      if(selectedRows.length == 0){
+        // alert("please select atleast one")
+        toast.warning('Please Select Atleast One ', {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
-      setTimeout(() =>{
-        setDeletePopUp(false)
+      }
+      else{
         getLastRecords();
-      },2000)
+        toast.success(' Deleted Suucessfully !', {
+          position: "top-center",
+          autoClose: 1498,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored"
+          });
+        setTimeout(() =>{
+          setDeletePopUp(false)
+        },2000)
+      }
     } 
     catch (err) {
       console.log(err); 
     }
   }
-  const showUpdateScreen = (data) => {
-    setShowUpdate(true);
-    setUpdateData(data); 
-    
+
+  // const handlerowClick = (e,lead) => {
+  
+  //   const selectedLead = records.find(record => record.id);
+  //   setSelectedLead(selectedLead);
+  //   setShowUpdate(true);
+
+  // }
+
+  const showUpdateScreen = () => {
+    if (selectedRows.length !== 1) {
+      // alert("Please select exactly one record for update!");
+      toast.warning('Please Select Exactly One record for Update ', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      const selectedLead = records.find(record => record.id === selectedRows[0]);
+      
+      setSelectedLead(selectedLead);
+      setShowUpdate(true);
+    }
   };
 
   const hideUpdateScreen = ( ) =>{
     setShowUpdate(false)
     
   }
+  const parseCourses = (courseString) => {
+    try {
+      return JSON.parse(courseString);
+    } catch (error) {
+      console.error("Error parsing course data:", error);
+      return [];
+    }
+  };
+
+  const handlerowClick = (e, lead) => {
+    // Check if the click was on the checkbox or its label
+    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+      return; // Do nothing if the click was on the checkbox or its label
+    }
+    setSelectedLead(lead);
+    setShowUpdate(true);
+  };
 
   
 
 
   return (
-    <div className="w-full pt-[79px] h-auto bg-[#E5D9F2]">
+    <div className="w-full p-4 h-[91vh] bg-[#E5D9F2]">
      <ToastContainer />
       <div className="w-[95%] h-auto mx-auto border-2 border-[#CDC1FF] p-2 rounded ">
         <div className="flex items-center w-full justify-between ">
@@ -239,7 +330,7 @@ export default function DashBoard() {
               onChange={handleFilterChange}
             >
               <option>All Leads</option>
-              <option>My Leads</option>
+              {/* <option>My Leads</option> */}
               <option>Today's Leads</option>
               <option>Yesterday's leads</option>
               <option>This week Leads</option>
@@ -256,7 +347,7 @@ export default function DashBoard() {
               </button>
             
             <button
-              className={`w-32 border-2 border-[#A594F9] rounded p-2 bg-[#CDC1FF] font-semibold ${displayActivity ? 'text-red-500' : ''}`}
+              className={`w-32 border-2 border-[#A594F9] rounded p-2 bg-[#CDC1FF] font-semibold`}
               onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}
             >
               Action
@@ -264,6 +355,15 @@ export default function DashBoard() {
                 { !displayActivity ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faXmark} /> }
               </span>
             </button>
+            {
+              displayActivity && (
+                <div className="w-32 text-white absolute top-[18.3%] right-[4%] bg-white ">
+                  <button className="w-full p-1 border  text-blue-800" onClick={showUpdateScreen}>Update <FontAwesomeIcon icon={faPenToSquare} /></button>
+                  <button className="w-full p-1 border  text-red-500" onClick={showPop}>Delete <FontAwesomeIcon icon={faTrash} /></button>
+                  <button className="w-full p-1 border  text-green-600">Convert <FontAwesomeIcon icon={faLink}/></button>
+                </div>
+              )
+            }
           </div>
         </div>
         <div className="mt-3 flex">
@@ -282,8 +382,8 @@ export default function DashBoard() {
 
           </div>
           <div className="w-60 border border-[#A594F9] rounded-md ml-8">
-            <button className={`w-1/2 p-1 rounded-l-md ${showKanban ?  'bg-[#A594F9] text-white' :'bg-[#CDC1FF]'}` } onClick={() =>setShowKanban(true)}><FontAwesomeIcon icon={faTable} className="text-xl" /> Table</button>
-            <button className={`w-1/2 p-1 rounded-r-md ${showKanban ? 'bg-[#CDC1FF]' : 'bg-[#A594F9] text-white'}` } onClick={() =>setShowKanban(false)}><FontAwesomeIcon icon={faChartBar} /> Kanban</button>
+            <button className={`w-1/2 p-1 rounded-l-md ${showKanban ?  'bg-[#A594F9] text-white' :'bg-[#CDC1FF] ease-in'}` } onClick={() =>setShowKanban(true)}><FontAwesomeIcon icon={faTable} className="text-xl" /> Table</button>
+            <button className={`w-1/2 p-1 rounded-r-md ${showKanban ? 'bg-[#CDC1FF] ease-in' : 'bg-[#A594F9] text-white'}` } onClick={() =>setShowKanban(false)}><FontAwesomeIcon icon={faChartBar} /> Kanban</button>
           </div>
         </div>
         <div className="w-full h-auto border-[#A594F9] border mt-5">
@@ -291,41 +391,54 @@ export default function DashBoard() {
            <table className="w-full ">
             <thead className="border border-[#A594F9] bg-[#CDC1FF]">
               <tr>
-                <th className="w-1/7 border-r-2 p-2">Created on</th>
+                <th className="w-10 accent-neutral-900"><input type="checkbox" className="scale-150" onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}></input></th>
+                <th className="w-[150px] border-r-2 p-2">Created on</th>
                 <th className="w-1/7 border-r-2 p-2">Lead Status</th>
-                <th className="w-1/7 border-r-2 p-2">Name</th>
-                <th className="w-1/7 border-r-2 p-2">Phone</th>
-                <th className="w-1/7 border-r-2 p-2">Email</th>
-                <th className="w-1/7 border-r-2 p-2">Course</th>
-                { displayActivity ? (<th className="w-1/7 border-r-2 p-2">Actions</th>) : '' }
+                <th className="w-1/4 border-r-2 p-2">Name</th>
+                <th className="w-1/6 border-r-2 p-2">Phone</th>
+                <th className="w-1/4 border-r-2 p-2">Email</th>
+                <th className="w-[180px] border-r-2 p-2">Course</th>
+                {/* { displayActivity ? (<th className="w-1/7 border-r-2 p-2">Actions</th>) : '' } */}
               </tr>
             </thead>
             <tbody className="bg-[#F5EFFF]">
               {showKanban && records && records.length > 0 ? (
                 records.map((d, i) => (
-                  <tr key={i} className="border-b border-b-[#CDC1FF]">
-                    <td className="w-1/7 text-center text-sm p-3">
+                  <tr key={i} className="border-b border-b-[#CDC1FF] " onClick={(e) => handlerowClick(e,d)}>
+                    <td className="w-10 mt-3 flex justify-center accent-slate-200"><input type="checkbox" className="scale-150" checked={selectedRows.includes(d.id)} onChange={(e) => handleCheckBoxChange(e,d.id)} ></input></td>
+                    <td className=" text-center text-sm p-3">
                       {formatDate(d.createdAt)}
                     </td>
                     <td className="w-[150px]"> <p className={`rounded-lg text-center ${d.leadStatus == 'Not Contacted' ? 'bg-orange-300' : d.leadStatus == 'Attempted' ? 'bg-green-400' : d.leadStatus == 'Warm Lead' ? 'bg-yellow-400' : d.leadStatus == 'Cold Lead' ? 'bg-red-400' : '' }`}>{d.leadStatus}</p> </td>
                     {/* <td className="w-[200px] text-center text-sm p-3 "><p className={`rounded-lg ${d.leadStatus === "Not Contacted" ? 'bg-orange-200' : d.leadStatus === 'Attempted' ? 'bg-[#B0EBB4]' : d.leadStatus === 'Warm Lead' ? 'bg-[#FFDB5C]' : d.leadStatus === 'Cold Lead' ? 'bg-[#FA7070]' : ''} }`}>{d.status}</p></td> */}
-                    <td className="w-1/7 text-center text-sm p-3">{d.leadname}</td>
-                    <td className="w-1/7 text-center text-sm p-3">{d.phone}</td>
-                    <td className="w-1/7 text-center text-sm p-3">{d.email}</td>
-                    <td className="w-1/7 text-center text-sm p-3"><p className={`rounded-lg ${d.course == 'MERN' ? 'bg-red-300' : d.course == 'TOFEL' ? 'bg-[#96F7E2]' : d.course == 'AWS + Devops' ? 'bg-[#90C7FD]' : d.course == 'JFS' ? 'bg-green-300' : d.course =="PFS" ? 'bg-orange-300' : d.course == 'HR Business Partner' ? 'bg-[#92C6FB]': d.course =='HR Generalist' ? 'bg-red-300': d.course == 'HR Analytics' ?'bg-green-300': d.course == 'Spoken English' ? 'bg-red-300' : d.course =='Public Speaking' ? 'bg-[#92C6FB]': d.course == 'Communication Skills'? 'bg-red-300' : d.course == 'Soft Skills' ? 'bg-green-300' : d.course == 'Aptitude' ? 'bg-red-300' : d.course =='IELTS' ? 'bg-[#92C6FB]' : d.course == 'GRE' ? 'bg-green-300' : d.course == 'Azure + Devops' ? 'bg-green-300' : '' }`}>{d.course}</p></td>
-                    {displayActivity && (
+                    <td className="w-1/7 pl-5 text-sm ">{d.leadname}</td>
+                    <td className="w-1/7 pl-4 text-sm">{d.phone}</td>
+                    <td className="w-1/7 pl-4 text-sm ">{d.email}</td>
+                    <td className="w-1/7 text-center text-sm flex flex-col ">
+                        {parseCourses(d.course).map((course, index) => (
+                          <span
+                            key={index}
+                            className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded"
+                          >
+                            {course.name}
+                          </span>
+                        ))}
+                      </td>
+                    {/* <td className="w-1/7 text-center text-sm p-3">{d.course.map(i => i.name)}</td> */}
+                    {/* <td className="w-1/7 text-center text-sm p-3"><p className={`rounded-lg ${d.course == 'MERN' ? 'bg-red-300' : d.course == 'TOFEL' ? 'bg-[#96F7E2]' : d.course == 'AWS + Devops' ? 'bg-[#90C7FD]' : d.course == 'JFS' ? 'bg-green-300' : d.course =="PFS" ? 'bg-orange-300' : d.course == 'HR Business Partner' ? 'bg-[#92C6FB]': d.course =='HR Generalist' ? 'bg-red-300': d.course == 'HR Analytics' ?'bg-green-300': d.course == 'Spoken English' ? 'bg-red-300' : d.course =='Public Speaking' ? 'bg-[#92C6FB]': d.course == 'Communication Skills'? 'bg-red-300' : d.course == 'Soft Skills' ? 'bg-green-300' : d.course == 'Aptitude' ? 'bg-red-300' : d.course =='IELTS' ? 'bg-[#92C6FB]' : d.course == 'GRE' ? 'bg-green-300' : d.course == 'Azure + Devops' ? 'bg-green-300' : '' }`}>{d.course}</p></td> */}
+                    {/* {displayActivity && (
                       <td className="w-1/7 text-center text-sm ">
                       <div className="flex w-full gap-x-2 mx-auto justify-center">
                         <button className=" bg-[#A6F6FF] rounded-lg w-2/5" onClick={() => showUpdateScreen(d)}>Edit<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
                         <button className="btn bg-[#FF204E] text-white rounded-lg w-2/5" onClick={() => showPop(d.id)}> delete <FontAwesomeIcon icon={faTrash} className="text-sm"/> </button>                 
                       </div>
                     </td>
-                    )}
+                    )} */}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center w-full h-[60vh]">
+                  <td colSpan={7} className="text-center w-full h-[60vh]">
                    
                     <div className="items-center">
                       <img src="./images/nodata.svg" className="w-1/4 h-60 mx-auto"></img>
@@ -408,7 +521,7 @@ export default function DashBoard() {
         }
         {
           showupdate && (
-           <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={updateData}/> 
+           <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={selectedLead}/> 
           )
         }
       </div>

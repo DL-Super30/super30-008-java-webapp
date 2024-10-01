@@ -24,16 +24,20 @@ export default function Login() {
     }
   }, [setValue]);
 
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
   // Handle form submission
   const onSubmit = async (data) => {
     const { username, password } = data;
 
     try {
-      const response = await axios.post("http://localhost:4000/api/users/login", {
+      const response = await axios.post(`${ApiUrl}/api/users/login`, {
         username,
         password
       });
 
+      console.log('Token:', response.data.token);
       if (response.data.token) {
         toast.success('Login Success!', {
           position: "top-right",
@@ -89,11 +93,11 @@ export default function Login() {
     setRememberMe(!rememberMe);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSubmit(onSubmit);
-    }
-  };
+  // const handleKeyPress = (e) => {
+  //   if (e.key === 'Enter') {
+  //     handleSubmit(onSubmit);
+  //   }
+  // };
 
   return (
     <div className="flex-col md:flex-row flex w-full h-[100vh] md:relative">
@@ -109,7 +113,7 @@ export default function Login() {
                 type="text"
                 className="w-full border outline-none p-3 rounded"
                 {...register('username', { required: "Username is required" })}
-                onKeyDown={handleKeyPress}
+                // onKeyDown={handleKeyPress}
               />
               {errors.username && <p className="text-red-500">Please Enter Username</p>}
 
@@ -118,7 +122,7 @@ export default function Login() {
                 type="password"
                 className="w-full border outline-none p-3 rounded"
                 {...register('password', { required: "Password is required" })}
-                onKeyDown={handleKeyPress}
+                // onKeyDown={handleKeyPress}
               />
               {errors.password && <p className="text-red-500">Please Enter Password</p>}
 
