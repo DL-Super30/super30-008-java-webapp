@@ -7,8 +7,8 @@ import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(){
     return(
-        <div className="w-full h-[90.9vh] p-14 bg-blue-100">
-        <div className="bg-white">
+        <div className="w-full h-[90.9vh] p-14 bg-[#F1E5D1]">
+        <div className="bg-gray-100">
             <div>
                 <button className="p-8 bg-white border m-4 rounded-md"><FontAwesomeIcon icon={faUserGroup} className="mr-1 text-md text-blue-800" />Not Contacted</button>
                 <button className="p-8 bg-white border m-4 rounded-md"><FontAwesomeIcon icon={faUserGroup} className="mr-1 text-md text-blue-800" />warm Lead</button>
