@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Createopportunity from "../createopportunity/page";
 import OpportunityKanban from "../kanbans/oppurtunitykanban";
+import Editopportunity from "./editopportunity";
 
 
 
@@ -20,7 +21,7 @@ export default function Opportunities() {
     const [createopportunity, setCreateOpportunity] = useState(false);
     const [displayActions, setDisplayActions] = useState(false);
     const [showKanban, setShowKanban] = useState(false);
-
+    const [ShowEditOpportunity, setShowEditOpportunity] = useState(false)
 
     const recordsPerPage = 10;
 
@@ -94,12 +95,12 @@ export default function Opportunities() {
                     <input className="w-72 p-1 border-2 border-[#987070] rounded-md bg-[#EEEEEE] outline-none ml-5" type="search" placeholder="Search" value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
-                <div>
+                {/* <div>
                     <button className="border border-[#987070]  w-40 p-1 rounded-l-lg ">Visiting</button>
                     <button className="border border-[#987070]  w-40 p-1 ">Visited</button>
                     <button className="border border-[#987070]  w-40 p-1 ">Demo attended</button>
                     <button className="border border-[#987070]  w-40 p-1 rounded-r-lg">Lost Opportunity</button>
-                </div>
+                </div> */}
                 <div className="mr-14 flex border border-[#987070] rounded-lg">
                     <button className={` w-40 p-1 rounded-l-lg ${!showKanban ? 'bg-[#987070] text-white' :''} `} onClick={()=>setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="mr-1 text-md" />Table</button>
                     <button className={` w-40 p-1 rounded-r-lg ${showKanban ? 'bg-[#987070]' : ''}`} onClick={()=>setShowKanban(true)}><FontAwesomeIcon icon={faSquarePollVertical} className="mr-1 text-md" />Kanban</button>
@@ -141,7 +142,7 @@ export default function Opportunities() {
                                             displayActions && (
                                                 <td>
                                                 <div className="w-40 mx-auto">
-                                                    <button className="w-20 bg-lime-300 rounded-text-center ">Edit</button>
+                                                    <button className="w-20 bg-lime-300 rounded-text-center " onClick={() => setShowEditOpportunity(true)}>Edit</button>
                                                     <button className="bg-red-500 w-20 rounded text-center">Delete</button>
                                                 </div>
                                             </td>
@@ -180,6 +181,7 @@ export default function Opportunities() {
 
             { createopportunity  && (<Createopportunity setCreateOpportunity={setCreateOpportunity} />)}
 
+            { ShowEditOpportunity && (<Editopportunity setShowEditOpportunity = {setShowEditOpportunity}/>)}
 
         </div>
         </div>

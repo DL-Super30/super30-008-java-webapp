@@ -2,9 +2,14 @@
 import { useEffect, useState } from "react"
 import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAddressCard, faAngleDown, faAnglesLeft, faAnglesRight, faBell, faCalendarDays, faChevronLeft, faChevronRight, faSquarePollVertical, faTable, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
-import Createlead from "../createlead/page";
+import { faAddressCard, faAngleDown, faAnglesLeft, faAnglesRight, faBell, faCalendarDays, faChevronLeft, faChevronRight, faL, faSquarePollVertical, faTable, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
+// import Createlead from "../createlead/page";
+import Createlead from "./ceatelead";
 import LeadsKanban from "../kanbans/leadskanban";
+// import Editlead from "../editlead/page";
+import Editlead from "./editlead";
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 export default function Leads() {
     const [records, setRecords] = useState([]);
@@ -15,6 +20,9 @@ export default function Leads() {
     const [createlead, setCreateLead] = useState(false);
     const [displayActions, setDisplayActions] = useState(false);
     const [showKanban, setShowKanban] = useState(false);
+    const [showEditLead , setShowEditLead] = useState(false)
+    const [deletePopUp , setDeletePopUp] = useState(false)
+    const [selectedLeadId, setSelectedLeadId] = useState(null);
 
     const recordsPerPage = 10;
 
@@ -26,6 +34,8 @@ export default function Leads() {
         try {
             const response = await fetch("http://localhost:3001/signupdata", { method: 'GET' });
             const result = await response.json();
+
+           
 
             const totalPages = Math.ceil(result.length / recordsPerPage);
             const paginateRecords = result.slice(recordsPerPage * (pageDisplay - 1), recordsPerPage * pageDisplay);
@@ -59,9 +69,47 @@ export default function Leads() {
         record.phone.includes(searchTerm)
     );
 
+    const deleteLead =( leadId ) =>{
+        try{
+        fetch(`http://localhost:3001/signupdata/${leadId}`, { method: 'DELETE' })    
+        fetchdata()
+        toast.success('Deleted', {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            // transition: Bounce,
+            });
+            // window.location.reload()
+            setTimeout(() =>{
+                setDeletePopUp(false)
+                window.location.reload()
+            },1500)
+
+        }        
+        catch (err){
+            console.log(err)
+            toast.error('Failed to delete', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+        }
+    }
 
     return (
         <div className="bg-[#987070] bg-opacity-90 w-full p-2 h-[91vh]">
+            <ToastContainer />
             <div className="bg-[#F1E5D1] rounded-md">
                 <div className="p-4 flex justify-between items-center ">
                     <div className="flex text-2xl ml-12">
@@ -92,12 +140,12 @@ export default function Leads() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <button className="border border-[#987070] w-40 p-1 rounded-l-lg">Not Contacted</button>
                         <button className="border border-[#987070] w-40 p-1 ">Attempted</button>
                         <button className="border border-[#987070] w-40 p-1 ">Warm Lead</button>
                         <button className="border border-[#987070] w-40 p-1 rounded-r-lg">Cold Lead</button>
-                    </div>
+                    </div> */}
                     <div className="mr-14 flex border border-[#987070] rounded-lg">
                         <button className={` w-40 p-1 rounded-l-lg ${!showKanban ? 'bg-[#987070] text-white' : ''}`} onClick={() => setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="mr-1 text-md" />Table</button>
                         <button className={` w-40 p-1 rounded-r-lg ${showKanban ? 'bg-[#987070] ' : ''} `} onClick={() => setShowKanban(true)}><FontAwesomeIcon icon={faSquarePollVertical} className="mr-1 text-md" />Kanban</button>
@@ -123,7 +171,7 @@ export default function Leads() {
                                     filteredRecords.length > 0 ? (
                                         filteredRecords.map((d) => (
                                             <tr key={d.id} className="border-b border-b-[#987070] bg-[#DBB5B5]">
-                                                <td className="text-center p-2">-</td>
+                                                <td className="text-center p-2">{d.formatDate}</td>
                                                 <td className="text-center p-1">-</td>
                                                 <td className="text-center p-1">{d.name}</td>
                                                 <td className="text-center p-1">{d.phone}</td>
@@ -132,8 +180,8 @@ export default function Leads() {
                                                 {displayActions && (
                                                     <td>
                                                         <div className="mx-auto w-40 gap-x-2">
-                                                            <button className="w-20 bg-lime-200 rounded text-center ">Edit</button>
-                                                            <button className="w-20 bg-red-300 rounded text-center">Delete</button>
+                                                            <button className="w-20 bg-lime-200 rounded text-center " onClick={() => setShowEditLead(true)}>Edit</button>
+                                                            <button className="w-20 bg-red-300 rounded text-center" onClick={() => { setDeletePopUp(true); setSelectedLeadId(d.id); }}>Delete</button>
                                                         </div>
                                                     </td>
                                                 )}
@@ -170,7 +218,19 @@ export default function Leads() {
 
                 {createlead && (<Createlead setCreateLead={setCreateLead} />)}
                 {/* { showKanban && ( < LeadsKanban /> ) } */}
+                { showEditLead && (<Editlead setShowEditLead={setShowEditLead}/>) }
 
+                { deletePopUp && (
+                    <div className="absolute top-0 left-0 w-full h-[100vh]  bg-black bg-opacity-60 content-center">
+                        <div className="w-1/4 h-80 bg-white rounded mx-auto text-center p-14 ">
+                            <h1>confirm to delete</h1>
+                            <div className="flex justify-center pt-14 gap-x-4">
+                                <button className="w-32 p-1 text-md font-semibold rounded-md border" onClick={() => setDeletePopUp(false)}>cancel</button>
+                                <button className="w-32 bg-red-300 text-white rounded-md font-semibold text-md" onClick={() => deleteLead(selectedLeadId)}>Delete</button>
+                            </div>
+                        </div> 
+                    </div>
+                )}
             </div>
         </div>
     );

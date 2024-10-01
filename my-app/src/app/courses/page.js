@@ -76,7 +76,7 @@ export default function Opportunities() {
                 </div>
                 <div className="flex text-md mr-12 gap-x-4">
                      <button className="bg-[#987070] p-1 text-white w-44 rounded-md " onClick={()=>setShowCreateCourse(true)}>Create course<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
-                    <button className={`text-white p-1 border border-black  w-40 rounded-md justify-end ${!displayActions ?'bg-[#DBB5B5] ':'bg-[#987070]'}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
+                    <button className={`text-white p-1   w-40 rounded-md justify-end ${!displayActions ?'bg-[#DBB5B5] ':'bg-[#987070]'}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
                 </div>
             </div>
             <div className=" flex justify-between ">

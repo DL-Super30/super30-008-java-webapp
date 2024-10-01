@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/navbar";
 const inter = Inter({ subsets: ["latin"] });
 import LineChart from "../components/lineChart"
+import NavbarWrapper from "@/components/navbarWrapper";
 
 export const metadata = {
   title: "Create Next App",
@@ -13,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}><Navbar/>{children}</body>
+      <body className={inter.className}><NavbarWrapper />{children}</body>
     </html>
   );
 }
