@@ -340,27 +340,27 @@ export default function Leads() {
 
  
   
-  // const datatoOpp = {
-  //   name : records.name || "",
-  //   cc : records.cc || "",
-  //   phone : records.phone || "",
-  //   email : records.email || "",
-  //   feeQuoted : records.feeQuoted || "",
-  //     batchTiming : records.batchTiming || "",
-  //     leadStatus : records.leadStatus || "",
-  //     stack : records.stack || "",
-  //     ClassMode : records.ClassMode || "",
-  //     opportunityStatus : records.opportunityStatus || "",
-  //     opportunitySatge : records.opportunitySatge || "",
-  //     DemoAttendedStage : records.DemoAttendedStage || "",
-  //     visitedStage : records.visitedStage || "",
-  //     lostOpportunityReason : records.lostOpportunityReason || "",
-  //     nextFollowUp : records.nextFollowUp || "",
-  //     leadSource : records.leadSource || "",
-  //     course : "",
-  //     // course : records.course || "",
-  //     description : records.description || "",
-  // }
+  const datatoOpp = {
+    name : records.name || "",
+    cc : records.cc || "",
+    phone : records.phone || "",
+    email : records.email || "",
+    feeQuoted : records.feeQuoted || "",
+      batchTiming : records.batchTiming || "",
+      leadStatus : records.leadStatus || "",
+      stack : records.stack || "",
+      ClassMode : records.ClassMode || "",
+      opportunityStatus : records.opportunityStatus || "",
+      opportunitySatge : records.opportunitySatge || "",
+      DemoAttendedStage : records.DemoAttendedStage || "",
+      visitedStage : records.visitedStage || "",
+      lostOpportunityReason : records.lostOpportunityReason || "",
+      nextFollowUp : records.nextFollowUp || "",
+      leadSource : records.leadSource || "",
+      course : "",
+      // course : records.course || "",
+      description : records.description || "",
+  }
 
 
   const convertLeadToOpp = async () => {
@@ -397,8 +397,8 @@ export default function Leads() {
       // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
       await Promise.all(
         selectedRows.map(id => {
+          const postRequest = axios.post(`${ApiUrl}/api/opportunity`,datatoOpp)
           const deleteRequest = axios.delete(`${ApiUrl}/api/leads/${id}`);
-          // const postRequest = axios.post(`${ApiUrl}/api/opportunity`,datatoOpp)
       
           return Promise.all([deleteRequest, postRequest]); // Wait for both requests
         })
