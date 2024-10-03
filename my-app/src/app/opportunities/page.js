@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard, faAngleDown,faXmark, faBell, faAnglesLeft, faAnglesRight, faCalendarDays, faChevronLeft, faChevronRight, faSquarePollVertical, faTable, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Createopportunity from "../createopportunity/page";
+// import Createopportunity from "../createopportunity/page";
 import OpportunityKanban from "../kanbans/oppurtunitykanban";
 import Editopportunity from "./editopportunity";
+import Createopportunity from "./createopportunity";
 
 
 

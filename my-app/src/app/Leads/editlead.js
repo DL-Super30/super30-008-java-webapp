@@ -15,7 +15,7 @@ export default function Editlead(props) {
                     </div>
                     <div className="flex gap-x-10">
                     <div className="items-center flex gap-x-4">
-                            <button className="w-20 bg-blue-500 border text-white p-2 rounded-md">Edit</button>
+                            <button className="w-20 bg-blue-500 border text-white p-2 rounded-md">Update</button>
                             <button className="w-20 bg-blue-500 border text-white p-2 rounded-md">Convert</button>
                     </div>
                     <button><FontAwesomeIcon icon={faXmark} className="text-2xl text-gray-300  mx-auto" onClick={() => setShowEditLead(false)} /></button>

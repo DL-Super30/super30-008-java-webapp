@@ -87,7 +87,7 @@ export default function Leads() {
             // window.location.reload()
             setTimeout(() =>{
                 setDeletePopUp(false)
-                window.location.reload()
+                window.location.reload() 
             },1500)
 
         }        
@@ -108,7 +108,7 @@ export default function Leads() {
     }
 
     return (
-        <div className="bg-[#987070] bg-opacity-90 w-full p-2 h-[91vh]">
+        <div className=" bg-[#987070]  w-full p-2.5 h-[91vh]">
             <ToastContainer />
             <div className="bg-[#F1E5D1] rounded-md">
                 <div className="p-4 flex justify-between items-center ">
@@ -124,8 +124,8 @@ export default function Leads() {
                             <option className="text-xl bg-[#F1E5D1]">Last Month Leads</option>
                         </select>
                     </div>
-                    <div className="flex text-md mr-12">
-                        <button className="bg-[#987070] p-1 text-white w-40 rounded-md mr-8" onClick={() => setCreateLead(true)}>Create Lead<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
+                    <div className="flex text-md mr-12 gap-x-4">
+                        <button className="bg-[#987070] p-1 text-white w-40 rounded-md " onClick={() => setCreateLead(true)}>Create Lead<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
                         <button className={`text-white p-1  w-40 rounded-md justify-end ${displayActions ? 'bg-[#987070] border border-[#987070]':'bg-[#DBB5B5]'}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions{!displayActions ? (<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" />) : (<FontAwesomeIcon icon={faXmark} className="ms-1 text-md" />)}</button>
                     </div>
                 </div>

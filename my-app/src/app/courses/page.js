@@ -4,7 +4,8 @@ import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard, faAngleDown, faBell, faAnglesLeft, faAnglesRight, faCalendarDays, faChevronLeft, faChevronRight, faSquarePollVertical, faTable, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from "react";
-import Createcourse from "../createcourse/page";
+// import Createcourse from "../createcourse/page";
+import Createcourse from "./createcourse";
 
 
 

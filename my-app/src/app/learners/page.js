@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard, faAngleDown, faAnglesLeft, faAnglesRight, faBell, faCalendarDays, faChevronLeft, faChevronRight, faSquarePollVertical, faTable, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Createlearner from "../createlearner/page";
+// import Createlearner from "../createlearner/page";
 import LearnersKanban from "../kanbans/learnerskanban";
 import Editlearner from "./editlearner";
+import Createlearner from "./createlearner";
 
 
 export default function Learners() {
