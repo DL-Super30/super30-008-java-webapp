@@ -4,7 +4,8 @@ import React,{useState,useEffect} from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown,faChevronLeft,faChevronRight,faTable,faChartBar,faPenToSquare,faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
-import KanbanOppurtunity from "../kanbanOppurtunity/page";
+// import KanbanOppurtunity from "../kanbanOppurtunity/page";
+import KanbanOppurtunity from "../kanban/oppurtunityKanban";
 import CreateOpportunity from "./createOppurtunity";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -289,9 +290,9 @@ export default function Oppurtunities(){
                     </div>
                     {
                       displayActivity && (
-                        <div className="w-36 absolute top-[18%] right-[2.1%] text-white bg-[#F5F7F8]">
-                          <button className="w-full  p-2 bg-[#006989] " onClick={showUpdateScreen}>Update <FontAwesomeIcon icon={faPenToSquare} className="ms-1"/> </button>
-                          <button className="w-full  p-2 bg-[#EE4E4E] " onClick={showPop}>Delete<FontAwesomeIcon icon={faTrash} className="ms-2  " /> </button>
+                        <div className="w-36 absolute top-[18.5%] right-[2.1%] bg-[#F5F7F8] ease-in-out">
+                          <button className="w-full  p-2 text-blue-500" onClick={showUpdateScreen}>Update <FontAwesomeIcon icon={faPenToSquare} className="ms-1"/> </button>
+                          <button className="w-full  p-2 text-red-500" onClick={showPop}>Delete<FontAwesomeIcon icon={faTrash} className="ms-2  " /> </button>
                         </div>
                       )
                     }

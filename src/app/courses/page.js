@@ -4,8 +4,11 @@ import React, { useState,useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight,faChevronLeft, faXmark, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-// import CreateCourse from "../createcourse/page";
 import CreateCourse from "./createcourse";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import UpdateCourse from "./updateCourse";
 
 export default function Courses() {
 
@@ -17,21 +20,34 @@ export default function Courses() {
         const [showCreateCourse,setShowCreateCourse] = useState(false);
         const [displayActivity,setDisplayActivity] = useState(false);
         const [deletePopUp, setDeletePopUp] = useState(false)
+        const [selectedRows , setSelectedRows] = useState([]);
+        const [selectedLead, setSelectedLead] = useState(null);
+        const [leadId,setLeadId] = useState();
+        const [showupdate ,setShowUpdate] = useState(false);
 
-        const recordsPerPage = 10;
+
+
+        const recordsPerPage = 8;
 
         useEffect( () =>{
             fetchData();
         },[pageDisplay,searchTerm])
 
+        const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
         const fetchData = async () =>{
             try{
-            const response = await fetch('http://localhost:3001/courses',{ method: 'GET' });
+            const response = await fetch(`${ApiUrl}/api/courses`,{ method: 'GET' });
             const data = await response.json()
-            // console.log(data.data)
-            // setRecords(data.data)
+            console.log(data.data)
 
-            const filteredRecords = filterRecords(data);
+            const sortedRecords = data.data.sort((a, b) => a.id - b.id);
+
+            // setRecords(data.data)
+            // console.log(data.data)
+
+            const filteredRecords = filterRecords(sortedRecords);
             
             const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
             const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage);
@@ -67,7 +83,7 @@ export default function Courses() {
             // Apply search filter based on the search term
             if (searchTerm) {
               filteredRecords = filteredRecords.filter(record =>
-                record.course.toLowerCase().includes(searchTerm.toLowerCase()) || record.description.toLowerCase().includes(searchTerm.toLowerCase())
+                record.courseName.toLowerCase().includes(searchTerm.toLowerCase()) || record.courseDescription.toLowerCase().includes(searchTerm.toLowerCase())
               );
             }
         
@@ -78,12 +94,120 @@ export default function Courses() {
             setPageDisplay(1); 
           };
 
+          const confirmDelete =async () =>{
+            try {
+              
+              // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
+              await Promise.all(
+                selectedRows.map(id => fetch(`${ApiUrl}/api/courses/${id}`,{method : 'DELETE'}))
+              );
+              setSelectedRows([])
+              if(selectedRows.length == 0){
+                // alert("please select atleast one")
+                toast.warning('Please Select Atleast One ', {
+                  position: "top-center",
+                  autoClose: 1500,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+              }
+              else{
+                // getLastRecords();
+                fetchData();
+                toast.success(' Deleted Suucessfully !', {
+                  position: "top-center",
+                  autoClose: 1498,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored"
+                  });
+                setTimeout(() =>{
+                  setDeletePopUp(false)
+                },2000)
+              }
+            } 
+            catch (err) {
+              console.log(err); 
+            }
+          }
+
+        const showPop = (e ) =>{
+            if(selectedRows.length == 0){
+              // alert("select atleast one !")
+              toast.warning('Please Select Atleast One ', {
+                position: "top-center",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            }
+            else{
+              setLeadId(e);
+              setDeletePopUp(true);
+            }
+        
+          }
+
+          const handleCheckBoxChange = (e,recordId) => {
+            e.stopPropagation();
+            setSelectedRows(prev =>{
+              if (prev.includes(recordId)){
+                return prev.filter(id => id !== recordId)
+              }
+              else{
+                return [...prev,recordId]
+              }
+            })
+          }
+
+          const showUpdateScreen = () => {
+            if (selectedRows.length !== 1) {
+              // alert("Please select exactly one record for update!");
+              toast.warning('Please Select Exactly One record for Update ', {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+            } else {
+              const selectedLead = records.find(record => record.id === selectedRows[0]);
+              
+              setSelectedLead(selectedLead);
+              setShowUpdate(true);
+            }
+          };
+
+          const handlerowClick = (e, lead) => {
+            // Check if the click was on the checkbox or its label
+            if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+              return; // Do nothing if the click was on the checkbox or its label
+            }
+            setSelectedLead(lead);
+            setShowUpdate(true);
+          };
+
 
         
 
     return (
         <>
             <div className="p-4 w-full h-[91vh] p-4 bg-[#E5D9F2]">
+            <ToastContainer />
                 <div className="w-full h-full border-2 border-[#CDC1FF] rounded p-3">
                     <div className="flex justify-between">
                         <div className="flex items-center gap-x-3">
@@ -97,8 +221,8 @@ export default function Courses() {
                         {
                             displayActivity && (
                                 <div className="absolute top-[18.2%] right-[2%] w-36 bg-white">
-                                    <button className="w-36 border p-1">Update</button>
-                                    <button className="w-36 border p-1" onClick={() => setDeletePopUp(true)}>Delete</button>
+                                    <button className="w-36 border p-1" onClick={showUpdateScreen}>Update</button>
+                                    <button className="w-36 border p-1" onClick={showPop}>Delete</button>
                                 </div>
                             )
                         }
@@ -110,18 +234,20 @@ export default function Courses() {
                         <table className="w-full">
                             <thead className="border border-[#CDC1FF] bg-[#A594F9]">
                                 <tr className="">
-                                    <th className="p-2 border-r-2">Course</th>
-                                    <th className="p-2 border-r-2">Decription</th>
-                                    <th className="p-2 border-r-2">Fee</th>
+                                    <th className="w-1/8 p-2 px-5 ml-5"><input type="checkbox" className="scale-150" onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}></input></th>
+                                    <th className="w-1/3 p-2 border-r-2">Course</th>
+                                    <th className="w-1/3 p-2 border-r-2">Decription</th>
+                                    <th className="w-1/3 p-2 border-r-2">Fee</th>
                                     {/* { displayActivity ? (<th className="p-2">Actions</th>) : '' } */}
                                 </tr>
                             </thead>
                             <tbody>
-                                { records && records.length >0 ?records.map(record => (
-                                    <tr className="border border-[#CDC1FF] bg-[#F5EFFF]" key={record.id}>
-                                        <td className=" w-1/5 p-2 ps-5">{record.course}</td>
-                                        <td className=" w-1/5 p-2 ps-5">{record.description}</td>
-                                        <td className="text-center w-1/5 p-2">{record.fee}</td>
+                                { records && records.length > 0 ?records.map(record => (
+                                    <tr className="border border-[#CDC1FF] bg-[#F5EFFF]" key={record.id} onClick={(e) => handlerowClick(e,record)}>
+                                        <td className="w-1/8 m-2 p-2 px-5"><input type="checkbox" className="scale-150" checked={selectedRows.includes(record.id)} onChange={(e) => handleCheckBoxChange(e,record.id)}></input></td>
+                                        <td className=" w-1/5 p-2 ps-8">{record.courseName}</td>
+                                        <td className=" w-1/5 p-2 ps-5">{record.courseDescription}</td>
+                                        <td className="text-center w-1/5 p-2">{record.courseFee}</td>
                                         {/* { displayActivity ? (<td className="w-1/6 p-2">
                                         <div className="flex gap-x-3 mx-auto justify-center">
                                             <button className="w-24 bg-lime-200 rounded-lg">Edit</button>
@@ -170,12 +296,12 @@ export default function Courses() {
                     <button
                         className="bg-[#E5D9F2] text-gray-700 px-4 py-2 rounded mr-2 border border-[#A594F9]"
                         onClick={() =>setDeletePopUp(false)}
-                    >
+                        >
                         Cancel
                     </button>
                     <button
                         className="bg-[#A594F9] text-white px-4 py-2 rounded"
-                        // onClick={confirmDelete}
+                        onClick={confirmDelete}
                     >
                         Delete
                     </button>
@@ -187,6 +313,11 @@ export default function Courses() {
             {
                 showCreateCourse && <CreateCourse setShowCreateCourse={setShowCreateCourse}/>
             }
+            {
+            showupdate && (
+                <UpdateCourse setShowUpdate={setShowUpdate} updateData={selectedLead}/>
+          )
+        }
         </>
     )
 }

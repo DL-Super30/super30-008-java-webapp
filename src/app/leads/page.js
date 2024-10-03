@@ -5,15 +5,16 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown, faTable, faChevronRight, faChevronLeft ,faPenToSquare,faTrash, faXmark, faLink} from "@fortawesome/free-solid-svg-icons";
-import Kanban from "../kanban/page";
+import Kanban from "../kanban/leadskanban";
 import CreateLead from "./createlead";
 import UpdateLead from "./updatelead";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
 
 
-export default function DashBoard() {
+export default function Leads() {
   const [records, setRecords] = useState([]);
   const [pageConfig, setPageConfig] = useState({});
   const [pageDisplay, setPageDisplay] = useState(1);
@@ -31,9 +32,12 @@ export default function DashBoard() {
   const [updateData, setUpdateData] = useState(null);
   const [selectedRows , setSelectedRows] = useState([]);
   const [selectedLead, setSelectedLead] = useState(null);
+  const [showConvert , setShowConvert] = useState(false);
 
 
   const recordsPerPage = 10;
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -52,7 +56,6 @@ export default function DashBoard() {
   },[])
 
   const getLastRecords = async () => {
-    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
       let response = await fetch(
@@ -293,6 +296,29 @@ export default function DashBoard() {
     setShowUpdate(false)
     
   }
+  
+  const showConvertForm = (leadId) => {
+    if(selectedRows.length > 0){
+      setShowConvert(true)
+
+    }
+    else{
+      toast.warning('Please Select atleast one record for Convert', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  }
+
+
+
+
   const parseCourses = (courseString) => {
     try {
       return JSON.parse(courseString);
@@ -311,11 +337,100 @@ export default function DashBoard() {
     setShowUpdate(true);
   };
 
+
+ 
+  
+  // const datatoOpp = {
+  //   name : records.name || "",
+  //   cc : records.cc || "",
+  //   phone : records.phone || "",
+  //   email : records.email || "",
+  //   feeQuoted : records.feeQuoted || "",
+  //     batchTiming : records.batchTiming || "",
+  //     leadStatus : records.leadStatus || "",
+  //     stack : records.stack || "",
+  //     ClassMode : records.ClassMode || "",
+  //     opportunityStatus : records.opportunityStatus || "",
+  //     opportunitySatge : records.opportunitySatge || "",
+  //     DemoAttendedStage : records.DemoAttendedStage || "",
+  //     visitedStage : records.visitedStage || "",
+  //     lostOpportunityReason : records.lostOpportunityReason || "",
+  //     nextFollowUp : records.nextFollowUp || "",
+  //     leadSource : records.leadSource || "",
+  //     course : "",
+  //     // course : records.course || "",
+  //     description : records.description || "",
+  // }
+
+
+  const convertLeadToOpp = async () => {
+    try {
+      
+      // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
+      await Promise.all(
+        selectedRows.map(id => fetch(`${ApiUrl}/api/leads/${id}`,{method : 'DELETE'}))
+      ) 
+      toast.info(' Converted Succesfully !', {
+        position: "top-center",
+        autoClose: 1498,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+        });
+        setTimeout(() => {
+          setShowConvert(false)
+          window.location.reload()
+        },1500)
+
+    }
+    catch (err){
+      console.log(err)
+    }
+  }
+  const convertLeadToLearner = async () => {
+    try {
+      
+      
+      // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
+      await Promise.all(
+        selectedRows.map(id => {
+          const deleteRequest = axios.delete(`${ApiUrl}/api/leads/${id}`);
+          // const postRequest = axios.post(`${ApiUrl}/api/opportunity`,datatoOpp)
+      
+          return Promise.all([deleteRequest, postRequest]); // Wait for both requests
+        })
+      );
+
+
+      toast.info(' Converted Succesfully !', {
+        position: "top-center",
+        autoClose: 1498,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+        });
+        setTimeout(() => {
+          setShowConvert(false)
+          window.location.reload()
+        },1500)
+
+    }
+    catch (err){
+      console.log(err)
+    }
+  }
+
   
 
 
   return (
-    <div className="w-full p-4 h-[91vh] bg-[#E5D9F2]">
+    <div className="w-full p-4 h-[110vh] bg-[#E5D9F2]">
      <ToastContainer />
       <div className="w-[95%] h-auto mx-auto border-2 border-[#CDC1FF] p-2 rounded ">
         <div className="flex items-center w-full justify-between ">
@@ -360,7 +475,7 @@ export default function DashBoard() {
                 <div className="w-32 text-white absolute top-[18.3%] right-[4%] bg-white ">
                   <button className="w-full p-1 border  text-blue-800" onClick={showUpdateScreen}>Update <FontAwesomeIcon icon={faPenToSquare} /></button>
                   <button className="w-full p-1 border  text-red-500" onClick={showPop}>Delete <FontAwesomeIcon icon={faTrash} /></button>
-                  <button className="w-full p-1 border  text-green-600">Convert <FontAwesomeIcon icon={faLink}/></button>
+                  <button className="w-full p-1 border  text-green-600" onClick={showConvertForm}>Convert <FontAwesomeIcon icon={faLink}/></button>
                 </div>
               )
             }
@@ -524,6 +639,25 @@ export default function DashBoard() {
            <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={selectedLead}/> 
           )
         }
+
+        {
+          showConvert && (
+            <div className="absolute top-0 left-0 w-full h-[100vh] bg-black bg-opacity-70 content-center">
+              <div className="w-2/5 h-3/4 bg-[#F5EFFF] rounded-lg mx-auto items-center text-center">
+                <div className="flex justify-end h-14 rounded-t-md w-full bg-[#CDC1FF] ">
+                  <button className="mr-5 content-center" onClick={() => setShowConvert(false)}><FontAwesomeIcon icon={faXmark} className="text-3xl"/></button>
+                </div>
+                <img src="./images/convert.svg" className="w-full h-3/5"></img>
+                <p className="m-4">Convert Into corresponding</p>
+                <div className="flex gap-x-4 mx-auto w-72 m-8">
+                  <button className="w-36 p-2 rounded-md bg-[#E5D9F2] border border-[#A594F9]" onClick={convertLeadToOpp}>To Oppurtunity</button>
+                  <button className="w-36 p-2 rounded-md bg-[#A594F9] text-white" onClick={convertLeadToLearner}>To Learners</button>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
       </div>
     </div>
   );

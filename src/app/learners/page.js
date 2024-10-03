@@ -3,7 +3,7 @@
 import React,{useState,useEffect, Fragment} from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faChartBar, faChevronDown, faChevronLeft, faChevronRight, faTable, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
-import LearnersKanban from "../../components/learnersKanban"; 
+import LearnersKanban from "../kanban/learnerskanban";
 import CreateLearner from "./createlearner";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

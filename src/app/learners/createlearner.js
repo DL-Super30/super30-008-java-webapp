@@ -42,7 +42,7 @@ export default function CreateLearner(props) {
         firstname : firstname,
         lastname : lastname || "",
         idProof : idProof || "",
-        phone : phone || "",
+        phone : "+ 91 "+phone || "",
         DOB : DOB || "",
         email : email || "",
         registeredDate : registeredDate || "",

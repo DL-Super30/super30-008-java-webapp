@@ -87,10 +87,10 @@ export default function UpdateOppurtunity(props){
                 <div className="flex justify-between border-b px-5 h-14 text-xl">
                     <div className="flex gap-x-4 items-center">
                         <button onClick={() => setShowUpdate(false)}><FontAwesomeIcon icon={faChevronLeft} /> Back</button>
-                        <p ><FontAwesomeIcon icon={faAddressCard} className="bg-blue-400 text-white p-2 rounded-md"/></p>
+                        <p ><FontAwesomeIcon icon={faAddressCard} className="bg-[#A594F9] text-white p-2 rounded-md"/></p>
                         <h2>{formData.name}</h2>
                     </div>
-                    <button className="w-32 p-1 m-2 rounded bg-blue-400 text-white" onClick={updateoppurtunity}>Update</button>
+                    <button className="w-32 p-1 m-2 rounded bg-[#A594F9] text-white" onClick={updateoppurtunity}>Update</button>
                 </div>
                 <div className="flex justify-around border-b-2">
                     <div>

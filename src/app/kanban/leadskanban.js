@@ -42,7 +42,7 @@ export default function Kanban(){
             <div className=" h-16 bg-[#FA7070] rounded border-t-4 border-[#FF204E] border-b" >
                 <p className="font-semibold p-5">Cold Lead</p>
             </div>
-            <div className=" h-[60vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
+            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
                 {
                     records.map((record,i) =>
                         record.leadStatus === 'Not Contacted' ?
@@ -58,7 +58,7 @@ export default function Kanban(){
                     )
                 }
             </div>
-            <div className=" h-[60vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
+            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
             {
                     records.map((record,i) =>
                         
@@ -76,7 +76,7 @@ export default function Kanban(){
                     )
                 }
             </div>
-            <div className=" h-[60vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
+            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
             {
                     records.map((record,i) =>
                         record.leadStatus === 'Warm Lead' ?
@@ -92,7 +92,7 @@ export default function Kanban(){
                     )
                 }
             </div>
-            <div className=" h-[60vh] overflow-y-scroll bg-[#E5E7EB] rounded p-3" >
+            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-3" >
             {
                     records.map((record,i) =>
                         record.leadStatus === 'Cold Lead' ?
