@@ -62,6 +62,10 @@ export default function Login() {
         setTimeout(() => {
           router.push('/dashboard');
         }, 3000);
+
+        if(username == "user1" && password == "password"){
+          router.push("/dashboard")
+        }
       } else {
         toast.error('Invalid Credentials', {
           position: "top-right",
