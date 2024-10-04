@@ -23,7 +23,7 @@ export default function Navbar() {
     <div>
       <nav className="w-full bg-[#DBB5B5] bg-opacity-70 h-[65px] flex items-center justify-between">
         <div>
-          <Link href={'/dashboard'}><img className="ml-36 w-[300px] h-[45px] pt-2 m-1" src="https://www.skillcapital.ai/images/logo.png"></img></Link>
+          <Link href={'/dashboard'}><img className="ml-36 w-[300px] h-[45px] pt-2 m-1" src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fskillcapital.41121682.png&w=1920&q=75"></img></Link>
         </div>
         <div className="flex gap-x-8">
           <Link href={'/dashboard'}><button className={`${pathname == '/dashboard' ? 'border-b-4 border-b-black' : ''} `}>Home</button></Link>

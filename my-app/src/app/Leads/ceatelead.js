@@ -23,12 +23,29 @@ export default function Createlead(props) {
     const [classMode,setClassMode] = useState("")
     const [nextFollowUp , setNextFollowUp] = useState("")
 
+    const isValidInput = () => {
+        if(!name || !phone ||!email || !feeQuoted){
+            toast.error('All fields must be filled out before submitting!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            return false;
+            
+        }
+    };
+
     const createdAt= new Date().toISOString()
     const day = new Date(createdAt).getDay()
     const Month = new Date(createdAt).getMonth()
     const year = new Date(createdAt).getFullYear()
     const formatDate = `${day}/${Month}/${year}`
-    // console.log(`${day}/${Month}/${year}`)
+    console.log(`${day}/${Month}/${year}`)
 
     const data = {
         name : name,
@@ -49,6 +66,21 @@ export default function Createlead(props) {
 
     const leadCreation = async () =>{
         try{
+            if(!name || !phone ||!email || !feeQuoted){
+                toast.error('All fields must be filled out before submitting!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
+            }
+            else {
+
+            
             const response = await axios.post("http://localhost:3001/signupdata" , data)
             console.log(response)
             toast.success('lead created !', {
@@ -66,6 +98,7 @@ export default function Createlead(props) {
                 setCreateLead(false)
                 window.location.reload()
             },1500)
+        }
 
         }
         catch (err){
@@ -99,8 +132,8 @@ export default function Createlead(props) {
                     <button><FontAwesomeIcon icon={faXmark} className="text-2xl text-gray-300  mx-auto" onClick={() => setCreateLead(false)} /></button>
                 </div>
                 <div className="flex gap-x-10">
-                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Name</h1>
-                        <input placeholder="Name" className="text-xl" value={name} onChange={(e) => setName(e.target.value)}></input>
+                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Name<span className="text-red-500"> *</span></h1>
+                        <input placeholder="Name" className="text-xl w-full outline-none" value={name} onChange={(e) => setName(e.target.value)}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="opacity-25 text-blue-950 text-xl">Lead Status</h1>
                         <div className="flex justify-between">
@@ -119,7 +152,7 @@ export default function Createlead(props) {
                 <div className="flex gap-x-10">
                     <div className=" w-full  mt-3 boarder-2 border-b-2">
                          <h1 className="text-xl" >CC</h1>
-                        <input placeholder="91" className="text-xl" value={cc} onChange={(e) =>setCc(e.target.value)}></input>
+                        <input placeholder="91" className="text-xl w-full outline-none" value={cc} onChange={(e) =>setCc(e.target.value)}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="opacity-25 text-blue-950 text-xl">Lead Source</h1>
                         <div className="flex justify-between">
@@ -142,8 +175,9 @@ export default function Createlead(props) {
 
 
                 <div className="flex gap-x-10">
-                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Phone</h1>
-                        <input placeholder="Phone" className="text-xl" value={phone} onChange={(e)=>setPhone(e.target.value)}></input>
+                    <div className=" w-full  mt-3 boarder-2 border-b-2">
+                        <h1 className="text-xl">Phone<span className="text-red-500"> *</span></h1>
+                        <input placeholder="Phone" className="text-xl w-full outline-none" value={phone} onChange={(e)=>setPhone(e.target.value) }></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="opacity-25 text-blue-950 text-xl">Stack</h1>
                         <div className="flex justify-between">
@@ -159,8 +193,8 @@ export default function Createlead(props) {
 
 
                 <div className="flex gap-x-10">
-                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Email</h1>
-                        <input placeholder="Email" className="text-xl" value={email} onChange={(e)=>setEmail(e.target.value)}></input>
+                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Email<span className="text-red-500"> *</span></h1>
+                        <input placeholder="Email" className="text-xl w-full outline-none" value={email} onChange={(e)=>setEmail(e.target.value)}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="opacity-25 text-blue-950 text-xl">Course</h1>
                         <div className="flex justify-between">
@@ -179,8 +213,8 @@ export default function Createlead(props) {
 
 
                 <div className="flex gap-x-10">
-                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Free Quoted</h1>
-                        <input placeholder="Free Quoted" className="text-xl" value={feeQuoted} onChange={(e) =>setFeeQuoted(e.target.value)}></input>
+                    <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Fee Quoted<span className="text-red-500"> *</span> </h1>
+                        <input type="number" placeholder="Free Quoted" className="text-xl w-full outline-none" value={feeQuoted} onChange={(e) =>setFeeQuoted(e.target.value)}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="opacity-25 text-blue-950 text-xl">Class Mode</h1>
                         <div className="flex justify-between">
@@ -199,7 +233,7 @@ export default function Createlead(props) {
 
                 <div className="flex gap-x-10">
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Batch Timing</h1>
-                        <input placeholder="Batch Timing" className="text-xl" value={batchTiming} onChange={(e) =>setBatchTiming(e.target.value)}></input>
+                        <input placeholder="Batch Timing" className="text-xl w-full outline-none" value={batchTiming} onChange={(e) =>setBatchTiming(e.target.value)}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className=" text-xl">Next FollowUp</h1>
                         <div className=" flex justify-between">
@@ -212,7 +246,7 @@ export default function Createlead(props) {
 
                 <div className="flex gap-x-10">
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Description</h1>
-                        <input placeholder="Description" className="text-xl" value={description} onChange={(e) =>SetDescription(e.target.value)}></input>
+                        <input placeholder="Description" className="text-xl w-full outline-none" value={description} onChange={(e) =>SetDescription(e.target.value)}></input>
                     </div>
 
                 </div>

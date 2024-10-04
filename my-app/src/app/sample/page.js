@@ -98,8 +98,8 @@ export default function Login() {
                     <label className="ml-4">Remember Me</label><br></br>
                     <h3 className="mt-28 ml-28 text-gray-400">©2024, All rights reserved</h3><br></br>
 
-
-                </div>
+ 
+        </div>
             </div>
             <div className="w-1/2 h-svh">
                 <div className="h-[26.5%] ">
