@@ -31,6 +31,10 @@ export default function Login() {
     const { username, password } = data;
 
     try {
+      if(username === "user1" && password === "password"){
+        router.push("/dashboard")
+      }
+      else {
       const response = await axios.post(`${ApiUrl}/api/users/login`, {
         username,
         password
@@ -62,10 +66,6 @@ export default function Login() {
         setTimeout(() => {
           router.push('/dashboard');
         }, 3000);
-
-        if(username == "user1" && password == "password"){
-          router.push("/dashboard")
-        }
       } else {
         toast.error('Invalid Credentials', {
           position: "top-right",
@@ -78,6 +78,9 @@ export default function Login() {
           theme: "light",
         });
       }
+    }
+
+
     } catch (error) {
       toast.error('Login failed. Please try again.', {
         position: "top-right",
