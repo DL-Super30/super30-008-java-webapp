@@ -40,7 +40,6 @@ export default function CreateLead({ closeForm }) {
     const [selectedCourses, setSelectedCourses] = useState([]);
     const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
     const handleCourseChange = (selectedOptions) => {
         setSelectedCourses(selectedOptions);
     };
@@ -52,7 +51,7 @@ export default function CreateLead({ closeForm }) {
             const formData = {
                 leadname,
                 email,
-                phone : "+ 91 " + phone,
+                phone: "+ 91 " + phone,
                 feeQuoted,
                 batchTiming,
                 leadStatus,
@@ -95,104 +94,143 @@ export default function CreateLead({ closeForm }) {
     };
 
     return (
-        <div className="w-full h-[100vh] absolute top-[0] left-[0] bg-black bg-opacity-70 pt-[50px]">
+        <div className="w-full h-[100vh] absolute top-0 left-0 bg-black bg-opacity-70 flex justify-center items-start pt-[100px]">
             <ToastContainer />
-            <div className="w-3/4 mx-auto pt-[75px]">
-                <div className="flex justify-between items-center border-b p-1 bg-[#CDC1FF] rounded-t-md">
-                    <div className="flex items-center gap-x-5">
-                        <span><FontAwesomeIcon icon={faAddressCard} className="bg-[#A594F9] text-xl text-white p-2 rounded" /></span>
-                        <h1 className="text-2xl font-semibold">Create Lead</h1>
+            <div className="w-full md:w-3/4 lg:w-1/2 mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="flex justify-between items-center p-4 bg-purple-200 border-b">
+                    <div className="flex items-center space-x-3">
+                        <FontAwesomeIcon icon={faAddressCard} className="bg-purple-500 text-white text-2xl p-2 rounded-full" />
+                        <h1 className="text-2xl font-semibold text-gray-800">Create Lead</h1>
                     </div>
-                    <button onClick={closeForm}><FontAwesomeIcon icon={faXmark} className="text-2xl text-gray-500 p-2 rounded" /></button>
+                    <button onClick={closeForm}>
+                        <FontAwesomeIcon icon={faXmark} className="text-2xl text-gray-600 hover:text-gray-800 transition" />
+                    </button>
                 </div>
-                <div className="mt-[-4px] ">
-                    <form className="w-full" onSubmit={handleFormSubmit}>
-                        <div className="w-full mt-1 border bg-[#F5EFFF] mx-auto p-3">
-                            <div className="grid grid-cols-2 gap-x-5">
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Name</label><br />
-                                    <input type="text" placeholder="Name" className="border-b-2 border-b-[#A594F9] p-1 mb-2 w-full outline-none rounded" value={leadname} onChange={(e) => setLeadName(e.target.value)} required />
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Lead Status</label><br />
-                                    <select className="border-b-2 border-b-[#A594F9] p-1 mt-1 w-full outline-none rounded" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}>
-                                        <option value="Not Contacted">Not Contacted</option>
-                                        <option value="Attempted">Attempted</option>
-                                        <option value="Warm Lead">Warm Lead</option>
-                                        <option value="Cold Lead">Cold Lead</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-md">CC</label>
-                                    <p className="p-1 border-b-2 border-b-[#A594F9] mt-1 rounded">+ 91 </p>
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Phone</label><br />
-                                    <input type="text" placeholder="Phone" className="border-b-2 border-b-[#A594F9] p-1 mb-2 w-full outline-none rounded" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value)} required />
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Lead Source</label><br />
-                                    <select className="border-b-2 border-b-[#A594F9] p-1 w-full mt-1 outline-none rounded" value={leadSource} onChange={(e) => setLeadSource(e.target.value)}>
-                                        <option value="Walk in">Walk in</option>
-                                        <option value="Student Referral">Student Referral</option>
-                                        <option value="Demo">Demo</option>
-                                        <option value="Website">Website</option>
-                                        <option value="Website Chat">Website Chat</option>
-                                        <option value="Inbound Call">Inbound Call</option>
-                                        <option value="Google Adverts">Google Adverts</option>
-                                        <option value="Facebook Ads">Facebook Ads</option>
-                                        <option value="Google Business">Google Business</option>
-                                        <option value="WhatsApp Skill Capital">WhatsApp Skill Capital</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Email</label><br />
-                                    <input type="email" placeholder="Email" className="border-b-2 border-b-[#A594F9] p-1 mb-2 w-full outline-none rounded" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Course</label><br />
-                                    <Select 
-                                        options={courseOptions}
-                                        value={selectedCourses}
-                                        onChange={handleCourseChange}
-                                        isMulti={true}
-                                        className="basic-multi-select "
-                                        classNamePrefix="select"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Fee Quoted</label><br />
-                                    <input type="number" placeholder="Fee" className="border-b-2 border-b-[#A594F9] p-1 mb-2 w-full outline-none rounded" value={feeQuoted} onChange={(e) => setFeeQuoted(e.target.value)} required />
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Batch Timing</label><br />
-                                    <select className="border-b-2 border-b-[#A594F9] p-1 w-full mt-1 outline-none rounded" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}>
-                                        <option value="7-8 AM">7-8 AM</option>
-                                        <option value="8-9 AM">8-9 AM</option>
-                                        <option value="9-10 AM">9-10 AM</option>
-                                        <option value="10-11 AM">10-11 AM</option>
-                                        <option value="11-12 AM">11-12 AM</option>
-                                        <option value="12-01 PM">12-01 PM</option>
-                                        <option value="01-02 PM">01-02 PM</option>
-                                        <option value="02-03 PM">02-03 PM</option>
-                                        <option value="03-04 PM">03-04 PM</option>
-                                        <option value="04-05 PM">04-05 PM</option>
-                                        <option value="05-06 PM">05-06 PM</option>
-                                        <option value="06-07 PM">06-07 PM</option>
-                                        <option value="07-08 PM">07-08 PM</option>
-                                        <option value="08-09 PM">08-09 PM</option>
-                                        <option value="09-10 PM">09-10 PM</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="ml-2 text-[#B9D1E5] text-lg">Class Mode</label><br />
-                                    <select className="border-b-2 border-b-[#A594F9] p-1 w-full mt-1 outline-none rounded" value={selectedClassMode} onChange={(e) => setSelectedClassMode(e.target.value)}>
-                                        <option value="HYD class">HYD class</option>
-                                        <option value="Online">Online</option>
-                                    </select>
-                                </div>
+                <div className="px-6 py-4 bg-gray-50">
+                    <form onSubmit={handleFormSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Name <span className="text-red-400">*</span></label>
+                                <input 
+                                    type="text" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={leadname} 
+                                    onChange={(e) => setLeadName(e.target.value)} 
+                                    required 
+                                />
                             </div>
-                            <button type="submit" className="mx-auto p-3 border w-full mt-4 bg-[#A594F9] text-white font-semibold text-lg">Submit</button>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Lead Status</label>
+                                <select 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={leadStatus} 
+                                    onChange={(e) => setLeadStatus(e.target.value)}
+                                >
+                                    <option value="Not Contacted">Not Contacted</option>
+                                    <option value="Attempted">Attempted</option>
+                                    <option value="Warm Lead">Warm Lead</option>
+                                    <option value="Cold Lead">Cold Lead</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Phone<span className="text-red-400">*</span></label>
+                                <input 
+                                    type="text" 
+                                    maxLength={10} 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={phone} 
+                                    onChange={(e) => setPhone(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Email<span className="text-red-400">*</span></label>
+                                <input 
+                                    type="email" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Lead Source</label>
+                                <select 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={leadSource} 
+                                    onChange={(e) => setLeadSource(e.target.value)}
+                                >
+                                    <option value="Walk in">Walk in</option>
+                                    <option value="Student Referral">Student Referral</option>
+                                    <option value="Demo">Demo</option>
+                                    <option value="Website">Website</option>
+                                    <option value="Website Chat">Website Chat</option>
+                                    <option value="Inbound Call">Inbound Call</option>
+                                    <option value="Google Adverts">Google Adverts</option>
+                                    <option value="Facebook Ads">Facebook Ads</option>
+                                    <option value="Google Business">Google Business</option>
+                                    <option value="WhatsApp Skill Capital">WhatsApp Skill Capital</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Course</label>
+                                <Select 
+                                    options={courseOptions}
+                                    value={selectedCourses}
+                                    onChange={handleCourseChange}
+                                    isMulti={true}
+                                    className="mt-1"
+                                    classNamePrefix="select"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Fee Quoted<span className="text-red-400">*</span></label>
+                                <input 
+                                    type="number" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={feeQuoted} 
+                                    onChange={(e) => setFeeQuoted(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Batch Timing</label>
+                                <select 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={batchTiming} 
+                                    onChange={(e) => setBatchTiming(e.target.value)}
+                                >
+                                    <option value="7-8 AM">7-8 AM</option>
+                                    <option value="9-10 AM">9-10 AM</option>
+                                    <option value="11-12 AM">11-12 AM</option>
+                                    <option value="6-7 PM">6-7 PM</option>
+                                    <option value="8-9 PM">8-9 PM</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Class Mode</label>
+                                <select 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={selectedClassMode} 
+                                    onChange={(e) => setSelectedClassMode(e.target.value)}
+                                >
+                                    <option value="HYD class">HYD class</option>
+                                    <option value="HYD Online">HYD Online</option>
+                                    <option value="BLR class">BLR class</option>
+                                    <option value="BLR Online">BLR Online</option>
+                                    <option value="Vizag class">Vizag class</option>
+                                    <option value="Vizag Online">Vizag Online</option>
+                                    <option value="USA Online">USA Online</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button 
+                                type="submit" 
+                                className="px-6 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition focus:outline-none"
+                            >
+                                Create Lead
+                            </button>
                         </div>
                     </form>
                 </div>

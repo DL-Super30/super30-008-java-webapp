@@ -14,16 +14,16 @@ export default function SignUp(props) {
   const [leadname, setLeadName] = useState('');   
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [feeQuoted, setFeeQuoted] = useState(0);  
-  const [batchTiming, setBatchTiming] = useState('');  
-  const [leadStatus, setLeadStatus] = useState('Not Contacted');   
   const [leadSource, setLeadSource] = useState('Website');   
-  const [course, setCourse] = useState('');          
+  const [leadStatus, setLeadStatus] = useState('Not Contacted');   
+  const [feeQuoted, setFeeQuoted] = useState("");  
+  const [batchTiming, setBatchTiming] = useState('');  
   const [selectedClassMode, setSelectedClassMode] = useState(''); 
+  // const [course, setCourse] = useState('');          
   
   const { handleClose, setShowSignUp } = props;
 
-  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  // const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
   const handleSubmit = async (e) => {
@@ -43,32 +43,34 @@ export default function SignUp(props) {
       return; 
     }
 
-    const data = {
-      leadname: leadname,
-      phone: "+ 91" + phone,
-      email: email,
-      feeQuoted: feeQuoted,
-      batchTiming: batchTiming,
-      leadStatus: leadStatus,
-      leadSource: leadSource,
-      course: course,
-      selectedClassMode: selectedClassMode,
-    };
+    
 
 
     try {
-      const response = await axios.post(`${ApiUrl}/api/leads`, data);
-      console.log("Successfully submitted:", response.data);
+      const data = {
+        leadname: leadname,
+        phone: "+ 91" + phone,
+        email: email,
+        feeQuoted: feeQuoted,
+        batchTiming: batchTiming,
+        leadStatus: leadStatus,
+        leadSource: leadSource,
+        course: course,
+        selectedClassMode: selectedClassMode,
+      };
 
-      setLeadName('');
-      setPhone('');
-      setEmail('');
-      setFeeQuoted(0);
-      setBatchTiming('');
-      setLeadStatus('');
-      setLeadSource('');
-      setCourse('');
-      setSelectedClassMode('');
+      await axios.post(`http://localhost:4000/api/leads`, data);
+      // console.log("Successfully submitted:", response.data);
+
+      // setLeadName('');
+      // setPhone('');
+      // setEmail('');
+      // setFeeQuoted(0);
+      // setBatchTiming('');
+      // setLeadStatus('');
+      // setLeadSource('');
+      // setCourse('');
+      // setSelectedClassMode('');
 
       toast.success('Registered Successfully!', {
         position: "top-right",
@@ -83,10 +85,21 @@ export default function SignUp(props) {
 
       setTimeout(() => {
         setShowSignUp(false);
+        
       }, 3000);
     } 
     catch (error) {
       console.error("Error submitting data:", error);
+      toast.error('Failed to signup!', {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 
@@ -130,7 +143,7 @@ export default function SignUp(props) {
               type="email"
               className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
               placeholder="Email"
-              value={email}
+              value={email} 
               onChange={(e) => setEmail(e.target.value)}
             />
             {/* <label>Fee Quoted</label>

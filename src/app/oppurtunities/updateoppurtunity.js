@@ -145,7 +145,14 @@ export default function UpdateOppurtunity(props){
                     </div>
                     <div>
                         <label>opportunityStatus</label> <br></br>
-                        <input value={formData.opportunityStatus} name="opportunityStatus" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="opportunityStatus"></input>
+                        {/* <input value={formData.opportunityStatus} name="opportunityStatus" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="opportunityStatus"></input> */}
+                        <select value={formData.opportunityStatus} name="opportunityStatus" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
+                            <option>select status</option>
+                            <option>Visiting</option>
+                            <option>Visited</option>
+                            <option>Demo Attended</option>
+                            <option>Lost Opportunity</option>
+                        </select>
                     </div><div>
                         <label>opportunitySatge</label> <br></br>
                         <input value={formData.opportunityStage} name="opportunitySatge" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="opportunitySatge"></input>

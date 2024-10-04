@@ -11,6 +11,7 @@ import UpdateLead from "./updatelead";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
+import { motion } from "framer-motion";
 
 
 
@@ -263,17 +264,9 @@ export default function Leads() {
     }
   }
 
-  // const handlerowClick = (e,lead) => {
-  
-  //   const selectedLead = records.find(record => record.id);
-  //   setSelectedLead(selectedLead);
-  //   setShowUpdate(true);
-
-  // }
 
   const showUpdateScreen = () => {
     if (selectedRows.length !== 1) {
-      // alert("Please select exactly one record for update!");
       toast.warning('Please Select Exactly One record for Update ', {
         position: "top-center",
         autoClose: 2000,
@@ -329,7 +322,6 @@ export default function Leads() {
   };
 
   const handlerowClick = (e, lead) => {
-    // Check if the click was on the checkbox or its label
     if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
       return; // Do nothing if the click was on the checkbox or its label
     }
@@ -340,7 +332,7 @@ export default function Leads() {
 
  
   
-  const datatoOpp = {
+  const dataOpp = {
     name : records.name || "",
     cc : records.cc || "",
     phone : records.phone || "",
@@ -397,8 +389,8 @@ export default function Leads() {
       // await fetch(`http://localhost:4000/api/leads/${leadId}`, { method: "DELETE" });
       await Promise.all(
         selectedRows.map(id => {
-          const postRequest = axios.post(`${ApiUrl}/api/opportunity`,datatoOpp)
-          const deleteRequest = axios.delete(`${ApiUrl}/api/leads/${id}`);
+          // const deleteRequest = axios.delete(`${ApiUrl}/api/leads/${id}`);
+          const postRequest = axios.post(`${ApiUrl}/api/opportunity`,dataOpp)
       
           return Promise.all([deleteRequest, postRequest]); // Wait for both requests
         })
@@ -430,235 +422,281 @@ export default function Leads() {
 
 
   return (
-    <div className="w-full p-4 h-[110vh] bg-[#E5D9F2]">
-     <ToastContainer />
-      <div className="w-[95%] h-auto mx-auto border-2 border-[#CDC1FF] p-2 rounded ">
-        <div className="flex items-center w-full justify-between ">
-          <div className="flex w-72 gap-x-2 justify-between ">
+    <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
+      <ToastContainer />
+      <div className="w-[95%] h-auto mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
+        <div className="flex items-center w-full justify-between mb-6">
+          <div className="flex w-72 gap-x-4 items-center">
             <FontAwesomeIcon
               icon={faAddressCard}
-              className="text-3xl bg-[#A594F9] text-white p-2 rounded"
+              className="text-3xl bg-indigo-600 text-white p-2 rounded-full"
             />
             <select
-              className="w-60 outline-none bg-[#E5D9F2] text-xl"
+              className="w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
               value={selectedFilter}
               onChange={handleFilterChange}
             >
               <option>All Leads</option>
-              {/* <option>My Leads</option> */}
               <option>Today's Leads</option>
               <option>Yesterday's leads</option>
               <option>This week Leads</option>
               <option>Last Month Leads</option>
             </select>
           </div>
-          <div className="w-72 flex justify-between">
-          
-              <button className="w-34 rounded bg-[#A594F9] p-2 text-white font-semibold" onClick={() =>setShowCreateLead(true)}>
-                Create Lead
-                <span>
-                  <FontAwesomeIcon icon={faChevronDown} className="ml-1"/>
-                </span>
-              </button>
-            
-            <button
-              className={`w-32 border-2 border-[#A594F9] rounded p-2 bg-[#CDC1FF] font-semibold`}
-              onClick={() => !displayActivity ? setDisplayActivity(true) : setDisplayActivity(false)}
+          <div className="flex gap-4">
+            <button 
+              className="px-4 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105" 
+              onClick={() => setShowCreateLead(true)}
             >
-              Action
-              <span className="ms-1">
-                { !displayActivity ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faXmark} /> }
-              </span>
+              Create Lead
+              <FontAwesomeIcon icon={faChevronDown} className="ml-2"/>
             </button>
-            {
-              displayActivity && (
-                <div className="w-32 text-white absolute top-[18.3%] right-[4%] bg-white ">
-                  <button className="w-full p-1 border  text-blue-800" onClick={showUpdateScreen}>Update <FontAwesomeIcon icon={faPenToSquare} /></button>
-                  <button className="w-full p-1 border  text-red-500" onClick={showPop}>Delete <FontAwesomeIcon icon={faTrash} /></button>
-                  <button className="w-full p-1 border  text-green-600" onClick={showConvertForm}>Convert <FontAwesomeIcon icon={faLink}/></button>
+            <div className="relative">
+              <button
+                className={`px-4 py-2 rounded-full border-2 border-indigo-600 font-semibold ${displayActivity ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'} hover:bg-indigo-700 hover:text-white transition duration-300 ease-in-out transform hover:scale-105`}
+                onClick={() => setDisplayActivity(!displayActivity)}
+              >
+                Action
+                <FontAwesomeIcon icon={displayActivity ? faXmark : faChevronDown} className="ml-2" />
+              </button>
+              {displayActivity && (
+                <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-10">
+                  <button className="w-full p-2 text-left hover:bg-indigo-100 text-indigo-800" onClick={showUpdateScreen}>
+                    Update <FontAwesomeIcon icon={faPenToSquare} className="float-right" />
+                  </button>
+                  <button className="w-full p-2 text-left hover:bg-indigo-100 text-red-600" onClick={showPop}>
+                    Delete <FontAwesomeIcon icon={faTrash} className="float-right" />
+                  </button>
+                  <button className="w-full p-2 text-left hover:bg-indigo-100 text-green-600" onClick={showConvertForm}>
+                    Convert <FontAwesomeIcon icon={faLink} className="float-right" />
+                  </button>
                 </div>
-              )
-            }
+              )}
+            </div>
           </div>
         </div>
-        <div className="mt-3 flex">
+        <div className="flex items-center mb-6">
           <input
             type="search"
-            className="border border-[#A594F9] p-1 rounded-md w-72 outline-none bg-[#F5EFFF]"
+            className="flex-grow mr-4 border-2 border-indigo-300 p-2 rounded-full outline-none bg-white focus:border-indigo-500 transition duration-300"
             placeholder="Search by name or phone"
             value={searchTerm}
-            onChange={handleSearchChange} />
-          <div className="flex w-3/5 justify-evenly items-center border-lg ml-3">
-            <button className={`flex w-full p-1 border border-[#A594F9] justify-center rounded-l-md ${selectedFilter === 'All Leads' ? 'bg-[#A594F9] text-white ' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("All Leads")}>All leads </button>
-            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Not Contacted' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Not Contacted")}>Not Contacted </button>
-            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Attempted' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Attempted")}>Attempted </button>
-            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center ${selectedFilter === 'Warm Lead' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Warm Lead")}>Warm Leads </button>
-            <button className={`w-full border border-[#A594F9] p-1 text-center flex justify-center rounded-r-md ${selectedFilter === 'Cold Lead' ? 'bg-[#A594F9] text-white' : 'bg-[#CDC1FF]'}`} onClick={() =>handleStatusClick("Cold Lead")}>Cold Leads </button>
-
-          </div>
-          <div className="w-60 border border-[#A594F9] rounded-md ml-8">
-            <button className={`w-1/2 p-1 rounded-l-md ${showKanban ?  'bg-[#A594F9] text-white' :'bg-[#CDC1FF] ease-in'}` } onClick={() =>setShowKanban(true)}><FontAwesomeIcon icon={faTable} className="text-xl" /> Table</button>
-            <button className={`w-1/2 p-1 rounded-r-md ${showKanban ? 'bg-[#CDC1FF] ease-in' : 'bg-[#A594F9] text-white'}` } onClick={() =>setShowKanban(false)}><FontAwesomeIcon icon={faChartBar} /> Kanban</button>
+            onChange={handleSearchChange}
+          />
+          <div className="flex flex-wrap justify-center gap-2">
+            {["All Leads", "Not Contacted", "Attempted", "Warm Lead", "Cold Lead"].map((status) => (
+              <button
+                key={status}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition duration-300 ease-in-out ${
+                  selectedFilter === status
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                }`}
+                onClick={() => handleStatusClick(status)}
+              >
+                {status}
+              </button>
+            ))}
           </div>
         </div>
-        <div className="w-full h-auto border-[#A594F9] border mt-5">
-          {showKanban ? ( 
-           <table className="w-full ">
-            <thead className="border border-[#A594F9] bg-[#CDC1FF]">
-              <tr>
-                <th className="w-10 accent-neutral-900"><input type="checkbox" className="scale-150" onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}></input></th>
-                <th className="w-[150px] border-r-2 p-2">Created on</th>
-                <th className="w-1/7 border-r-2 p-2">Lead Status</th>
-                <th className="w-1/4 border-r-2 p-2">Name</th>
-                <th className="w-1/6 border-r-2 p-2">Phone</th>
-                <th className="w-1/4 border-r-2 p-2">Email</th>
-                <th className="w-[180px] border-r-2 p-2">Course</th>
-                {/* { displayActivity ? (<th className="w-1/7 border-r-2 p-2">Actions</th>) : '' } */}
-              </tr>
-            </thead>
-            <tbody className="bg-[#F5EFFF]">
-              {showKanban && records && records.length > 0 ? (
-                records.map((d, i) => (
-                  <tr key={i} className="border-b border-b-[#CDC1FF] " onClick={(e) => handlerowClick(e,d)}>
-                    <td className="w-10 mt-3 flex justify-center accent-slate-200"><input type="checkbox" className="scale-150" checked={selectedRows.includes(d.id)} onChange={(e) => handleCheckBoxChange(e,d.id)} ></input></td>
-                    <td className=" text-center text-sm p-3">
-                      {formatDate(d.createdAt)}
-                    </td>
-                    <td className="w-[150px]"> <p className={`rounded-lg text-center ${d.leadStatus == 'Not Contacted' ? 'bg-orange-300' : d.leadStatus == 'Attempted' ? 'bg-green-400' : d.leadStatus == 'Warm Lead' ? 'bg-yellow-400' : d.leadStatus == 'Cold Lead' ? 'bg-red-400' : '' }`}>{d.leadStatus}</p> </td>
-                    {/* <td className="w-[200px] text-center text-sm p-3 "><p className={`rounded-lg ${d.leadStatus === "Not Contacted" ? 'bg-orange-200' : d.leadStatus === 'Attempted' ? 'bg-[#B0EBB4]' : d.leadStatus === 'Warm Lead' ? 'bg-[#FFDB5C]' : d.leadStatus === 'Cold Lead' ? 'bg-[#FA7070]' : ''} }`}>{d.status}</p></td> */}
-                    <td className="w-1/7 pl-5 text-sm ">{d.leadname}</td>
-                    <td className="w-1/7 pl-4 text-sm">{d.phone}</td>
-                    <td className="w-1/7 pl-4 text-sm ">{d.email}</td>
-                    <td className="w-1/7 text-center text-sm flex flex-col ">
-                        {parseCourses(d.course).map((course, index) => (
-                          <span
-                            key={index}
-                            className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded"
-                          >
-                            {course.name}
-                          </span>
-                        ))}
+        <div className="mb-6 flex justify-end">
+          <div className="inline-flex rounded-md shadow-sm border border-indigo-600 rounded-lg">
+            <button
+              className={`px-4 py-2 text-sm font-medium rounded-l-md ${
+                showKanban
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-indigo-600 hover:bg-indigo-50'
+              }`}
+              onClick={() => setShowKanban(true)}
+            >
+              <FontAwesomeIcon icon={faTable} className="mr-2" /> Table
+            </button>
+            <button
+              className={`px-4 py-2 text-sm font-medium rounded-r-md ${
+                !showKanban
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-indigo-600 hover:bg-indigo-50'
+              }`}
+              onClick={() => setShowKanban(false)}
+            >
+              <FontAwesomeIcon icon={faChartBar} className="mr-2" /> Kanban
+            </button>
+          </div>
+        </div>
+        <div className="w-full overflow-x-auto border border-indigo-200 rounded-lg shadow-md">
+          {showKanban ? (
+            <table className="w-full">
+              <thead className="bg-indigo-100">
+                <tr>
+                  <th className="w-10 p-3">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                      onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}
+                    />
+                  </th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Created on</th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Lead Status</th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Name</th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Phone</th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Email</th>
+                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Course</th>
+                </tr>
+              </thead>
+              <tbody>
+                {showKanban && records && records.length > 0 ? (
+                  records.map((d, i) => (
+                    <motion.tr
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.1 }}
+                      className="bg-white hover:bg-indigo-50 transition-colors duration-200"
+                      onClick={(e) => handlerowClick(e, d)}
+                    >
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                          checked={selectedRows.includes(d.id)}
+                          onChange={(e) => handleCheckBoxChange(e, d.id)}
+                        />
                       </td>
-                    {/* <td className="w-1/7 text-center text-sm p-3">{d.course.map(i => i.name)}</td> */}
-                    {/* <td className="w-1/7 text-center text-sm p-3"><p className={`rounded-lg ${d.course == 'MERN' ? 'bg-red-300' : d.course == 'TOFEL' ? 'bg-[#96F7E2]' : d.course == 'AWS + Devops' ? 'bg-[#90C7FD]' : d.course == 'JFS' ? 'bg-green-300' : d.course =="PFS" ? 'bg-orange-300' : d.course == 'HR Business Partner' ? 'bg-[#92C6FB]': d.course =='HR Generalist' ? 'bg-red-300': d.course == 'HR Analytics' ?'bg-green-300': d.course == 'Spoken English' ? 'bg-red-300' : d.course =='Public Speaking' ? 'bg-[#92C6FB]': d.course == 'Communication Skills'? 'bg-red-300' : d.course == 'Soft Skills' ? 'bg-green-300' : d.course == 'Aptitude' ? 'bg-red-300' : d.course =='IELTS' ? 'bg-[#92C6FB]' : d.course == 'GRE' ? 'bg-green-300' : d.course == 'Azure + Devops' ? 'bg-green-300' : '' }`}>{d.course}</p></td> */}
-                    {/* {displayActivity && (
-                      <td className="w-1/7 text-center text-sm ">
-                      <div className="flex w-full gap-x-2 mx-auto justify-center">
-                        <button className=" bg-[#A6F6FF] rounded-lg w-2/5" onClick={() => showUpdateScreen(d)}>Edit<FontAwesomeIcon icon={faPenToSquare} className="text-sm ms-1" /></button>
-                        <button className="btn bg-[#FF204E] text-white rounded-lg w-2/5" onClick={() => showPop(d.id)}> delete <FontAwesomeIcon icon={faTrash} className="text-sm"/> </button>                 
+                      <td className="p-3 text-sm text-gray-800">{formatDate(d.createdAt)}</td>
+                      <td className="p-3">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          d.leadStatus === 'Not Contacted' ? 'bg-yellow-100 text-yellow-800' :
+                          d.leadStatus === 'Attempted' ? 'bg-blue-100 text-blue-800' :
+                          d.leadStatus === 'Warm Lead' ? 'bg-green-100 text-green-800' :
+                          d.leadStatus === 'Cold Lead' ? 'bg-red-100 text-red-800' : ''
+                        }`}>
+                          {d.leadStatus}
+                        </span>
+                      </td>
+                      <td className="p-3 text-sm text-gray-800">{d.leadname}</td>
+                      <td className="p-3 text-sm text-gray-800">{d.phone}</td>
+                      <td className="p-3 text-sm text-gray-800">{d.email}</td>
+                      <td className="p-3">
+                        <div className="flex flex-wrap gap-1">
+                          {parseCourses(d.course).map((course, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full"
+                            >
+                              {course.name}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      <div className="flex flex-col items-center justify-center">
+                        <img src="./images/nodata.svg" className="w-1/4 h-60 mb-4" alt="No data" />
+                        <h1 className="text-2xl font-semibold text-gray-500">No Data Found</h1>
                       </div>
                     </td>
-                    )} */}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="text-center w-full h-[60vh]">
-                   
-                    <div className="items-center">
-                      <img src="./images/nodata.svg" className="w-1/4 h-60 mx-auto"></img>
-                      <h1 className=" text-3xl text-center mt-3 ml-10">No Data Found</h1>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>):(<Kanban />) 
-          }
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <Kanban />
+          )}
         </div>
-        {records.length>0 && showKanban && (<div className="w-full h-7 flex justify-center text-sm gap-x-10 items-center">
-          <div className="flex">
-            <span
-              className={`mr-2 ${
-                pageConfig.isPrevious ? "cursor-pointer" : "cursor-not-allowed"
+        {records.length > 0 && showKanban && (
+          <div className="mt-4 flex justify-center items-center space-x-2">
+            <button
+              className={`p-2 px-4 rounded-full ${
+                pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay - 1)}
+              disabled={!pageConfig.isPrevious}
             >
               <FontAwesomeIcon icon={faChevronLeft} />
-            </span>
+            </button>
             {pages.map((page) => (
-              <p
+              <button
                 key={page}
-                className={`mx-1 ${
-                  page === pageDisplay ? "font-semibold" : "font-normal"
-                } cursor-pointer`}
+                className={`px-3 py-1 rounded-full ${
+                  page === pageDisplay ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-indigo-100'
+                }`}
                 onClick={() => handlePageChange(page)}
               >
                 {page}
-              </p>
+              </button>
             ))}
-            <span
-              className={`mr-5 ml-2 ${
-                pageConfig.isNext ? "cursor-pointer" : "cursor-not-allowed"
+            <button
+              className={`p-2 px-4 rounded-full ${
+                pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay + 1)}
+              disabled={!pageConfig.isNext}
             >
               <FontAwesomeIcon icon={faChevronRight} />
-            </span>
+            </button>
           </div>
-        </div>) }
-        {/* ------- Delete Pop up ----------- */}
-        { deletePopUp && (
-          <div
-          id="deleteModal"
-          className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
+        )}
+      </div>
+      {deletePopUp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-           <img src="./images/delete.svg"></img>
-            <h2 className="text-lg font-bold text-red-800 mt-2 text-center">Confirm Deletion</h2>
-
-            <p className="text-gray-600 mt-4">
-              Are you sure you want to delete this item? This action cannot be
-              undone.
+            <img src="./images/delete.svg" alt="Delete confirmation" className="w-60 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-600 mb-4 text-center">Confirm Deletion</h2>
+            <p className="text-gray-600 mb-6 text-center">
+              Are you sure you want to delete this item? This action cannot be undone.
             </p>
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-end space-x-4">
               <button
-                className="bg-[#E5D9F2] text-gray-700 px-4 py-2 rounded mr-2 border border-[#A594F9]"
-                onClick={() =>setDeletePopUp(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition duration-200"
+                onClick={() => setDeletePopUp(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-[#A594F9] text-white px-4 py-2 rounded"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200"
                 onClick={confirmDelete}
               >
                 Delete
               </button>
             </div>
           </div>
-          
         </div>
-        )}
-        {/* ------delete pop up ended ----------- */}
-        {
-          showCreateLead && (
-            <CreateLead closeForm={closeForm} />
-          )
-        }
-        {
-          showupdate && (
-           <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={selectedLead}/> 
-          )
-        }
-
-        {
-          showConvert && (
-            <div className="absolute top-0 left-0 w-full h-[100vh] bg-black bg-opacity-70 content-center">
-              <div className="w-2/5 h-3/4 bg-[#F5EFFF] rounded-lg mx-auto items-center text-center">
-                <div className="flex justify-end h-14 rounded-t-md w-full bg-[#CDC1FF] ">
-                  <button className="mr-5 content-center" onClick={() => setShowConvert(false)}><FontAwesomeIcon icon={faXmark} className="text-3xl"/></button>
-                </div>
-                <img src="./images/convert.svg" className="w-full h-3/5"></img>
-                <p className="m-4">Convert Into corresponding</p>
-                <div className="flex gap-x-4 mx-auto w-72 m-8">
-                  <button className="w-36 p-2 rounded-md bg-[#E5D9F2] border border-[#A594F9]" onClick={convertLeadToOpp}>To Oppurtunity</button>
-                  <button className="w-36 p-2 rounded-md bg-[#A594F9] text-white" onClick={convertLeadToLearner}>To Learners</button>
-                </div>
+      )}
+      {showCreateLead && <CreateLead closeForm={closeForm} />}
+      {showupdate && <UpdateLead hideUpdateScreen={hideUpdateScreen} updateData={selectedLead} />}
+      {showConvert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden">
+            <div className="bg-indigo-100 p-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-indigo-800">Convert Lead</h2>
+              <button onClick={() => setShowConvert(false)}>
+                <FontAwesomeIcon icon={faXmark} className="text-2xl text-indigo-600 hover:text-indigo-800" />
+              </button>
+            </div>
+            <div className="p-6">
+              <img src="./images/convert.svg" alt="Convert" className="w-48 h-48 mx-auto mb-6" />
+              <p className="text-center text-gray-600 mb-6">Convert into corresponding</p>
+              <div className="flex justify-center space-x-4">
+                <button
+                  className="px-4 py-2 bg-indigo-100 text-indigo-800 rounded hover:bg-indigo-200 transition duration-200"
+                  onClick={convertLeadToOpp}
+                >
+                  To Opportunity
+                </button>
+                <button
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200"
+                  onClick={convertLeadToLearner}
+                >
+                  To Learners
+                </button>
               </div>
             </div>
-          )
-        }
-
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
