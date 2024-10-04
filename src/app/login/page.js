@@ -103,21 +103,21 @@ export default function Login() {
             <form className="login-form w-full rounded border-black h-[460px] mt-8 p-5" onSubmit={handleSubmit(onSubmit)}>
               
               {/* Username Label and Input */}
-              <label className="block text-sm mb-2" htmlFor="username">User Name</label>
+              <label className="block text-black text-sm mb-2" htmlFor="username">User Name</label>
               <input
                 id="username"
                 type="text"
-                className="w-full border outline-none p-3 rounded"
+                className="w-full text-black border outline-none p-3 rounded"
                 {...register('username', { required: "Username is required" })}
               />
               {errors.username && <p className="text-red-500">Please Enter Username</p>}
 
               {/* Password Label and Input */}
-              <label className="block text-sm mt-4 mb-2" htmlFor="password">Password</label>
+              <label className="block text-black text-sm mt-4 mb-2" htmlFor="password">Password</label>
               <input
                 id="password"
                 type="password"
-                className="w-full border outline-none p-3 rounded"
+                className="w-full text-black border outline-none p-3 rounded"
                 {...register('password', { required: "Password is required" })}
               />
               {errors.password && <p className="text-red-500">Please Enter Password</p>}
@@ -135,10 +135,10 @@ export default function Login() {
                   checked={rememberMe}
                   onChange={handleRememberMe}
                 />
-                <span className="text-sm align-center ml-2">Remember me</span>
+                <span className="text-sm text-black align-center ml-2">Remember me</span>
               </div>
 
-              <p className="mt-[90px] text-center opacity-50">©2024, All rights reserved</p>
+              <p className="mt-[90px] text-black text-center opacity-50">©2024, All rights reserved</p>
             </form>
           </div>
         </div>

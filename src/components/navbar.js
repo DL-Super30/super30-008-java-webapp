@@ -64,7 +64,7 @@ export default function Navbar() {
 
       <div className="flex items-center space-x-4 mr-4">
         <Link href="/calender">
-          <button className="text-2xl text-indigo-600 hover:text-indigo-800 transition-colors duration-200" aria-label="Calendar">
+          <button className="text-2xl text-black hover:text-indigo-800 transition-colors duration-200" aria-label="Calendar">
             <FontAwesomeIcon icon={faCalendarDays} />
           </button>
         </Link>
@@ -76,7 +76,7 @@ export default function Navbar() {
           />
         </Link>
         <button
-          className="text-2xl text-indigo-600 hover:text-indigo-800 transition-colors duration-200"
+          className="text-2xl text-black hover:text-indigo-800 transition-colors duration-200"
           onClick={() => setIsLogout(!isLogout)}
           aria-label="User menu"
         >

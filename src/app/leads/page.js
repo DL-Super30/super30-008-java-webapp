@@ -528,7 +528,7 @@ export default function Leads() {
             <table className="w-full">
               <thead className="bg-indigo-100">
                 <tr>
-                  <th className="w-10 p-3">
+                  <th className="w-10 p-3 accent-neutral-900">
                     <input
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
@@ -554,7 +554,7 @@ export default function Leads() {
                       className="bg-white hover:bg-indigo-50 transition-colors duration-200"
                       onClick={(e) => handlerowClick(e, d)}
                     >
-                      <td className="p-3">
+                      <td className="p-3 accent-slate-100	">
                         <input
                           type="checkbox"
                           className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"

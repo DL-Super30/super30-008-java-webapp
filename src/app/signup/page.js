@@ -14,12 +14,7 @@ export default function SignUp(props) {
   const [leadname, setLeadName] = useState('');   
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [leadSource, setLeadSource] = useState('Website');   
-  const [leadStatus, setLeadStatus] = useState('Not Contacted');   
-  const [feeQuoted, setFeeQuoted] = useState("");  
-  const [batchTiming, setBatchTiming] = useState('');  
-  const [selectedClassMode, setSelectedClassMode] = useState(''); 
-  // const [course, setCourse] = useState('');          
+            
   
   const { handleClose, setShowSignUp } = props;
 
@@ -28,7 +23,8 @@ export default function SignUp(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
-
+  
+    // Check if required fields are filled
     if (!leadname || !phone || !email) {
       toast.error('Please enter Required Fields!', {
         position: "top-right",
@@ -42,36 +38,23 @@ export default function SignUp(props) {
       });
       return; 
     }
-
-    
-
-
+  
     try {
+      // Create data object with only required fields
       const data = {
         leadname: leadname,
-        phone: "+ 91" + phone,
+        phone: "+91" + phone,
         email: email,
-        feeQuoted: feeQuoted,
-        batchTiming: batchTiming,
-        leadStatus: leadStatus,
-        leadSource: leadSource,
-        course: course,
-        selectedClassMode: selectedClassMode,
+        feeQuoted: "20000",         // Empty value
+        batchTiming: "",       // Empty value
+        leadStatus: "Not Contacted",        // Empty value
+        leadSource: "",        // Empty value
+        course: [{"name":"HR Generalist"}],            // Empty value
+        selectedClassMode: ""  // Empty value
       };
-
-      await axios.post(`http://localhost:4000/api/leads`, data);
-      // console.log("Successfully submitted:", response.data);
-
-      // setLeadName('');
-      // setPhone('');
-      // setEmail('');
-      // setFeeQuoted(0);
-      // setBatchTiming('');
-      // setLeadStatus('');
-      // setLeadSource('');
-      // setCourse('');
-      // setSelectedClassMode('');
-
+  
+      await axios.post(`http://localhost:4000/api/leads`, data); // Post data to the server
+  
       toast.success('Registered Successfully!', {
         position: "top-right",
         autoClose: 2500,
@@ -82,10 +65,9 @@ export default function SignUp(props) {
         progress: undefined,
         theme: "light",
       });
-
+  
       setTimeout(() => {
         setShowSignUp(false);
-        
       }, 3000);
     } 
     catch (error) {
@@ -102,6 +84,7 @@ export default function SignUp(props) {
       });
     }
   };
+  
 
   return (
     <div>
