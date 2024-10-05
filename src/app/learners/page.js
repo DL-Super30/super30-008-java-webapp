@@ -1,139 +1,138 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAddressCard, faChartBar } from '@fortawesome/free-regular-svg-icons'
-import { faChevronDown, faChevronLeft, faChevronRight, faTable, faTrash, faXmark, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import LearnersKanban from "../kanban/learnerskanban"
-import CreateLearner from "./createlearner"
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAddressCard, faChartBar } from '@fortawesome/free-regular-svg-icons';
+import { faChevronDown, faChevronLeft, faChevronRight, faTable, faTrash, faXmark, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import LearnersKanban from "../kanban/learnerskanban";
+import CreateLearner from "./createlearner";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import UpdateLearner from "./updatelearners.";
 export default function Learners() {
-  const [records, setRecords] = useState([])
-  const [pages, setPages] = useState([])
-  const [pageConfig, setPageConfig] = useState({})
-  const [pageDisplay, setPageDisplay] = useState(1)
-  const [displayActivity, setDisplayActivity] = useState(false)
-  const [showKanban, setShowKanban] = useState(false)
-  const [deletePopUp, setDeletePopUp] = useState(false)
-  const [leadId, setLeadId] = useState()
-  const [showCreateLearner, setShowCreateLearner] = useState(false)
-  const [selectedRows, setSelectedRows] = useState([])
-  const [selectedFilter, setSelectedFilter] = useState("All Learners")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [records, setRecords] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [pageConfig, setPageConfig] = useState({});
+  const [pageDisplay, setPageDisplay] = useState(1);
+  const [displayActivity, setDisplayActivity] = useState(false);
+  const [showKanban, setShowKanban] = useState(false);
+  const [deletePopUp, setDeletePopUp] = useState(false);
+  const [leadId, setLeadId] = useState();
+  const [showCreateLearner, setShowCreateLearner] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState("All Learners");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLead, setSelectedLead] = useState(null)
+  const [showUpdate , setShowUpdate] = useState(false)
 
-  const recordsPerPage = 10
-  const ApiUrl = process.env.NEXT_PUBLIC_API_URL
+  const recordsPerPage = 10;
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear().toString().slice(-2)
-    return `${day}/${month}/${year}`
-  }
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+  };
 
   useEffect(() => {
-    fetchedData()
-  }, [pageDisplay, selectedFilter, searchTerm])
+    fetchedData();
+  }, [pageDisplay, selectedFilter, searchTerm]);
 
   const fetchedData = async () => {
     try {
-      const response = await fetch(`${ApiUrl}/api/learner?page=1&limit=10`)
-      const data = await response.json()
-    
-      const sortedRecords = data.data.sort((a, b) => {
-        const dateA = new Date(a.date)
-        const dateB = new Date(b.date)
-        return dateB - dateA
-      })
-    
-      const filteredRecords = filterRecords(sortedRecords)
+      const response = await fetch(`${ApiUrl}/api/learner?page=1&limit=10`);
+      const data = await response.json();
 
-      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage)
-      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage)
-      setRecords(paginatedRecords)
+      const sortedRecords = data.data.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
+
+      const filteredRecords = filterRecords(sortedRecords);
+      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage);
+      setRecords(paginatedRecords);
 
       setPageConfig({
         isPrevious: pageDisplay > 1,
-        isNext: pageDisplay < totalPages
-      })
+        isNext: pageDisplay < totalPages,
+      });
 
-      const tempArr = []
-      for(let i=1; i<=totalPages; i++) {
-        tempArr.push(i)
+      const tempArr = [];
+      for (let i = 1; i <= totalPages; i++) {
+        tempArr.push(i);
       }
-      setPages(tempArr)
+      setPages(tempArr);
+    } catch (err) {
+      console.log(err);
     }
-    catch (err) {
-      console.log(err)
-    }
-  }
+  };
 
   const filterRecords = (records) => {
-    let filteredRecords = records
+    let filteredRecords = records;
 
     switch (selectedFilter) {
       case "All Learners":
-        break
+        break;
       case "Today's Learners":
-        filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          const today = new Date()
-          return recordDate.toDateString() === today.toDateString()
-        })
-        break
+        filteredRecords = filteredRecords.filter((record) => {
+          const recordDate = new Date(record.createdAt);
+          const today = new Date();
+          return recordDate.toDateString() === today.toDateString();
+        });
+        break;
       case "Yesterday's Learners":
-        filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          const yesterday = new Date()
-          yesterday.setDate(yesterday.getDate() - 1)
-          return recordDate.toDateString() === yesterday.toDateString()
-        })
-        break
+        filteredRecords = filteredRecords.filter((record) => {
+          const recordDate = new Date(record.createdAt);
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          return recordDate.toDateString() === yesterday.toDateString();
+        });
+        break;
       case "This week Learners":
-        filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          const today = new Date()
-          const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
-          return recordDate >= firstDayOfWeek
-        })
-        break
+        filteredRecords = filteredRecords.filter((record) => {
+          const recordDate = new Date(record.createdAt);
+          const today = new Date();
+          const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+          return recordDate >= firstDayOfWeek;
+        });
+        break;
       case "Last Month Learners":
-        filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          const today = new Date()
-          const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-          const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-          return recordDate >= lastMonth && recordDate < thisMonth
-        })
-        break
+        filteredRecords = filteredRecords.filter((record) => {
+          const recordDate = new Date(record.createdAt);
+          const today = new Date();
+          const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+          return recordDate >= lastMonth && recordDate < thisMonth;
+        });
+        break;
       default:
-        break
+        break;
     }
 
     if (searchTerm) {
-      filteredRecords = filteredRecords.filter(record => 
-        record.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.phone.includes(searchTerm)
-      )
+      filteredRecords = filteredRecords.filter((record) =>
+        record.firstname.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
+      );
     }
 
-    return filteredRecords
-  }
+    return filteredRecords;
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pages.length) {
-      setPageDisplay(newPage)
+      setPageDisplay(newPage);
     }
-  }
+  };
 
   const showPop = () => {
-    if(selectedRows.length === 0) {
+    if (selectedRows.length === 0) {
       toast.warn('Please select at least one record!', {
-        position: "top-center", 
+        position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -141,29 +140,27 @@ export default function Learners() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     } else {
-      setDeletePopUp(true)
+      setDeletePopUp(true);
     }
-  }
+  };
 
   const handleCheckboxChange = (recordId) => {
-    setSelectedRows(prev => {
+    setSelectedRows((prev) => {
       if (prev.includes(recordId)) {
-        return prev.filter(id => id !== recordId)
+        return prev.filter((id) => id !== recordId);
       } else {
-        return [...prev, recordId]
+        return [...prev, recordId];
       }
-    })
-  }
-    
+    });
+  };
+
   const confirmDelete = async () => {
     try {
-      await Promise.all(
-        selectedRows.map(id => fetch(`${ApiUrl}/api/learner/${id}`, { method: "DELETE" }))
-      )
-      setSelectedRows([])
-      fetchedData()
+      await Promise.all(selectedRows.map((id) => fetch(`${ApiUrl}/api/learner/${id}`, { method: "DELETE" })));
+      setSelectedRows([]);
+      fetchedData();
       toast.success('Deleted Successfully!', {
         position: "top-center",
         autoClose: 1000,
@@ -173,13 +170,12 @@ export default function Learners() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
       setTimeout(() => {
-        setDeletePopUp(false)
-      }, 1500)
-    } 
-    catch (err) {
-      console.log(err)
+        setDeletePopUp(false);
+      }, 1500);
+    } catch (err) {
+      console.log(err);
       toast.error('Failed to Delete!', {
         position: "top-center",
         autoClose: 1500,
@@ -189,12 +185,12 @@ export default function Learners() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     }
-  }
+  };
 
   const updateModel = () => {
-    if(selectedRows.length !== 1) {
+    if (selectedRows.length !== 1) {
       toast.warn('Please select exactly one record for update!', {
         position: "top-center",
         autoClose: 1000,
@@ -204,44 +200,49 @@ export default function Learners() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     } else {
-      // Implement update functionality here
-      toast.info('Update functionality not implemented yet', {
-        position: "top-center",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      })
+
+      const selectedLead = records.find(record => record.id === selectedRows[0])
+      setSelectedLead(selectedLead)
+      setShowUpdate(true)
+
+
+      // toast.info('Update functionality not implemented yet', {
+      //   position: "top-center",
+      //   autoClose: 1000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "light",
+      // });
     }
-  }
+  };
 
   const handleFilterChange = (event) => {
-    setSelectedFilter(event.target.value)
-    setPageDisplay(1)
-  }
+    setSelectedFilter(event.target.value);
+    setPageDisplay(1);
+  };
 
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-    setPageDisplay(1)
-  }
+    setSearchTerm(event.target.value);
+    setPageDisplay(1);
+  };
 
   return (
     <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
       <ToastContainer />
-      <div className="w-[95%] h-auto mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
-        <div className="flex items-center w-full justify-between mb-6">
-          <div className="flex w-72 gap-x-4 items-center">
+      <div className="w-[95%] max-w-full mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
+        <div className="flex flex-col md:flex-row items-center w-full justify-between mb-6">
+          <div className="flex w-full md:w-72 gap-x-4 items-center mb-4 md:mb-0">
             <FontAwesomeIcon
               icon={faAddressCard}
               className="text-3xl bg-indigo-600 text-white p-2 rounded-full"
             />
             <select
-              className="w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
+              className="w-full md:w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
               value={selectedFilter}
               onChange={handleFilterChange}
             >
@@ -268,7 +269,7 @@ export default function Learners() {
                 Action
                 <FontAwesomeIcon icon={displayActivity ? faXmark : faChevronDown} className="ml-2" />
               </button>
-              {displayActivity && (
+              {displayActivity && !showUpdate && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                   <button className="w-full p-2 text-left hover:bg-indigo-100 text-indigo-800" onClick={updateModel}>
                     Update <FontAwesomeIcon icon={faPenToSquare} className="float-right" />
@@ -281,23 +282,23 @@ export default function Learners() {
             </div>
           </div>
         </div>
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-6 flex-col md:flex-row">
           <input
             type="search"
-            className="flex-grow mr-4 border-2 border-indigo-300 p-2 rounded-full outline-none bg-white focus:border-indigo-500 transition duration-300"
+            className="w-full md:flex-grow mr-4 border-2 border-indigo-300 p-2 rounded-full outline-none bg-white focus:border-indigo-500 transition duration-300"
             placeholder="Search by name or phone"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <div className="flex rounded-full overflow-hidden border-2 border-indigo-300">
+          <div className="w-80 flex rounded-full overflow-hidden border-2 border-indigo-300 mt-4 md:mt-0">
             <button
-              className={`px-4 py-2 ${!showKanban ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}
+              className={`px-4 w-1/2 py-2 ${!showKanban ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}
               onClick={() => setShowKanban(false)}
             >
               <FontAwesomeIcon icon={faTable} className="mr-2" /> Table
             </button>
             <button
-              className={`px-4 py-2 ${showKanban ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}
+              className={`px-4 w-1/2 py-2 ${showKanban ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}
               onClick={() => setShowKanban(true)}
             >
               <FontAwesomeIcon icon={faChartBar} className="mr-2" /> Kanban
@@ -313,7 +314,7 @@ export default function Learners() {
                     <input
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
-                      onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}
+                      onChange={(e) => setSelectedRows(e.target.checked ? records.map((record) => record.id) : [])}
                     />
                   </th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Created Time</th>
@@ -443,6 +444,8 @@ export default function Learners() {
         </div>
       )}
       {showCreateLearner && <CreateLearner setShowCreateLearner={setShowCreateLearner} />}
+      {showUpdate && (<UpdateLearner setShowUpdate={setShowUpdate} updateData={selectedLead}/>)}
+
     </div>
-  )
+  );
 }

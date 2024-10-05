@@ -104,27 +104,27 @@ export default function CreateOpportunity(props){
                 </div>
                 <div className="grid grid-cols-2 gap-4 h-[65vh] overflow-y-scroll mt-4 border-[#A594F9] border p-4 rounded-md">
                     <div>
-                        <label className="ml-2 opacity-70">Name</label> <br></br>
+                        <label className="ml-2 opacity-70">Name<span className="text-red-500">*</span> </label> <br></br>
                         <input type="text" placeholder="name" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={name} onChange={(e) => setName(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">CC</label> <br></br>
+                        <label className="ml-2 opacity-70" >CC </label> <br></br>
                         <input type="text" placeholder="CC" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={cc} onChange={(e) => setCc(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">Phone</label> <br></br>
+                        <label className="ml-2 opacity-70">Phone <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="Phone" maxLength={10} className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={phone} onChange={(e) => setPhone(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">Email</label> <br></br>
+                        <label className="ml-2 opacity-70">Email <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="email" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={email} onChange={(e) => setEmail(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">feeQuoted</label> <br></br>
+                        <label className="ml-2 opacity-70">feeQuoted <span className="text-red-500">*</span></label> <br></br>
                         <input type="number" placeholder="feeQuoted" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={feeQuoted} onChange={(e) => setFeeQuoted(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">batchTiming</label> <br></br>
+                        <label className="ml-2 opacity-70">batchTiming <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="batchTiming" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}>
                             <option>7 - 8 AM</option>
@@ -143,7 +143,7 @@ export default function CreateOpportunity(props){
                         </select>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">leadStatus</label> <br></br>
+                        <label className="ml-2 opacity-70">leadStatus <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="leadStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}>
                             <option>Not Contacted</option>
@@ -153,11 +153,11 @@ export default function CreateOpportunity(props){
                         </select>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">stack</label> <br></br>
+                        <label className="ml-2 opacity-70">stack <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="stack" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={stack} onChange={(e) => setStack(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">ClassMode</label> <br></br>
+                        <label className="ml-2 opacity-70">ClassMode <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="ClassMode" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}>
                             <option>HYD classroom</option>
@@ -166,7 +166,7 @@ export default function CreateOpportunity(props){
                         </select>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">opportunityStatus</label> <br></br>
+                        <label className="ml-2 opacity-70">opportunityStatus<span className="text-red-500">*</span> </label> <br></br>
                         {/* <input type="text" placeholder="opportunityStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}>
                             <option>Select Opputunity status</option>
@@ -177,23 +177,23 @@ export default function CreateOpportunity(props){
                         </select>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">opportunitySatge</label> <br></br>
+                        <label className="ml-2 opacity-70">opportunitySatge <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="opportunitySatge" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunitySatge} onChange={(e) => setOpportunitySatge(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">DemoAttendedStage</label> <br></br>
+                        <label className="ml-2 opacity-70">DemoAttendedStage <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="DemoAttendedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={DemoAttendedStage} onChange={(e) => setDemoAttendedStage(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">visitedStage</label> <br></br>
+                        <label className="ml-2 opacity-70">visitedStage <span className="text-red-500">*</span></label> <br></br>
                         <input type="text" placeholder="visitedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={visitedStage} onChange={(e) => setVisitedStage(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">lostOpportunityReason</label> <br></br>
+                        <label className="ml-2 opacity-70">lostOpportunityReason<span className="text-red-500">*</span> </label> <br></br>
                         <input type="text" placeholder="lostOpportunityReason" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={lostOpportunityReason} onChange={(e) => setLostOpportunityReason(e.target.value)}></input>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">nextFollowUp</label> <br></br>
+                        <label className="ml-2 opacity-70">nextFollowUp<span className="text-red-500">*</span> </label> <br></br>
                         <input type="datetime-local" placeholder="nextFollowUp" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={nextFollowUp} onChange={(e) => setNextFollowUp(e.target.value)}></input>
                     </div>
                     <div>

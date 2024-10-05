@@ -45,7 +45,7 @@ export default function Navbar() {
         </button>
         <Link href="/dashboard">
           <img
-            className="h-10 ml-4"
+            className="h-10 w-52 ml-4"
             src="https://crm.skillcapital.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fskillcapital.41121682.png&w=1920&q=75"
             alt="Skill Capital Logo"
           />

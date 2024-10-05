@@ -1,28 +1,54 @@
 'use client'
 
-import React from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faAddressCard,faXmark } from "@fortawesome/free-regular-svg-icons"
+import React, { useState } from "react"
 
-export default function UpdateLearner() {
+export default function UpdateLearner(props) {
+
+    const {setShowUpdate,updateData} = props;
+
+    const [firstname , setFirstname] = useState('')
+    const [phone,setPhone] = useState("");
+    const [email , setEmail] = useState("")
+
+
+  const [formData, setFormData] = useState({
+    firstname : updateData.firstname || "",
+    lastname : updateData.lastname || "",
+    phone : updateData.phone || "",
+    email : updateData.email || ""
+  })
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
     return (
-        <div>
-            <div className="w-3/4 bg-[#F5EFFF] rounded h-[90vh] mx-auto ">
+        <div className="absolute top-0 left-0 bg-black bg-opacity-70 w-full content-center h-[110vh]">
+            <div className="w-3/4 bg-[#F5EFFF] rounded h-[80vh] mx-auto ">
                    <div className="w-full p-4 bg-[#CDC1FF] p-2 items-center rounded-t-md flex justify-between">
                         <div className="flex gap-x-4 items-center">
                             <span className="bg-[#A594F9] text-xl text-white p-2  rounded-md px-3"><FontAwesomeIcon icon={faAddressCard}/></span>
-                            <h1 className="font-bold text-2xl">Create Learner</h1>
+                            <h1 className="font-bold text-2xl">{updateData.firstname }</h1>
                         </div>
-                        <button className="text-3xl" onClick={() => setShowCreateLearner(false)}><FontAwesomeIcon icon={faXmark}/></button>
+                        <button className="w-32 border p-1 rounded-lg bg-purple-900 text-white">Update</button>
                    </div>
                    <div className="p-4">
-                        <div className="w-full h-[67vh] border border-[#A594F9] rounded-md overflow-y-scroll p-2">
+                        <div className="w-full h-[65vh] border border-[#A594F9] rounded-md overflow-y-scroll p-2">
                            <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label>First Name</label> <br></br>
-                                        <input type="text"  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
+                                        <input type="text" name="firstname" value={formData.firstname} onChange={handleInputChange}  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
                                     </div>
                                     <div>
                                         <label>Last Name</label> <br></br>
-                                        <input type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="last name"></input>
+                                        <input type="text" name="lastname" value={formData.lastname} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="last name"></input>
                                     </div>
                                     <div>
                                         <label>Id Proof</label> <br></br>
@@ -134,10 +160,7 @@ export default function UpdateLearner() {
                             </div>
                         </div>
                    </div>
-                   <div className="flex justify-center gap-x-3">
-                        <button className="w-36 p-1 rounded-md border bg-[#CDC1FF] border-[#A594F9] " onClick={() => setShowCreateLearner(false)}>Cancel</button>
-                        <button className="w-36 p-1 bg-[#A594F9] rounded-md">Create</button>
-                   </div>
+                   
             </div>
         </div>
     )

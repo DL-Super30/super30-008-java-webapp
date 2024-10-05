@@ -15,9 +15,9 @@ export default function KanbanOppurtunity() {
 
     const fetchData = async () =>{
         try{
-            const response = await fetch(`${ApiUrl}/signUpData`);
+            const response = await fetch(`${ApiUrl}/api/opportunity?page=1&limit=10`);
             const data = await response.json()
-            setRecords(data.reverse())
+            setRecords(data.data)
 
         }
         catch (err){
@@ -28,41 +28,83 @@ export default function KanbanOppurtunity() {
 
 
     return (
-        <div className="grid grid-cols-3 gap-4 p-4">
-                {/* <div className=" border-t-4 border-[#86EFAC] h-20 p-3 font-semibold rounded bg-[#DCFCE7]">
+        <div className="grid grid-cols-4 gap-4 p-4">
+                <div className=" border-t-4 border-[#8EACCD] h-20 p-3 font-semibold rounded bg-[#D2E0FB]">
                     <p>visiting</p>
-                </div> */}
-                <div className=" border-t-4 border-[#93C5FD] h-20 p-3 font-semibold rounded bg-[#DBEAFE]">
+                </div>
+                <div className=" border-t-4 border-[#6EC207] h-20 p-3 font-semibold rounded bg-[#8FD14F]">
                     <p>visited</p>
                 </div>
-                <div className=" border-t-4 border-[#A8A29E] h-20 p-3 font-semibold rounded bg-[#FFEDD5]">
+                <div className=" border-t-4 border-[#FF6500] h-20 p-3 font-semibold rounded bg-[#FD8B51]">
                     <p>Demo Attended</p>
                 </div>
-                <div className=" border-t-4 border-[#94A3B8] h-20 p-3 font-semibold rounded bg-[#E0E7FF]">
+                <div className=" border-t-4 border-[#FF204E] h-20 p-3 font-semibold rounded bg-[#FA7070]">
                     <p>Lost Oppurtunity</p>
                 </div>
-                {/* <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
-                {
-                    records.map((record,index) => (
-                        <div className="flex justify-between">
-                            <p>{ record.visitStatus == 'visiting' ? record.name : '' }</p>
-                            <p>{ record.visitStatus == 'visiting' ? record.phone : '' }</p>
-                        </div>
-                    ))
-                }
-                </div> */}
                 <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
                 {
-                        records.map( (record,index) =>(
-                            <div key={index} className="flex justify-between ">
-                            <p className="" >{record.visitStatus === 'visited' ? record.name : ''}</p>
-                            <p>{record.visitStatus === 'visited' ? record.phone : ''}</p>
+                    records.map((record,i) =>
+                        record.opportunityStatus == 'Visiting' ?
+                        (
+                        <div key={i} className="bg-[#D1E9F6] rounded p-2 m-1">
+                            <div className="flex justify-between">
+                                <p  className="text-lg font-semibold">{record.name}</p>
+                                <p>{record.phone}</p>
                             </div>
-                        ))
+                            <p>{record.email}</p>
+                        </div>
+                    ) : (<></>)
+                    )
                 }
                 </div>
-                <div className=" border h-auto rounded bg-[#E5E7EB] p-2"></div>
-                <div className=" border h-auto rounded bg-[#E5E7EB] p-2"></div>
+                <div className=" border h-[80vh] rounded bg-[#E5E7EB] p-2">
+                {
+                    records.map((record,i) =>
+                        record.opportunityStatus == 'Visited' ?
+                        (
+                        <div key={i} className="bg-[#C1E2A4] rounded p-2 m-1">
+                            <div className="flex justify-between">
+                                <p  className="text-lg font-semibold">{record.name}</p>
+                                <p>{record.phone}</p>
+                            </div>
+                            <p>{record.email}</p>
+                        </div>
+                    ) : (<></>)
+                    )
+                }
+                </div>
+                <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
+                {
+                    records.map((record,i) =>
+                        record.opportunityStatus == 'Demo Attended' ?
+                        (
+                        <div key={i} className="bg-[#FF885B] rounded p-2 m-1">
+                            <div className="flex justify-between">
+                                <p  className="text-lg font-semibold">{record.name}</p>
+                                <p>{record.phone}</p>
+                            </div>
+                            <p>{record.email}</p>
+                        </div>
+                    ) : (<></>)
+                    )
+                }
+                </div>
+                <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
+                {
+                    records.map((record,i) =>
+                        record.opportunityStatus == 'Lost Opportunity' ?
+                        (
+                        <div key={i} className="bg-red-300 rounded p-2 m-1">
+                            <div className="flex justify-between">
+                                <p  className="text-lg font-semibold">{record.name}</p>
+                                <p>{record.phone}</p>
+                            </div>
+                            <p>{record.email}</p>
+                        </div>
+                    ) : (<></>)
+                    )
+                }
+                </div>
         </div>
     )
 }

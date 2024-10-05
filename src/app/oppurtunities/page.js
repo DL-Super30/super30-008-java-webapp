@@ -1,161 +1,160 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons"
-import { faChevronDown, faChevronLeft, faChevronRight, faTable, faPenToSquare, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons"
-import KanbanOppurtunity from "../kanban/oppurtunityKanban"
-import CreateOpportunity from "./createOppurtunity"
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import UpdateOppurtunity from "./updateoppurtunity"
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown, faChevronLeft, faChevronRight, faTable, faPenToSquare, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import KanbanOppurtunity from "../kanban/oppurtunityKanban";
+import CreateOpportunity from "./createOppurtunity";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import UpdateOppurtunity from "./updateoppurtunity";
 
 export default function Opportunities() {
-  const [records, setRecords] = useState([])
-  const [pageConfig, setPageConfig] = useState({})
-  const [pageDisplay, setPageDisplay] = useState(1)
-  const [pages, setPages] = useState([])
-  const [selectedFilter, setSelectedFilter] = useState("All Opportunities")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showKanban, setShowKanban] = useState(false)
-  const [displayActivity, setDisplayActivity] = useState(false)
-  const [deletePopUp, setDeletePopUp] = useState(false)
-  const [leadId, setLeadId] = useState()
-  const [showUpdate, setShowUpdate] = useState(false)
-  const [showCreateOpp, setShowCreateOpp] = useState(false)
-  const [selectedRows, setSelectedRows] = useState([])
-  const [selectLeadId, setSelectLeadId] = useState(null)
-  const [opportunityData, setOpputunityData] = useState(null)
+  const [records, setRecords] = useState([]);
+  const [pageConfig, setPageConfig] = useState({});
+  const [pageDisplay, setPageDisplay] = useState(1);
+  const [pages, setPages] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState("All Opportunities");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showKanban, setShowKanban] = useState(false);
+  const [displayActivity, setDisplayActivity] = useState(false);
+  const [deletePopUp, setDeletePopUp] = useState(false);
+  const [leadId, setLeadId] = useState();
+  const [showUpdate, setShowUpdate] = useState(false);
+  const [showCreateOpp, setShowCreateOpp] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectLeadId, setSelectLeadId] = useState(null);
+  const [opportunityData, setOpputunityData] = useState(null);
 
-  const recordsPerPage = 10
-  const ApiUrl = process.env.NEXT_PUBLIC_API_URL
+  const recordsPerPage = 10;
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear().toString().slice(-2)
-    return `${day}/${month}/${year}`
-  }
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+  };
 
   useEffect(() => {
-    getLastRecords()
-  }, [pageDisplay, selectedFilter, searchTerm])
+    getLastRecords();
+  }, [pageDisplay, selectedFilter, searchTerm]);
 
   const getLastRecords = async () => {
     try {
-      let response = await fetch(`${ApiUrl}/api/opportunity?page=1&limit=10`, { method: "GET" })
-      const data = await response.json()
+      let response = await fetch(`${ApiUrl}/api/opportunity?page=1&limit=10`, { method: "GET" });
+      const data = await response.json();
       const sortedRecords = data.data.sort((a, b) => {
-        const dateA = new Date(a.date)
-        const dateB = new Date(b.date)
-        return dateB - dateA
-      })
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
       
-      const filteredRecords = filterRecords(sortedRecords)
-
-      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage)
+      const filteredRecords = filterRecords(sortedRecords);
+      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage);
       
-      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage)
-      setRecords(paginatedRecords)
+      setRecords(paginatedRecords);
       setPageConfig({
         isPrevious: pageDisplay > 1,
         isNext: pageDisplay < totalPages
-      })
+      });
 
-      const tempArr = []
+      const tempArr = [];
       for (let i = 1; i <= totalPages; i++) {
-        tempArr.push(i)
+        tempArr.push(i);
       }
-      setPages(tempArr)
+      setPages(tempArr);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   const filterRecords = (records) => {
-    const today = new Date()
-    let filteredRecords = records
+    const today = new Date();
+    let filteredRecords = records;
 
     switch (selectedFilter) {
       case "All Opportunities":
-        break
+        break;
       case "Today's Opportunities":
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          return recordDate.toDateString() === today.toDateString()
-        })
-        break
+          const recordDate = new Date(record.createdAt);
+          return recordDate.toDateString() === today.toDateString();
+        });
+        break;
       case "Yesterday's Opportunities":
-        const yesterday = new Date(today)
-        yesterday.setDate(today.getDate() - 1)
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          return recordDate.toDateString() === yesterday.toDateString()
-        })
-        break
+          const recordDate = new Date(record.createdAt);
+          return recordDate.toDateString() === yesterday.toDateString();
+        });
+        break;
       case "This week Opportunities":
-        const startOfWeek = new Date(today)
-        startOfWeek.setDate(today.getDate() - today.getDay())
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          return recordDate >= startOfWeek && recordDate <= today
-        })
-        break
+          const recordDate = new Date(record.createdAt);
+          return recordDate >= startOfWeek && recordDate <= today;
+        });
+        break;
       case "Last Month Opportunities":
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth(), 0)
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth(), 0);
         filteredRecords = filteredRecords.filter(record => {
-          const recordDate = new Date(record.createdAt)
-          return recordDate >= startOfMonth && recordDate <= endOfMonth
-        })
-        break
+          const recordDate = new Date(record.createdAt);
+          return recordDate >= startOfMonth && recordDate <= endOfMonth;
+        });
+        break;
       case "Visiting":
       case "Visited":
       case "Demo Attended":
       case "Lost Opportunity":
-        filteredRecords = filteredRecords.filter(record => record.opportunityStatus === selectedFilter)
-        break
+        filteredRecords = filteredRecords.filter(record => record.opportunityStatus === selectedFilter);
+        break;
       default:
-        break
+        break;
     }
 
     if (searchTerm) {
       filteredRecords = filteredRecords.filter(record => {
-        const name = record.name ? record.name.toLowerCase() : ""
-        const phone = record.phone ? record.phone : ""
-        return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm)
-      })
+        const name = record.name ? record.name.toLowerCase() : "";
+        const phone = record.phone ? record.phone : "";
+        return name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm);
+      });
     }
 
-    return filteredRecords
-  }
+    return filteredRecords;
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pages.length) {
-      setPageDisplay(newPage)
+      setPageDisplay(newPage);
     }
-  }
+  };
 
   const handleFilterChange = (event) => {
-    setSelectedFilter(event.target.value)
-    setPageDisplay(1)
-  }
+    setSelectedFilter(event.target.value);
+    setPageDisplay(1);
+  };
 
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-    setPageDisplay(1)
-  }
+    setSearchTerm(event.target.value);
+    setPageDisplay(1);
+  };
 
   const handleStatusClick = (status) => {
-    setSelectedFilter(status)
-    setPageDisplay(1)
-  }
+    setSelectedFilter(status);
+    setPageDisplay(1);
+  };
 
   const confirmDelete = async () => {
     try {
-      await Promise.all(selectedRows.map(id => fetch(`${ApiUrl}/api/opportunity/${id}`, { method: "DELETE" })))
+      await Promise.all(selectedRows.map(id => fetch(`${ApiUrl}/api/opportunity/${id}`, { method: "DELETE" })));
       toast.success('Deleted successfully!', {
         position: "top-center",
         autoClose: 1500,
@@ -165,14 +164,14 @@ export default function Opportunities() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
       setTimeout(() => {
-        getLastRecords()
-        setDeletePopUp(false)
-        setSelectedRows([])
-      }, 1500)
+        getLastRecords();
+        setDeletePopUp(false);
+        setSelectedRows([]);
+      }, 1500);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.error('Failed to delete', {
         position: "top-center",
         autoClose: 1500,
@@ -182,9 +181,9 @@ export default function Opportunities() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     }
-  }
+  };
 
   const showPop = () => {
     if (selectedRows.length === 0) {
@@ -197,22 +196,22 @@ export default function Opportunities() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     } else {
-      setDeletePopUp(true)
+      setDeletePopUp(true);
     }
-  }
+  };
 
   const handleCheckboxChange = (e, recordId) => {
-    e.stopPropagation()
+    e.stopPropagation();
     setSelectedRows(prev => {
       if (prev.includes(recordId)) {
-        return prev.filter(id => id !== recordId)
+        return prev.filter(id => id !== recordId);
       } else {
-        return [...prev, recordId]
+        return [...prev, recordId];
       }
-    })
-  }
+    });
+  };
 
   const showUpdateScreen = () => {
     if (selectedRows.length !== 1) {
@@ -225,34 +224,34 @@ export default function Opportunities() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     } else {
-      const selectOpportunity = records.find(record => record.id === selectedRows[0])
-      setOpputunityData(selectOpportunity)
-      setShowUpdate(true)
+      const selectOpportunity = records.find(record => record.id === selectedRows[0]);
+      setOpputunityData(selectOpportunity);
+      setShowUpdate(true);
     }
-  }
+  };
 
   const handleRowClick = (e, oppdata) => {
     if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
-      return
+      return;
     }
-    setOpputunityData(oppdata)
-    setShowUpdate(true)
-  }
+    setOpputunityData(oppdata);
+    setShowUpdate(true);
+  };
 
   return (
     <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
       <ToastContainer />
-      <div className="w-[95%] h-auto mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
-        <div className="flex items-center w-full justify-between mb-6">
-          <div className="flex w-72 gap-x-4 items-center">
+      <div className="w-[95%] max-w-full mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
+        <div className="flex flex-col md:flex-row items-center w-full justify-between mb-6">
+          <div className="flex w-full md:w-72 gap-x-4 items-center mb-4 md:mb-0">
             <FontAwesomeIcon
               icon={faAddressCard}
               className="text-3xl bg-indigo-600 text-white p-2 rounded-full"
             />
             <select
-              className="w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
+              className="w-full md:w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
               value={selectedFilter}
               onChange={handleFilterChange}
             >
@@ -292,15 +291,15 @@ export default function Opportunities() {
             </div>
           </div>
         </div>
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-6 flex-col md:flex-row">
           <input
             type="search"
-            className="flex-grow mr-4 border-2 border-indigo-300 p-2 rounded-full outline-none bg-white focus:border-indigo-500 transition duration-300"
+            className="w-full md:flex-grow mr-4 border-2 border-indigo-300 p-2 rounded-full outline-none bg-white focus:border-indigo-500 transition duration-300"
             placeholder="Search by name or phone"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-0">
             {["All Opportunities", "Visiting", "Visited", "Demo Attended", "Lost Opportunity"].map((status) => (
               <button
                 key={status}
@@ -317,9 +316,9 @@ export default function Opportunities() {
           </div>
         </div>
         <div className="mb-6 flex justify-end">
-          <div className="inline-flex rounded-md shadow-sm">
+          <div className="inline-flex rounded-md shadow-sm border border-indigo-500 rounded-lg">
             <button
-              className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
+              className={`px-4 py-2 text-sm font-medium rounded-l-md ${
                 !showKanban
                   ? 'bg-indigo-600 text-white'
                   : 'bg-white text-indigo-600 hover:bg-indigo-50'
@@ -329,7 +328,7 @@ export default function Opportunities() {
               <FontAwesomeIcon icon={faTable} className="mr-2" /> Table
             </button>
             <button
-              className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
+              className={`px-4 py-2 text-sm font-medium rounded-r-md ${
                 showKanban
                   ? 'bg-indigo-600 text-white'
                   : 'bg-white text-indigo-600 hover:bg-indigo-50'
@@ -447,7 +446,7 @@ export default function Opportunities() {
         {records.length > 0 && !showKanban && (
           <div className="mt-4 flex justify-center items-center space-x-2">
             <button
-              className={`p-2 rounded-full ${
+              className={`p-2 px-4 rounded-full ${
                 pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay - 1)}
@@ -467,7 +466,7 @@ export default function Opportunities() {
               </button>
             ))}
             <button
-              className={`p-2 rounded-full ${
+              className={`p-2 px-4 rounded-full ${
                 pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay + 1)}
@@ -506,5 +505,5 @@ export default function Opportunities() {
       {showCreateOpp && <CreateOpportunity setShowCreateOpp={setShowCreateOpp} />}
       {showUpdate && <UpdateOppurtunity setShowUpdate={setShowUpdate} opportunityData={opportunityData} />}
     </div>
-  )
+  );
 }

@@ -1,94 +1,93 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAddressCard } from "@fortawesome/free-regular-svg-icons"
-import { faChevronRight, faChevronLeft, faXmark, faChevronDown, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons"
-import CreateCourse from "./createcourse"
-import UpdateCourse from "./updateCourse"
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAddressCard } from "@fortawesome/free-regular-svg-icons";
+import { faChevronRight, faChevronLeft, faXmark, faChevronDown, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import CreateCourse from "./createcourse";
+import UpdateCourse from "./updateCourse";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Courses() {
-  const [records, setRecords] = useState([])
-  const [pages, setPages] = useState([])
-  const [pageDisplay, setPageDisplay] = useState(1)
-  const [pageConfig, setPageConfig] = useState({})
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showCreateCourse, setShowCreateCourse] = useState(false)
-  const [displayActivity, setDisplayActivity] = useState(false)
-  const [deletePopUp, setDeletePopUp] = useState(false)
-  const [selectedRows, setSelectedRows] = useState([])
-  const [selectedLead, setSelectedLead] = useState(null)
-  const [leadId, setLeadId] = useState()
-  const [showupdate, setShowUpdate] = useState(false)
+  const [records, setRecords] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [pageDisplay, setPageDisplay] = useState(1);
+  const [pageConfig, setPageConfig] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCreateCourse, setShowCreateCourse] = useState(false);
+  const [displayActivity, setDisplayActivity] = useState(false);
+  const [deletePopUp, setDeletePopUp] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [leadId, setLeadId] = useState();
+  const [showupdate, setShowUpdate] = useState(false);
 
-  const recordsPerPage = 8
-  const ApiUrl = process.env.NEXT_PUBLIC_API_URL
+  const recordsPerPage = 8;
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    fetchData()
-  }, [pageDisplay, searchTerm])
+    fetchData();
+  }, [pageDisplay, searchTerm]);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${ApiUrl}/api/courses`, { method: 'GET' })
-      const data = await response.json()
+      const response = await fetch(`${ApiUrl}/api/courses`, { method: 'GET' });
+      const data = await response.json();
 
-      const sortedRecords = data.data.sort((a, b) => a.id - b.id)
-      const filteredRecords = filterRecords(sortedRecords)
-      
-      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage)
-      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage)
-      setRecords(paginatedRecords)
-      
+      const sortedRecords = data.data.sort((a, b) => a.id - b.id);
+      const filteredRecords = filterRecords(sortedRecords);
+
+      const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+      const paginatedRecords = filteredRecords.slice((pageDisplay - 1) * recordsPerPage, pageDisplay * recordsPerPage);
+      setRecords(paginatedRecords);
+
       setPageConfig({
         isPrevious: pageDisplay > 1,
-        isNext: pageDisplay < totalPages
-      })
+        isNext: pageDisplay < totalPages,
+      });
 
-      const tempArr = []
+      const tempArr = [];
       for (let i = 1; i <= totalPages; i++) {
-        tempArr.push(i)
+        tempArr.push(i);
       }
-      setPages(tempArr)
+      setPages(tempArr);
+    } catch (err) {
+      console.log(err);
     }
-    catch (err) {
-      console.log(err)
-    }
-  }
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pages.length) {
-      setPageDisplay(newPage)
+      setPageDisplay(newPage);
     }
-  }
+  };
 
   const filterRecords = (records) => {
-    let filteredRecords = records
+    let filteredRecords = records;
 
     if (searchTerm) {
-      filteredRecords = filteredRecords.filter(record =>
-        record.courseName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      filteredRecords = filteredRecords.filter((record) =>
+        record.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.courseDescription.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      );
     }
 
-    return filteredRecords
-  }
+    return filteredRecords;
+  };
 
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-    setPageDisplay(1)
-  }
+    setSearchTerm(event.target.value);
+    setPageDisplay(1);
+  };
 
   const confirmDelete = async () => {
     try {
       await Promise.all(
-        selectedRows.map(id => fetch(`${ApiUrl}/api/courses/${id}`, { method: 'DELETE' }))
-      )
-      setSelectedRows([])
+        selectedRows.map((id) => fetch(`${ApiUrl}/api/courses/${id}`, { method: 'DELETE' }))
+      );
+      setSelectedRows([]);
       if (selectedRows.length === 0) {
         toast.warning('Please Select At Least One Course', {
           position: "top-center",
@@ -99,10 +98,9 @@ export default function Courses() {
           draggable: true,
           progress: undefined,
           theme: "light",
-        })
-      }
-      else {
-        fetchData()
+        });
+      } else {
+        fetchData();
         toast.success('Deleted Successfully!', {
           position: "top-center",
           autoClose: 1498,
@@ -111,15 +109,14 @@ export default function Courses() {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "colored"
-        })
+          theme: "colored",
+        });
         setTimeout(() => {
-          setDeletePopUp(false)
-        }, 2000)
+          setDeletePopUp(false);
+        }, 2000);
       }
-    } 
-    catch (err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
       toast.error('Failed to Delete', {
         position: "top-center",
         autoClose: 1500,
@@ -129,9 +126,9 @@ export default function Courses() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     }
-  }
+  };
 
   const showPop = () => {
     if (selectedRows.length === 0) {
@@ -144,24 +141,22 @@ export default function Courses() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
+    } else {
+      setDeletePopUp(true);
     }
-    else {
-      setDeletePopUp(true)
-    }
-  }
+  };
 
   const handleCheckBoxChange = (e, recordId) => {
-    e.stopPropagation()
-    setSelectedRows(prev => {
+    e.stopPropagation();
+    setSelectedRows((prev) => {
       if (prev.includes(recordId)) {
-        return prev.filter(id => id !== recordId)
+        return prev.filter((id) => id !== recordId);
+      } else {
+        return [...prev, recordId];
       }
-      else {
-        return [...prev, recordId]
-      }
-    })
-  }
+    });
+  };
 
   const showUpdateScreen = () => {
     if (selectedRows.length !== 1) {
@@ -174,28 +169,28 @@ export default function Courses() {
         draggable: true,
         progress: undefined,
         theme: "light",
-      })
+      });
     } else {
-      const selectedLead = records.find(record => record.id === selectedRows[0])
-      setSelectedLead(selectedLead)
-      setShowUpdate(true)
+      const selectedLead = records.find((record) => record.id === selectedRows[0]);
+      setSelectedLead(selectedLead);
+      setShowUpdate(true);
     }
-  }
+  };
 
   const handlerowClick = (e, lead) => {
     if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
-      return
+      return;
     }
-    setSelectedLead(lead)
-    setShowUpdate(true)
-  }
+    setSelectedLead(lead);
+    setShowUpdate(true);
+  };
 
   return (
     <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
       <ToastContainer />
-      <div className="w-[95%] h-auto mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
-        <div className="flex items-center w-full justify-between mb-6">
-          <div className="flex w-72 gap-x-4 items-center">
+      <div className="w-[95%] max-w-full mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
+        <div className="flex flex-col md:flex-row items-center w-full justify-between mb-6">
+          <div className="flex w-full md:w-72 gap-x-4 items-center mb-4 md:mb-0">
             <FontAwesomeIcon
               icon={faAddressCard}
               className="text-3xl bg-indigo-600 text-white p-2 rounded-full"
@@ -208,7 +203,7 @@ export default function Courses() {
               onClick={() => setShowCreateCourse(true)}
             >
               Create Course
-              <FontAwesomeIcon icon={faChevronDown} className="ml-2"/>
+              <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
             </button>
             <div className="relative">
               <button
@@ -248,7 +243,7 @@ export default function Courses() {
                   <input
                     type="checkbox"
                     className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
-                    onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}
+                    onChange={(e) => setSelectedRows(e.target.checked ? records.map((record) => record.id) : [])}
                   />
                 </th>
                 <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Course</th>
@@ -299,9 +294,7 @@ export default function Courses() {
         {records.length > 0 && (
           <div className="mt-4 flex justify-center items-center space-x-2">
             <button
-              className={`p-2 rounded-full ${
-                pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
-              }`}
+              className={`p-2 rounded-full ${pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay - 1)}
               disabled={!pageConfig.isPrevious}
             >
@@ -310,18 +303,14 @@ export default function Courses() {
             {pages.map((page) => (
               <button
                 key={page}
-                className={`px-3 py-1 rounded-full ${
-                  page === pageDisplay ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-indigo-100'
-                }`}
+                className={`px-3 py-1 rounded-full ${page === pageDisplay ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-indigo-100'}`}
                 onClick={() => handlePageChange(page)}
               >
                 {page}
               </button>
             ))}
             <button
-              className={`p-2 rounded-full ${
-                pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
-              }`}
+              className={`p-2 rounded-full ${pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay + 1)}
               disabled={!pageConfig.isNext}
             >
@@ -358,5 +347,5 @@ export default function Courses() {
       {showCreateCourse && <CreateCourse setShowCreateCourse={setShowCreateCourse} />}
       {showupdate && <UpdateCourse setShowUpdate={setShowUpdate} updateData={selectedLead} />}
     </div>
-  )
+  );
 }

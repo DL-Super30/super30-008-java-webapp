@@ -133,7 +133,7 @@ export default function CreateLearner(props) {
                         <div className="w-full h-[67vh] border border-[#A594F9] rounded-md overflow-y-scroll p-2">
                            <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label>First Name</label> <br></br>
+                                        <label>First Name <span className="text-red-500">*</span></label> <br></br>
                                         <input value={firstname} onChange={(e) => setFirstname(e.target.value)} type="text"  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
                                     </div>
                                     <div>
@@ -145,7 +145,7 @@ export default function CreateLearner(props) {
                                         <input value={idProof} onChange={(e) => setIdProof(e.target.value)} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Id Proof"></input>
                                     </div>
                                     <div>
-                                        <label>Phone</label> <br></br>
+                                        <label>Phone <span className="text-red-500">*</span></label> <br></br>
                                         <input value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={10} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="phone"></input>
                                     </div>
                                     <div>
@@ -153,7 +153,7 @@ export default function CreateLearner(props) {
                                         <input value={DOB} onChange={(e) => setDOB(e.target.value)} type="date" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="DOB"></input>
                                     </div>
                                     <div>
-                                        <label>Email</label> <br></br>
+                                        <label>Email <span className="text-red-500">*</span></label> <br></br>
                                         <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Email"></input>
                                     </div>
                                     <div>

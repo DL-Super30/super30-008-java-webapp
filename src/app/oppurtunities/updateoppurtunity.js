@@ -82,8 +82,8 @@ export default function UpdateOppurtunity(props){
 
 
     return (
-        <div className="bg-black bg-opacity-70 absolute top-0 left-0 h-[100vh] w-full pt-[80px]">
-            <div className="w-3/5 h-[90%] bg-white rounded mx-auto ">
+        <div className="bg-black bg-opacity-70 absolute top-0 left-0 h-[130vh] w-full content-center">
+            <div className="w-3/5 h-[70%] bg-white rounded mx-auto ">
                 <div className="flex justify-between border-b px-5 h-14 text-xl">
                     <div className="flex gap-x-4 items-center">
                         <button onClick={() => setShowUpdate(false)}><FontAwesomeIcon icon={faChevronLeft} /> Back</button>
@@ -103,7 +103,9 @@ export default function UpdateOppurtunity(props){
                     </div>
                     <div>
                         <p>opportunityStatus</p>
-                        <p className="text-blue-500 font-semibold">{formData.opportunityStatus}</p>
+                        <p className={`text-blue-500 font-semibold ${
+                            formData.opportunityStatus === "Visiting" ? 'text-blue-500' : formData.opportunityStatus === "Visited" ? 'text-green-500' : formData.opportunityStatus === "Demo Attended" ? 'text-orange-500' : formData.opportunityStatus === "Lost Opportunity" ? 'text-red-500' : ''
+                        }`}>{formData.opportunityStatus}</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-5 w-full p-4 overflow-y-scroll h-[80%]">
@@ -178,7 +180,17 @@ export default function UpdateOppurtunity(props){
                         <input value={formData.leadSource} name="leadSource" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="leadSource"></input>
                     </div><div>
                         <label>course</label> <br></br>
-                        <input value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="course"></input>
+                        {/* <input value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="course"></input> */}
+                        <select value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
+                            <option>select course</option>
+                            <option>HR Analytics</option>
+                            <option>HR Recruiter</option>
+                            <option>Life Skills</option>
+                            <option>Aptitude</option>
+                            <option>MERN</option>
+                            <option>JSF</option>
+                            <option>PFS</option>
+                        </select>
                     </div><div>
                         <label>description</label> <br></br>
                         <input value={formData.description} name="description" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="description"></input>

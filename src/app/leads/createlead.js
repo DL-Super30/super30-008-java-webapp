@@ -46,7 +46,7 @@ export default function CreateLead({ closeForm }) {
 
     const handleFormSubmit = async (event) => {
         event.preventDefault();
-        
+
         try {
             const formData = {
                 leadname,
@@ -96,7 +96,7 @@ export default function CreateLead({ closeForm }) {
     return (
         <div className="w-full h-[100vh] absolute top-0 left-0 bg-black bg-opacity-70 flex justify-center items-start pt-[100px]">
             <ToastContainer />
-            <div className="w-full md:w-3/4 lg:w-1/2 mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="w-full max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="flex justify-between items-center p-4 bg-purple-200 border-b">
                     <div className="flex items-center space-x-3">
                         <FontAwesomeIcon icon={faAddressCard} className="bg-purple-500 text-white text-2xl p-2 rounded-full" />
@@ -238,3 +238,4 @@ export default function CreateLead({ closeForm }) {
         </div>
     );
 }
+

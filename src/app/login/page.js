@@ -31,8 +31,20 @@ export default function Login() {
     const { username, password } = data;
 
     try {
-      if(username === "user1" && password === "password"){
-        router.push("/dashboard")
+      if(username === "user1" && password === "password123!"){
+        toast.success('Login Success!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setTimeout(() => {
+          router.push("/dashboard")
+        },3000)
       }
       else {
       const response = await axios.post(`${ApiUrl}/api/users/login`, {
