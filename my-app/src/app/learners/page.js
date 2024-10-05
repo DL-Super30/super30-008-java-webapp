@@ -8,6 +8,8 @@ import Link from "next/link";
 import LearnersKanban from "../kanbans/learnerskanban";
 import Editlearner from "./editlearner";
 import Createlearner from "./createlearner";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Learners() {
 
@@ -20,6 +22,9 @@ export default function Learners() {
     const [displayActions, setDisplayActions] = useState(false);
     const [showKanban, setShowKanban] = useState(false);
     const [ShowEditLearner, setShowEditLearner] = useState(false);
+    const [deletelearner, setDeleteLearner] = useState(false);
+    const [selectlearnerid, setSelectLearnerId] = useState(null)
+
 
     const recordsPerPage = 10;
 
@@ -64,8 +69,52 @@ export default function Learners() {
         (record.phone || "").includes(searchTerm)
     );
 
+    const showDeletePop = (learnerId) => {
+        setSelectLearnerId(learnerId)
+        setDeleteLearner(true)
+    }
+
+    const learnerDelete = ( learnerId ) =>{
+        try{
+            fetch(`http://localhost:3001/learnerdata/${learnerId}`, {method : 'DELETE'})
+            fetchdata()
+            toast.success('Deleted learner', {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+                window.location.reload()
+                setTimeout(() =>{
+                    setDeleteLearner(false)
+                    window.location.reload() 
+                },1500)
+    
+            }        
+        catch (err){
+            console.log(err)
+            toast.error('Failed to delete', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+        }
+    }
+
     return (
         <div className="bg-[#987070] w-full p-2.5 h-[91vh]">
+            <ToastContainer/>
             <div className="bg-[#F1E5D1] rounded-md ">
                 <div className=" p-4 flex justify-between items-center">
                     <div className="flex text-2xl ml-12">
@@ -115,17 +164,17 @@ export default function Learners() {
                                 {filteredRecords.length > 0 ? (
                                     filteredRecords.map((d) => (
                                         <tr key={d.id} className="border-b-[#987070] border-b bg-[#DBB5B5]">
-                                            <td className="text-center p-2">-</td>
+                                            <td className="text-center p-2">{d.createdAt}</td>
                                             <td className="text-center p-1">-</td>
-                                            <td className="text-center p-1">{d.name}</td>
+                                            <td className="text-center p-1">{d.firstname}</td>
                                             <td className="text-center p-1">{d.phone}</td>
                                             <td className="text-center p-1">{d.email}</td>
-                                            <td className="text-center p-1">-</td>
+                                            <td className="text-center p-1">{d.registeredcourse}</td>
                                             {displayActions && (
                                                 <td>
                                                     <div className="w-40 mx-auto">
                                                         <button className="w-20 bg-lime-300 rounded-text-center " onClick={() => setShowEditLearner(true)}>Edit</button>
-                                                        <button className="bg-red-500 w-20 rounded text-center">Delete</button>
+                                                        <button className="bg-red-500 w-20 rounded text-center" onClick={() =>showDeletePop(d.id)}>Delete</button>
                                                     </div>
                                                 </td>
                                             )}
@@ -156,6 +205,18 @@ export default function Learners() {
                 {showcreatelearner && (<Createlearner setShowCreateLearner={setShowCreateLearner} />)}
 
                 {ShowEditLearner && (< Editlearner setShowEditLearner={setShowEditLearner} />)}
+
+                { deletelearner && (
+                    <div className="absolute top-0 left-0 w-full h-[100vh]  bg-black bg-opacity-60 content-center">
+                        <div className="w-1/4 h-80 bg-white rounded mx-auto text-center p-14 ">
+                            <h1>confirm to delete</h1>
+                            <div className="flex justify-center pt-14 gap-x-4">
+                                <button className="w-32 p-1 text-md font-semibold rounded-md border" onClick={() => setDeleteLearner(false)}>cancel</button>
+                                <button className="w-32 bg-red-300 text-white rounded-md font-semibold text-md" onClick={() => learnerDelete(selectlearnerid)}>Delete</button>
+                            </div>
+                        </div> 
+                    </div>
+                )}
 
             </div>
         </div>

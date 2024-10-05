@@ -44,7 +44,7 @@ export default function Createopportunity(props) {
 
     const data = {
         name : name,
-        formatDate,
+        createdAt: formatDate,
         cc: cc,
         phone: phone,
         email: email,

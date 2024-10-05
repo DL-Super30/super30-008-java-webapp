@@ -159,12 +159,12 @@ export default function Opportunities() {
                                 {filteredRecords.length > 0 ? (
                                     filteredRecords.map((d) => (
                                         <tr key={d.id} className=" border-b-[#987070] border-b bg-[#DBB5B5]">
-                                            <td className="text-center p-2">{d.formatDate}</td>
+                                            <td className="text-center p-2">{d.createdAt}</td>
                                             <td className="text-center p-1">-</td>
                                             <td className="text-center p-1">{d.name}</td>
                                             <td className="text-center p-1">{d.phone}</td>
                                             <td className="text-center p-1">{d.email}</td>
-                                            <td className="text-center p-1">-</td>
+                                            <td className="text-center p-1">{d.stack}</td>
                                             {displayActions && (
                                                 <td>
                                                     <div className="w-40 mx-auto">

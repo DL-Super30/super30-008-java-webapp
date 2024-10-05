@@ -47,7 +47,8 @@ export default function Createlearner(props) {
     const formatDate = `${day}/${Month}/${year}`
 
     const data = {
-        firstname:firstname,
+        createdAt : formatDate,
+        firstname :firstname,
         lastname : lastname,
         idproof: idproof,
         phone : phone,
@@ -136,8 +137,7 @@ export default function Createlearner(props) {
 
     return (
         <div className="w-full h-auto border-2 absolute top-0 bg-black bg-opacity-50 py-4" >
-                        <ToastContainer/>
-
+        <ToastContainer/>
             <div className="w-[60%] h-[100%] rounded-lg border-2 mx-auto bg-white p-3 ">
                 <div className="flex justify-between">
                     <div className="flex">

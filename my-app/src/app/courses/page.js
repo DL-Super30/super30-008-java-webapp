@@ -6,6 +6,8 @@ import { faAddressCard, faAngleDown, faBell, faAnglesLeft, faAnglesRight, faCale
 import { useState, useEffect } from "react";
 // import Createcourse from "../createcourse/page";
 import Createcourse from "./createcourse";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -18,6 +20,8 @@ export default function Opportunities() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showCreateCourse,setShowCreateCourse] = useState(false);
     const [displayActions, setDisplayActions] = useState(false);
+    const [deletecourse, setDeleteCourse] = useState(false);
+    const [selectcourseid, setSelectCourseId] = useState(null)
 
     const recordsPerPage = 10;
 
@@ -57,16 +61,56 @@ export default function Opportunities() {
     };
 
     const filteredRecords = records.filter(record =>
-        record.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.course_fee.includes(searchTerm)
+        (record.course && record.course.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (record.description && record.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (record.course_fee && record.course_fee.includes(searchTerm))
     );
+    
+
+    const courseDelete = ( courseId ) =>{
+        try{
+            fetch(`http://localhost:3001/coursedata/${courseId}`, {method : 'DELETE'})
+            fetchdata()
+            toast.success('Deleted course', {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+                // window.location.reload()
+                setTimeout(() =>{
+                    setDeleteCourse(false)
+                    window.location.reload() 
+                },1500)
+    
+     }
+     catch (err){
+            console.log(err)
+            toast.error('Failed to delete course', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+     }
+    }
 
 
 
 
     return (
         <div className="w-full h-[91vh] p-2.5 bg-[#987070]">
+            <ToastContainer/>
         <div className="bg-[#F1E5D1] rounded-md">
             <div className=" p-4 flex justify-between items-center">
                 <div className="flex text-2xl ml-12">
@@ -115,7 +159,7 @@ export default function Opportunities() {
                                         <td className="text-center p-1">{d.course_fee}</td>
                                         {
                                             displayActions && (<td className="flex justify-center">
-                                                <button className="w-20 p-1 bg-red-400 rounded ">Delete</button>
+                                                <button className="w-20 p-1 bg-red-400 rounded " onClick={() =>{setDeleteCourse(true); setSelectCourseId(d.id);}}>Delete</button>
                                             </td>)
                                         }
                                     </tr>
@@ -142,6 +186,18 @@ export default function Opportunities() {
             </div>
 
             { showCreateCourse && (<Createcourse setShowCreateCourse = {setShowCreateCourse}/>)}
+
+            { deletecourse && (
+                 <div className="absolute top-0 left-0 w-full h-[100vh]  bg-black bg-opacity-60 content-center">
+                        <div className="w-1/4 h-80 bg-white rounded mx-auto text-center p-14 ">
+                            <h1>confirm to delete</h1>
+                            <div className="flex justify-center pt-14 gap-x-4">
+                                <button className="w-32 p-1 text-md font-semibold rounded-md border" onClick={() => setDeleteCourse(false)}>cancel</button>
+                                <button className="w-32 bg-red-300 text-white rounded-md font-semibold text-md" onClick={() => courseDelete(selectcourseid)}>Delete</button>
+                            </div>
+                        </div> 
+                    </div>
+                )}
 
         </div>
         </div>

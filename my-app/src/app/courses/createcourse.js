@@ -14,12 +14,29 @@ export default function Createcourse(props) {
     const [description, setDescription] = useState("");
     const [coursebrochure, setCourseBrochure] = useState("");
 
+
+    const createdAt= new Date().toISOString()
+    const day = new Date(createdAt).getDay()
+    const Month = new Date(createdAt).getMonth()
+    const year = new Date(createdAt).getFullYear()
+    const formatDate = `${day}/${Month}/${year}`
+    console.log(`${day}/${Month}/${year}`)
+
+
+    const data = {
+        createdAt : formatDate,
+        course : coursename,
+        course_fee : coursefee,
+        description : description,
+        coursebrochure : coursebrochure
+    }
+
     
     
         
         const courseCreation = async() => {
         try {
-                if (!coursename || !coursefee  || !coursebrochure) {
+                if (!coursename || !coursefee  || !description) {
                     toast.error('All fields must be filled out before submitting!', {
                         position: "top-right",
                         autoClose: 5000,
@@ -46,7 +63,7 @@ export default function Createcourse(props) {
                 theme: "light",
             }) 
             setTimeout(() => {
-                setShowCreateLearner(false)
+                setShowCreateCourse(false)
                 window.location.reload()
             }, 1500);
         }
@@ -90,34 +107,34 @@ export default function Createcourse(props) {
                         <h1 className="text-xl">Course Name<span className="text-red-400">*</span></h1>
                         <input
                             placeholder="Course Name"
-                            className="text-xl"
+                            className="text-xl w-full outline-none"
                             value={coursename}
-                            onChange={(e) => setCourseName(e.target.value)}
+                            onChange={(e) => setCourseName(e.target.value)} 
                         />
                     </div>
                     <div className="w-full p-2 mt-6 border-b-2">
                         <h1 className="text-xl">Course Fee<span className="text-red-400">*</span></h1>
                         <input
                             placeholder="Course Fee"
-                            className="text-xl"
+                            className="text-xl w-full outline-none"
                             value={coursefee}
                             onChange={(e) => setCourseFee(e.target.value)}
                         />
                     </div>
                     <div className="w-full p-2 mt-6 border-b-2">
-                        <h1 className="text-xl">Description</h1>
+                        <h1 className="text-xl">Description<span className="text-red-400">*</span></h1>
                         <input
                             placeholder="Description"
-                            className="text-xl"
+                            className="text-xl w-full outline-none"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
                     <div className="w-full p-2 mt-6 border-b-2">
-                        <h1 className="text-xl">Course Brochure<span className="text-red-400">*</span></h1>
+                        <h1 className="text-xl">Course Brochure</h1>
                         <input
                             placeholder="Course Brochure"
-                            className="text-xl"
+                            className="text-xl w-full outline-none"
                             value={coursebrochure}
                             onChange={(e) => setCourseBrochure(e.target.value)}
                         />

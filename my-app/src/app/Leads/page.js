@@ -9,7 +9,7 @@ import LeadsKanban from "../kanbans/leadskanban";
 // import Editlead from "../editlead/page";
 import Editlead from "./editlead";
 import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Leads() {
     const [records, setRecords] = useState([]);
@@ -107,6 +107,11 @@ export default function Leads() {
         }
     }
 
+    const showUpdateModel = (leadData) => {
+        setSelectedLeadId(leadData)
+        setShowEditLead(true)
+    }
+
     return (
         <div className=" bg-[#987070]  w-full p-2.5 h-[91vh]">
             <ToastContainer />
@@ -171,16 +176,16 @@ export default function Leads() {
                                     filteredRecords.length > 0 ? (
                                         filteredRecords.map((d) => (
                                             <tr key={d.id} className="border-b border-b-[#987070] bg-[#DBB5B5]">
-                                                <td className="text-center p-2">{d.formatDate}</td>
+                                                <td className="text-center p-2">{d.createdAt}</td>
                                                 <td className="text-center p-1">-</td>
                                                 <td className="text-center p-1">{d.name}</td>
                                                 <td className="text-center p-1">{d.phone}</td>
                                                 <td className="text-center p-1">{d.email}</td>
-                                                <td className="text-center p-1">-</td>
+                                                <td className="text-center p-1">{d.course}</td>
                                                 {displayActions && (
                                                     <td>
                                                         <div className="mx-auto w-40 gap-x-2">
-                                                            <button className="w-20 bg-lime-200 rounded text-center " onClick={() => setShowEditLead(true)}>Edit</button>
+                                                            <button className="w-20 bg-lime-200 rounded text-center " onClick={() => showUpdateModel(d)}>Edit</button>
                                                             <button className="w-20 bg-red-300 rounded text-center" onClick={() => { setDeletePopUp(true); setSelectedLeadId(d.id); }}>Delete</button>
                                                         </div>
                                                     </td>
@@ -218,7 +223,7 @@ export default function Leads() {
 
                 {createlead && (<Createlead setCreateLead={setCreateLead} />)}
                 {/* { showKanban && ( < LeadsKanban /> ) } */}
-                { showEditLead && (<Editlead setShowEditLead={setShowEditLead}/>) }
+                { showEditLead && (<Editlead setShowEditLead={setShowEditLead} selectedLeadId={selectedLeadId}/>) }
 
                 { deletePopUp && (
                     <div className="absolute top-0 left-0 w-full h-[100vh]  bg-black bg-opacity-60 content-center">
