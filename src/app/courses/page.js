@@ -242,7 +242,7 @@ export default function Courses() {
                 <th className="w-10 p-3">
                   <input
                     type="checkbox"
-                    className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                    className="accent-neutral-900 form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
                     onChange={(e) => setSelectedRows(e.target.checked ? records.map((record) => record.id) : [])}
                   />
                 </th>
@@ -261,7 +261,7 @@ export default function Courses() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="bg-white hover:bg-indigo-50 transition-colors duration-200"
+                      className="accent-slate-100 bg-white hover:bg-indigo-50 transition-colors duration-200"
                       onClick={(e) => handlerowClick(e, record)}
                     >
                       <td className="p-3">
@@ -294,7 +294,7 @@ export default function Courses() {
         {records.length > 0 && (
           <div className="mt-4 flex justify-center items-center space-x-2">
             <button
-              className={`p-2 rounded-full ${pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
+              className={`p-2 px-4 rounded-full ${pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay - 1)}
               disabled={!pageConfig.isPrevious}
             >
@@ -310,7 +310,7 @@ export default function Courses() {
               </button>
             ))}
             <button
-              className={`p-2 rounded-full ${pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
+              className={`p-2 px-4 rounded-full ${pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay + 1)}
               disabled={!pageConfig.isNext}
             >

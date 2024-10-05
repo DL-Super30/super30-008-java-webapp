@@ -155,6 +155,14 @@ export default function Learners() {
       }
     });
   };
+  
+  const handlerowClick = (e, lead) => {
+    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+      return
+    }
+    setSelectedLead(lead)
+    setShowUpdate(true)
+  }
 
   const confirmDelete = async () => {
     try {
@@ -206,18 +214,6 @@ export default function Learners() {
       const selectedLead = records.find(record => record.id === selectedRows[0])
       setSelectedLead(selectedLead)
       setShowUpdate(true)
-
-
-      // toast.info('Update functionality not implemented yet', {
-      //   position: "top-center",
-      //   autoClose: 1000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "light",
-      // });
     }
   };
 
@@ -313,7 +309,7 @@ export default function Learners() {
                   <th className="w-10 p-3">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                      className="accent-neutral-900 form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
                       onChange={(e) => setSelectedRows(e.target.checked ? records.map((record) => record.id) : [])}
                     />
                   </th>
@@ -336,11 +332,12 @@ export default function Learners() {
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                         className="bg-white hover:bg-indigo-50 transition-colors duration-200"
+                        onClick={(e) => handlerowClick(e,record) }
                       >
                         <td className="p-3">
                           <input
                             type="checkbox"
-                            className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                            className="accent-slate-100 form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
                             checked={selectedRows.includes(record.id)}
                             onChange={() => handleCheckboxChange(record.id)}
                           />

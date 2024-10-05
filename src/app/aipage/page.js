@@ -28,7 +28,7 @@ export default function AiPage() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 pt-[70px] p-4'>
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className='w-full max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden'

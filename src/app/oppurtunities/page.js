@@ -347,7 +347,7 @@ export default function Opportunities() {
                   <th className="w-10 p-3">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                      className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out accent-neutral-900"
                       onChange={(e) => setSelectedRows(e.target.checked ? records.map(record => record.id) : [])}
                     />
                   </th>
@@ -375,7 +375,7 @@ export default function Opportunities() {
                         <td className="p-3">
                           <input
                             type="checkbox"
-                            className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                            className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out accent-slate-500"
                             checked={selectedRows.includes(d.id)}
                             onChange={(e) => handleCheckboxChange(e, d.id)}
                           />
