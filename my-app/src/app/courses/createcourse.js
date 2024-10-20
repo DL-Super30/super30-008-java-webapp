@@ -14,6 +14,8 @@ export default function Createcourse(props) {
     const [description, setDescription] = useState("");
     const [coursebrochure, setCourseBrochure] = useState("");
 
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
+
 
     const createdAt= new Date().toISOString()
     const day = new Date(createdAt).getDay()
@@ -50,7 +52,7 @@ export default function Createcourse(props) {
             }
 
             else {
-            const response = await axios.post("http://localhost:3001/coursedata", data);
+            const response = await axios.post(`${Api_Url}/coursedata`, data);
             console.log(response);
             toast.success('Created course!', {
                 position: "top-right",

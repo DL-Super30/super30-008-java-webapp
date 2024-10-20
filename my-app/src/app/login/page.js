@@ -14,10 +14,13 @@ export default function Login() {
     const router = useRouter();
     const { register, watch, handleSubmit, formState: { errors } } = useForm();
 
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
+
+
     const validation = async (data) => {
         const { username, password } = data;
         try {
-            const response = await axios.post("http://localhost:3001/loginData", {
+            const response = await axios.post(`${Api_Url}/loginData`, {
                 username,
                 password
             })

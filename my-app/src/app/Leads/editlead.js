@@ -4,9 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard, faChevronLeft, faXmark } from '@fortawesome/free-solid-svg-icons'
 // import { useState } from "react/cjs/react.production.min";
 import {useState} from 'react';
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 export default function Editlead(props) {
     const {setShowEditLead,selectedLeadId } = props;
     const [name, setName] = useState("")
+
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
 
     const [formData,setFormData] =useState( {
         name : selectedLeadId.name || "",
@@ -33,11 +40,70 @@ export default function Editlead(props) {
         }));
     }
 
+    const updateLead =async (leadId) => {
+
+        const data = {
+            createdAt :selectedLeadId.createdAt,
+            name : formData.name,
+            leadStatus : formData.leadStatus ,
+            cc : formData.cc ,
+            leadSource : formData.leadSource ,
+            phone : formData.phone ,
+            stack : formData.stack ,
+            email : formData.email ,
+            course : formData.course ,
+            feeQuoted : formData.feeQuoted ,
+            classMode : formData.classMode ,
+            batchTiming : formData.batchTiming ,
+            nextFollowUp : formData.nextFollowUp ,
+            description  : formData.description 
+
+        }
+
+        try{
+            await axios.put(`${Api_Url}/signupdata/${leadId}`,data)
+            toast.success('lead updated!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                    setShowEditLead(false);
+                },2000) 
+        }
+        catch(err) {
+            console.log(err)
+            toast.error('failed to update!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                // transition: Bounce,
+                });
+        }
+    }
+
+
+
+
+
 
 
 
     return (
         <div className="w-full h-auto border-2 absolute top-0  left-0 bg-black bg-opacity-50 py-14">
+            <ToastContainer />
             <div className="w-[60%] h-[84vh] rounded-lg border-2 mx-auto p-3 bg-white">
                 <div className="flex justify-between bg-gray-200 p-3">
                     <div className="flex ">
@@ -48,7 +114,7 @@ export default function Editlead(props) {
                     </div>
                     <div className="flex gap-x-10">
                     <div className="items-center flex gap-x-4">
-                            <button className="w-20 bg-blue-500 border text-white p-2 rounded-md">Update</button>
+                            <button className="w-20 bg-blue-500 border text-white p-2 rounded-md" onClick={(e) => updateLead(selectedLeadId.id)}>Update</button>
                             {/* <button className="w-20 bg-blue-500 border text-white p-2 rounded-md">Convert</button> */}
                     </div>
                     {/* <button><FontAwesomeIcon icon={faChevronLeft} className="text-2xl text-gray-300  mx-auto" onClick={() => setShowEditLead(false)} /></button> */}
@@ -98,7 +164,7 @@ export default function Editlead(props) {
 
                 <div className="flex gap-x-10">
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className="text-xl">Phone</h1>
-                        <input placeholder="Phone" className="text-xl w-full outline-none" name="phone" value={formData.phone} onChange={handleOnChange}></input>
+                        <input placeholder="Phone" maxLength={10} className="text-xl w-full outline-none" name="phone" value={formData.phone} onChange={handleOnChange}></input>
                     </div>
                     <div className=" w-full  mt-3 boarder-2 border-b-2"> <h1 className=" text-blue-950 text-xl">Stack</h1>
                         <div className="flex justify-between">
@@ -172,15 +238,7 @@ export default function Editlead(props) {
 
                 </div>
 
-                <div className=" flex mt-1">
-                
-                        <button className="ml-[33%] w-[15%] p-1 border border-blue-500 rounded-lg text-center text-blue-500 mt-1" onClick={() => setShowEditLead(false)}>Cancel</button>
-                    
-                    
-                        <button className="ml-[20px] w-[15%] p-1 border border-blue-500 bg-blue-500 rounded-lg text-center text-white mt-1">Create</button>
-
-                    
-                </div>
+               
 
 
 

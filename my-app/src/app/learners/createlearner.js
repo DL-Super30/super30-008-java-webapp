@@ -40,6 +40,10 @@ export default function Createlearner(props) {
     const [comments, setComments] = useState("")
     const [lmsaccess, setLmsAccess] = useState("")
 
+
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
+
+
     const createdAt = new Date().toISOString()
     const day = new Date(createdAt).getDay()
     const Month = new Date(createdAt).getMonth()
@@ -96,7 +100,7 @@ export default function Createlearner(props) {
 
             else {
 
-            const response = await axios.post("http://localhost:3001/learnerdata", data)
+            const response = await axios.post(`${Api_Url}/learnerdata`, data)
             console.log(response)
             toast.success('Learner Created!', {
                 position: "top-right",

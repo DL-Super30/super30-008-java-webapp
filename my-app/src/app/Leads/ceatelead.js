@@ -6,7 +6,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function Createlead(props) { 
+export default function  (props) { 
     const {setCreateLead} = props;
 
     const [name , setName] = useState("")
@@ -22,6 +22,8 @@ export default function Createlead(props) {
     const [course , setCourse] = useState("")
     const [classMode,setClassMode] = useState("")
     const [nextFollowUp , setNextFollowUp] = useState("")
+
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
 
     const isValidInput = () => {
         if(!name || !phone ||!email || !feeQuoted){
@@ -81,7 +83,7 @@ export default function Createlead(props) {
             else {
 
             
-            const response = await axios.post("http://localhost:3001/signupdata" , data)
+            const response = await axios.post(`${Api_Url}/signupdata` , data)
             console.log(response)
             toast.success('lead created !', {
                 position: "top-right",

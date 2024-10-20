@@ -1,99 +1,89 @@
 'use client'
-import { useEffect, useState } from "react"
-import React from "react"
+
+import React, { useEffect, useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAddressCard, faAngleDown, faAnglesLeft, faAnglesRight, faBell, faCalendarDays, faChevronLeft, faChevronRight, faL, faSquarePollVertical, faTable, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
-// import Createlead from "../createlead/page";
-import Createlead from "./ceatelead";
-import LeadsKanban from "../kanbans/leadskanban";
-// import Editlead from "../editlead/page";
-import Editlead from "./editlead";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { faAddressCard, faAngleDown, faAnglesLeft, faAnglesRight, faChevronLeft, faChevronRight, faSquarePollVertical, faTable, faXmark, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import Createlead from "./ceatelead"
+import LeadsKanban from "../kanbans/leadskanban"
+import Editlead from "./editlead"
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Leads() {
-    const [records, setRecords] = useState([]);
-    const [pages, setPages] = useState([]);
-    const [pageDisplay, setPageDisplay] = useState(1);
-    const [pageConfig, SetPageConfig] = useState({});
-    const [searchTerm, setSearchTerm] = useState("");
-    const [createlead, setCreateLead] = useState(false);
-    const [displayActions, setDisplayActions] = useState(false);
-    const [showKanban, setShowKanban] = useState(false);
-    const [showEditLead , setShowEditLead] = useState(false)
-    const [deletePopUp , setDeletePopUp] = useState(false)
-    const [selectedLeadId, setSelectedLeadId] = useState(null);
+    const [records, setRecords] = useState([])
+    const [pages, setPages] = useState([])
+    const [pageDisplay, setPageDisplay] = useState(1)
+    const [pageConfig, setPageConfig] = useState({})
+    const [searchTerm, setSearchTerm] = useState("")
+    const [createlead, setCreateLead] = useState(false)
+    const [displayActions, setDisplayActions] = useState(false)
+    const [showKanban, setShowKanban] = useState(false)
+    const [showEditLead, setShowEditLead] = useState(false)
+    const [deletePopUp, setDeletePopUp] = useState(false)
+    const [selectedLeadId, setSelectedLeadId] = useState(null)
 
-    const recordsPerPage = 10;
+    const recordsPerPage = 10
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
 
     useEffect(() => {
-        fetchdata();
-    }, [pageDisplay]);
+        fetchdata()
+    }, [pageDisplay])
 
     const fetchdata = async () => {
         try {
-            const response = await fetch("http://localhost:3001/signupdata", { method: 'GET' });
-            const result = await response.json();
+            const response = await fetch(`${Api_Url}/signupdata`, { method: 'GET' })
+            const result = await response.json()
 
-           
+            const totalPages = Math.ceil(result.length / recordsPerPage)
+            const paginateRecords = result.slice(recordsPerPage * (pageDisplay - 1), recordsPerPage * pageDisplay)
+            setRecords(paginateRecords)
 
-            const totalPages = Math.ceil(result.length / recordsPerPage);
-            const paginateRecords = result.slice(recordsPerPage * (pageDisplay - 1), recordsPerPage * pageDisplay);
-            setRecords(paginateRecords);
+            setPages(Array.from({ length: totalPages }, (_, i) => i + 1))
 
-            const tempArr = [];
-            for (let i = 1; i <= totalPages; i++) {
-                tempArr.push(i);
-            }
-            setPages(tempArr);
-
-            SetPageConfig({
+            setPageConfig({
                 isPrevious: pageDisplay > 1,
                 isNext: pageDisplay < totalPages
-            });
+            })
 
         } catch (err) {
-            console.log(err);
+            console.error(err)
+            toast.error('Failed to fetch data')
         }
-    };
+    }
 
     const handlePageChange = (newpage) => {
         if (newpage >= 1 && newpage <= pages.length) {
-            setPageDisplay(newpage);
+            setPageDisplay(newpage)
         }
-    };
+    }
 
     const filteredRecords = records.filter(record =>
         record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.phone.includes(searchTerm)
-    );
+    )
 
-    const deleteLead =( leadId ) =>{
-        try{
-        fetch(`http://localhost:3001/signupdata/${leadId}`, { method: 'DELETE' })    
-        fetchdata()
-        toast.success('Deleted', {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            // transition: Bounce,
-            });
-            // window.location.reload()
-            setTimeout(() =>{
+    const deleteLead = async (leadId) => {
+        try {
+            await fetch(`${Api_Url}/signupdata/${leadId}`, { method: 'DELETE' })
+            await fetchdata()
+            toast.success('Lead deleted successfully', {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+            setTimeout(() => {
                 setDeletePopUp(false)
-                window.location.reload() 
-            },1500)
-
-        }        
-        catch (err){
-            console.log(err)
-            toast.error('Failed to delete', {
+                window.location.reload()
+            }, 1500)
+        } catch (err) {
+            console.error(err)
+            toast.error('Failed to delete lead', {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -102,8 +92,7 @@ export default function Leads() {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
-                // transition: Bounce,
-                });
+            })
         }
     }
 
@@ -113,80 +102,110 @@ export default function Leads() {
     }
 
     return (
-        <div className=" bg-[#987070]  w-full p-2.5 h-[91vh]">
+        <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen p-6">
             <ToastContainer />
-            <div className="bg-[#F1E5D1] rounded-md">
-                <div className="p-4 flex justify-between items-center ">
-                    <div className="flex text-2xl ml-12">
-                        <p className="text-2xl bg-[#987070] text-white py-1 rounded-md px-2"><FontAwesomeIcon icon={faAddressCard} /></p>
-                        <select className="outline-none ml-4 w-32 bg-[#F1E5D1] w-56">
-                            <option className="text-xl bg-[#F1E5D1]">All Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]">My Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]">Today's Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]">Yesterday's Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]0">This week Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]">This Month Leads</option>
-                            <option className="text-xl bg-[#F1E5D1]">Last Month Leads</option>
-                        </select>
-                    </div>
-                    <div className="flex text-md mr-12 gap-x-4">
-                        <button className="bg-[#987070] p-1 text-white w-40 rounded-md " onClick={() => setCreateLead(true)}>Create Lead<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" /></button>
-                        <button className={`text-white p-1  w-40 rounded-md justify-end ${displayActions ? 'bg-[#987070] border border-[#987070]':'bg-[#DBB5B5]'}`} onClick={() => !displayActions ? setDisplayActions(true) : setDisplayActions(false)}>Actions{!displayActions ? (<FontAwesomeIcon icon={faAngleDown} className="ms-1 text-md" />) : (<FontAwesomeIcon icon={faXmark} className="ms-1 text-md" />)}</button>
+            <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+                <div className="p-6 bg-gray-50 border-b border-gray-200">
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <FontAwesomeIcon icon={faAddressCard} className="text-4xl text-indigo-600 mr-4" />
+                            <select className="bg-white border-2 border-indigo-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option>All Leads</option>
+                                <option>My Leads</option>
+                                <option>Today's Leads</option>
+                                <option>Yesterday's Leads</option>
+                                <option>This week Leads</option>
+                                <option>This Month Leads</option>
+                                <option>Last Month Leads</option>
+                            </select>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105"
+                                onClick={() => setCreateLead(true)}
+                            >
+                                Create Lead
+                                <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
+                            </button>
+                            <button
+                                className={`py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 ${
+                                    displayActions ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'
+                                }`}
+                                onClick={() => setDisplayActions(!displayActions)}
+                            >
+                                {displayActions ? 'Hide Actions' : 'Show Actions'}
+                                <FontAwesomeIcon icon={displayActions ? faXmark : faAngleDown} className="ml-2" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex justify-between ">
-                    <div>
+                <div className="p-6">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-6">
                         <input
-                            className="w-72 p-1 border-2 border-[#987070] rounded-md outline-none ml-5 bg-[#EEEEEE]"
+                            className="w-full md:w-64 p-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent mb-4 md:mb-0"
                             type="search"
-                            placeholder="Search"
+                            placeholder="Search leads..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        <div className="flex border-2 border-indigo-300 rounded-lg overflow-hidden">
+                            <button
+                                className={`py-2 px-4 ${!showKanban ? 'bg-indigo-600 text-white' : 'bg-gray-100'}`}
+                                onClick={() => setShowKanban(false)}
+                            >
+                                <FontAwesomeIcon icon={faTable} className="mr-2" />
+                                Table
+                            </button>
+                            <button
+                                className={`py-2 px-4 ${showKanban ? 'bg-indigo-600 text-white' : 'bg-gray-100'}`}
+                                onClick={() => setShowKanban(true)}
+                            >
+                                <FontAwesomeIcon icon={faSquarePollVertical} className="mr-2" />
+                                Kanban
+                            </button>
+                        </div>
                     </div>
-                    {/* <div>
-                        <button className="border border-[#987070] w-40 p-1 rounded-l-lg">Not Contacted</button>
-                        <button className="border border-[#987070] w-40 p-1 ">Attempted</button>
-                        <button className="border border-[#987070] w-40 p-1 ">Warm Lead</button>
-                        <button className="border border-[#987070] w-40 p-1 rounded-r-lg">Cold Lead</button>
-                    </div> */}
-                    <div className="mr-14 flex border border-[#987070] rounded-lg">
-                        <button className={` w-40 p-1 rounded-l-lg ${!showKanban ? 'bg-[#987070] text-white' : ''}`} onClick={() => setShowKanban(false)}><FontAwesomeIcon icon={faTable} className="mr-1 text-md" />Table</button>
-                        <button className={` w-40 p-1 rounded-r-lg ${showKanban ? 'bg-[#987070] ' : ''} `} onClick={() => setShowKanban(true)}><FontAwesomeIcon icon={faSquarePollVertical} className="mr-1 text-md" />Kanban</button>
-                    </div>
-                </div>
 
-                <div className="p-5">
                     {!showKanban ? (
-                        <table className="w-full border border-[#987070]">
-                            <thead>
-                                <tr className=" bg-[#987070] text-white">
-                                    <th className="p-2">Created on</th>
-                                    <th>Status</th>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Course</th>
-                                    {displayActions && (<th>Actions</th>)}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    filteredRecords.length > 0 ? (
+                        <div className="overflow-x-auto bg-white rounded-lg shadow">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50 text-gray-700 uppercase text-sm leading-normal">
+                                        <th className="py-3 px-6 text-left">Created on</th>
+                                        <th className="py-3 px-6 text-left">Status</th>
+                                        <th className="py-3 px-6 text-left">Name</th>
+                                        <th className="py-3 px-6 text-left">Phone</th>
+                                        <th className="py-3 px-6 text-left">Email</th>
+                                        <th className="py-3 px-6 text-left">Course</th>
+                                        {displayActions && <th className="py-3 px-6 text-left">Actions</th>}
+                                    </tr>
+                                </thead>
+                                <tbody className="text-gray-600 text-sm font-light">
+                                    {filteredRecords.length > 0 ? (
                                         filteredRecords.map((d) => (
-                                            <tr key={d.id} className="border-b border-b-[#987070] bg-[#DBB5B5]">
-                                                <td className="text-center p-2">{d.createdAt}</td>
-                                                <td className="text-center p-1">-</td>
-                                                <td className="text-center p-1">{d.name}</td>
-                                                <td className="text-center p-1">{d.phone}</td>
-                                                <td className="text-center p-1">{d.email}</td>
-                                                <td className="text-center p-1">{d.course}</td>
+                                            <tr key={d.id} className="border-b border-gray-200 hover:bg-gray-100">
+                                                <td className="py-3 px-6 text-left whitespace-nowrap">{d.createdAt}</td>
+                                                <td className="py-3 px-6 text-left">-</td>
+                                                <td className="py-3 px-6 text-left">{d.name}</td>
+                                                <td className="py-3 px-6 text-left">{d.phone}</td>
+                                                <td className="py-3 px-6 text-left">{d.email}</td>
+                                                <td className="py-3 px-6 text-left">{d.course}</td>
                                                 {displayActions && (
-                                                    <td>
-                                                        <div className="mx-auto w-40 gap-x-2">
-                                                            <button className="w-20 bg-lime-200 rounded text-center " onClick={() => showUpdateModel(d)}>Edit</button>
-                                                            <button className="w-20 bg-red-300 rounded text-center" onClick={() => { setDeletePopUp(true); setSelectedLeadId(d.id); }}>Delete</button>
+                                                    <td className="py-3 px-6 text-left">
+                                                        <div className="flex item-center justify-center">
+                                                            <button
+                                                                className="transform hover:text-indigo-500 hover:scale-110 mr-3"
+                                                                onClick={() => showUpdateModel(d)}
+                                                            >
+                                                                <FontAwesomeIcon icon={faEdit} />
+                                                            </button>
+                                                            <button
+                                                                className="transform hover:text-red-500 hover:scale-110"
+                                                                onClick={() => { setDeletePopUp(true); setSelectedLeadId(d.id); }}
+                                                            >
+                                                                <FontAwesomeIcon icon={faTrash} />
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 )}
@@ -194,49 +213,93 @@ export default function Leads() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="6" className="text-center">No results found</td>
+                                            <td colSpan={displayActions ? 7 : 6} className="py-3 px-6 text-center">
+                                                No results found
+                                            </td>
                                         </tr>
-                                    )
-                                }
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     ) : (
                         <LeadsKanban />
                     )}
 
-
-                    {
-                        !showKanban ? (
-                            <div className="flex justify-center mt-6 mr-12 gap-x-4">
-                                <p className="cursor-pointer"><FontAwesomeIcon icon={faAnglesLeft} onClick={() => setPageDisplay(1)} /></p>
-                                <p className={`${pageConfig.isPrevious ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay - 1)}><FontAwesomeIcon icon={faChevronLeft} /></p>
-                                {pages.map(page => (
-                                    <p key={page} onClick={() => handlePageChange(page)} className={`cursor-pointer ${pageDisplay === page ? 'font-bold' : ''}`}>{page}</p>
-                                ))}
-                                <p className={`${pageConfig.isNext ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => handlePageChange(pageDisplay + 1)}><FontAwesomeIcon icon={faChevronRight} /></p>
-                                <p className="cursor-pointer"><FontAwesomeIcon icon={faAnglesRight} onClick={() => setPageDisplay(pages[pages.length - 1])} /></p>
-                            </div>
-                        ) : (<></>)
-
-                    }
+                    {!showKanban && (
+                        <div className="flex justify-center mt-6 gap-x-2">
+                            <button
+                                className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-300"
+                                onClick={() => setPageDisplay(1)}
+                            >
+                                <FontAwesomeIcon icon={faAnglesLeft} />
+                            </button>
+                            <button
+                                className={`p-2 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-300 ${
+                                    !pageConfig.isPrevious && 'opacity-50 cursor-not-allowed'
+                                }`}
+                                onClick={() => handlePageChange(pageDisplay - 1)}
+                                disabled={!pageConfig.isPrevious}
+                            >
+                                <FontAwesomeIcon icon={faChevronLeft} />
+                            </button>
+                            {pages.map((page) => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`p-2 rounded-md transition duration-300 ${
+                                        pageDisplay === page
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'bg-gray-200 hover:bg-gray-300'
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                            <button
+                                className={`p-2 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-300 ${
+                                    !pageConfig.isNext && 'opacity-50 cursor-not-allowed'
+                                }`}
+                                onClick={() => handlePageChange(pageDisplay + 1)}
+                                disabled={!pageConfig.isNext}
+                            >
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </button>
+                            <button
+                                className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-300"
+                                onClick={() => setPageDisplay(pages[pages.length - 1])}
+                            >
+                                <FontAwesomeIcon icon={faAnglesRight} />
+                            </button>
+                        </div>
+                    )}
                 </div>
-
-                {createlead && (<Createlead setCreateLead={setCreateLead} />)}
-                {/* { showKanban && ( < LeadsKanban /> ) } */}
-                { showEditLead && (<Editlead setShowEditLead={setShowEditLead} selectedLeadId={selectedLeadId}/>) }
-
-                { deletePopUp && (
-                    <div className="absolute top-0 left-0 w-full h-[100vh]  bg-black bg-opacity-60 content-center">
-                        <div className="w-1/4 h-80 bg-white rounded mx-auto text-center p-14 ">
-                            <h1>confirm to delete</h1>
-                            <div className="flex justify-center pt-14 gap-x-4">
-                                <button className="w-32 p-1 text-md font-semibold rounded-md border" onClick={() => setDeletePopUp(false)}>cancel</button>
-                                <button className="w-32 bg-red-300 text-white rounded-md font-semibold text-md" onClick={() => deleteLead(selectedLeadId)}>Delete</button>
-                            </div>
-                        </div> 
-                    </div>
-                )}
             </div>
+
+            {createlead && <Createlead setCreateLead={setCreateLead} />}
+            {showEditLead && <Editlead setShowEditLead={setShowEditLead} selectedLeadId={selectedLeadId} />}
+
+            {deletePopUp && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 max-w-sm w-full">
+                        <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
+                        <p className="mb-6">Are you sure you want to delete this lead?</p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-300"
+                                onClick={() => setDeletePopUp(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
+                                onClick={() => deleteLead(selectedLeadId)}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-    );
+    )
 }

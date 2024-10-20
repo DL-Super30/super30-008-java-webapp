@@ -33,6 +33,8 @@ export default function Createopportunity(props) {
     const [leadstatus, setLeadStatus] = useState("")
     const [leadsource, setLeadSource] = useState("")
 
+    const Api_Url = process.env.NEXT_PUBLIC_API_URL
+    
 
 
     const createdAt = new Date().toISOString()
@@ -77,7 +79,7 @@ export default function Createopportunity(props) {
 
             else {
 
-            const response  = await axios.post("http://localhost:3001/opportunitydata" , data)
+            const response  = await axios.post(`${Api_Url}/opportunitydata` , data)
             console.log(response)
             toast.success('opportunity created!', {
                 position: "top-right",

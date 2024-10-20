@@ -1,18 +1,19 @@
 'use client'
 import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAddressCard, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faAddressCard, faChevronLeft, faXmark } from '@fortawesome/free-solid-svg-icons'
 export default function Editlearner(props) {
-    const {setShowEditLearner} = props;
+    const { setShowEditLearner } = props;
     return (
-        <div className="w-full h-auto border-2 absolute top-0 bg-black bg-opacity-50 py-4" >
-            <div className="w-[60%] h-[100%] rounded-lg border-2 mx-auto bg-white p-3 ">
+        <div className="w-full h-[100vh] border-2 absolute top-0 bg-black bg-opacity-50 py-4" >
+            <div className="w-[60%] h-[88vh] rounded-lg border-2 mx-auto bg-white p-3 ">
                 <div className="flex justify-between">
                     <div className="flex">
-                    <p><FontAwesomeIcon icon={faAddressCard} className="mr-2 text-blue-500 p-2 text-4xl" /></p>
-                    <h1 className="text-2xl mt-3">Create Learners</h1>
+                    <button onClick={() => setShowEditLearner(false)} className="w-32 border p-1 text-2xl  mx-auto"><FontAwesomeIcon icon={faChevronLeft}   />Back</button>
+
+                        <p><FontAwesomeIcon icon={faAddressCard} className="mr-2 text-blue-500 p-2 text-4xl" /></p>
+                        <h1 className="text-2xl mt-3">Create Learners</h1>
                     </div>
-                    <button><FontAwesomeIcon icon={faXmark} className="mx-auto text-gray-300 p-2 text-2xl"  onClick={()=>setShowEditLearner(false)}/></button>
                 </div>
 
 
@@ -129,17 +130,7 @@ export default function Editlearner(props) {
 
 
 
-                <div className=" flex mt-5">
-                    <div className="ml-[33%] w-[15%] p-2 border border-blue-500 rounded-lg text-center">
-                            <button className=" text-blue-500" onClick={()=>setShowEditLearner(false)}>Cancel</button>
-                    </div>
-                    <div className="ml-[20px] w-[15%] p-2 border border-blue-500 bg-blue-500 rounded-lg text-center">
-                    <button className=" text-white">Create</button>
-
-                    </div>
-                </div>
-
-
+            
             </div>
         </div>
     )
