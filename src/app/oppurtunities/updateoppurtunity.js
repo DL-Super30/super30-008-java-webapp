@@ -15,14 +15,14 @@ export default function UpdateOppurtunity(props){
         cc:"+ 91",
         phone: opportunityData.phone || "",
         email: opportunityData.email || "",
-        feeQuoted: 0,
+        feeQuoted: opportunityData.feeQuoted || "",
         batchTiming: opportunityData.batchTiming || "",
         leadStatus: opportunityData.leadStatus || "",
         stack: opportunityData.stack || "",
-        ClassMode: opportunityData.ClassMode || "",
-        opportunityStatus: opportunityData.opportunityStatus || "",
+        classMode: opportunityData.classMode || "",
+        status: opportunityData.status || "",
         opportunityStage:opportunityData.opportunityStage || "",
-        DemoAttendedStage:opportunityData.DemoAttendedStage|| "",
+        demoAttendedStage:opportunityData.demoAttendedStage|| "",
         visitedStage:opportunityData.visitedStage || "",
         lostOpportunityReason:opportunityData.lostOpportunityReason || "",
         nextFollowUp:opportunityData.nextFollowUp || "",
@@ -43,7 +43,7 @@ export default function UpdateOppurtunity(props){
 
       const updateoppurtunity = async () => {
         try {
-          await fetch(`${ApiUrl}/api/opportunity/${opportunityData.id}`, {
+          await fetch(`${ApiUrl}/api/opportunities/${opportunityData.id}`, {
             method: "PUT",
             headers: {
               'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export default function UpdateOppurtunity(props){
 
 
     return (
-        <div className="bg-black bg-opacity-70 absolute top-0 left-0 h-[130vh] w-full content-center">
+        <div className="bg-black bg-opacity-70 absolute top-0 left-0 h-[110vh] w-full content-center">
             <div className="w-3/5 h-[70%] bg-white rounded mx-auto ">
                 <div className="flex justify-between border-b px-5 h-14 text-xl">
                     <div className="flex gap-x-4 items-center">
@@ -104,8 +104,8 @@ export default function UpdateOppurtunity(props){
                     <div>
                         <p>opportunityStatus</p>
                         <p className={`text-blue-500 font-semibold ${
-                            formData.opportunityStatus === "Visiting" ? 'text-blue-500' : formData.opportunityStatus === "Visited" ? 'text-green-500' : formData.opportunityStatus === "Demo Attended" ? 'text-orange-500' : formData.opportunityStatus === "Lost Opportunity" ? 'text-red-500' : ''
-                        }`}>{formData.opportunityStatus}</p>
+                            formData.status === "Visiting" ? 'text-blue-500' : formData.status === "Visited" ? 'text-green-500' : formData.status === "Demo Attended" ? 'text-orange-500' : formData.status === "Lost Opportunity" ? 'text-red-500' : ''
+                        }`}>{formData.status}</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-5 w-full p-4 overflow-y-scroll h-[80%]">
@@ -143,12 +143,12 @@ export default function UpdateOppurtunity(props){
                     </div>
                     <div>
                         <label>ClassMode</label> <br></br>
-                        <input value={formData.ClassMode} name="ClassMode" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="ClassMode"></input>
+                        <input value={formData.classMode} name="classMode" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="ClassMode"></input>
                     </div>
                     <div>
                         <label>opportunityStatus</label> <br></br>
                         {/* <input value={formData.opportunityStatus} name="opportunityStatus" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="opportunityStatus"></input> */}
-                        <select value={formData.opportunityStatus} name="opportunityStatus" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
+                        <select value={formData.status} name="status" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
                             <option>select status</option>
                             <option>Visiting</option>
                             <option>Visited</option>
@@ -161,7 +161,7 @@ export default function UpdateOppurtunity(props){
                     </div>
                     <div>
                         <label>DemoAttendedStage</label> <br></br>
-                        <input value={formData.DemoAttendedStage} name="DemoAttendedStage" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="DemoAttendedStage"></input>
+                        <input value={formData.demoAttendedStage} name="demoAttendedStage" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="DemoAttendedStage"></input>
                     </div>
                     <div>
                         <label>visitedStage</label> <br></br>
@@ -180,8 +180,8 @@ export default function UpdateOppurtunity(props){
                         <input value={formData.leadSource} name="leadSource" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="leadSource"></input>
                     </div><div>
                         <label>course</label> <br></br>
-                        {/* <input value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="course"></input> */}
-                        <select value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
+                        <input value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="course"></input>
+                        {/* <select value={formData.course} name="course" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none">
                             <option>select course</option>
                             <option>HR Analytics</option>
                             <option>HR Recruiter</option>
@@ -190,7 +190,7 @@ export default function UpdateOppurtunity(props){
                             <option>MERN</option>
                             <option>JSF</option>
                             <option>PFS</option>
-                        </select>
+                        </select> */}
                     </div><div>
                         <label>description</label> <br></br>
                         <input value={formData.description} name="description" onChange={handleInputChange} className="w-full border-b-2 border-b-[#A594F9] rounded-b-md p-1 outline-none"  type="text" placeholder="description"></input>

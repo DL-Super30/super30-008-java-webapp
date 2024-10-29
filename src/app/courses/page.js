@@ -9,6 +9,9 @@ import CreateCourse from "./createcourse";
 import UpdateCourse from "./updateCourse";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { dotSpinner } from 'ldrs'
+
+dotSpinner.register()
 
 export default function Courses() {
   const [records, setRecords] = useState([]);
@@ -21,8 +24,8 @@ export default function Courses() {
   const [deletePopUp, setDeletePopUp] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedLead, setSelectedLead] = useState(null);
-  const [leadId, setLeadId] = useState();
   const [showupdate, setShowUpdate] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const recordsPerPage = 8;
   const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -32,11 +35,13 @@ export default function Courses() {
   }, [pageDisplay, searchTerm]);
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`${ApiUrl}/api/courses`, { method: 'GET' });
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch(`${ApiUrl}/api/courses/all`, { method: 'GET' });
       const data = await response.json();
 
-      const sortedRecords = data.data.sort((a, b) => a.id - b.id);
+      const sortedRecords = data.sort((a, b) => a.id - b.id);
       const filteredRecords = filterRecords(sortedRecords);
 
       const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
@@ -55,7 +60,34 @@ export default function Courses() {
       setPages(tempArr);
     } catch (err) {
       console.log(err);
+      toast.error('Failed to fetch data', {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const filterRecords = (records) => {
+    if (searchTerm) {
+      return records.filter((record) =>
+        record.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return records;
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPageDisplay(1);
   };
 
   const handlePageChange = (newPage) => {
@@ -64,22 +96,61 @@ export default function Courses() {
     }
   };
 
-  const filterRecords = (records) => {
-    let filteredRecords = records;
-
-    if (searchTerm) {
-      filteredRecords = filteredRecords.filter((record) =>
-        record.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.courseDescription.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    return filteredRecords;
+  const handleCheckBoxChange = (e, recordId) => {
+    e.stopPropagation();
+    setSelectedRows((prev) => {
+      if (prev.includes(recordId)) {
+        return prev.filter((id) => id !== recordId);
+      } else {
+        return [...prev, recordId];
+      }
+    });
   };
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setPageDisplay(1);
+  const handlerowClick = (e, lead) => {
+    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+      return;
+    }
+    setSelectedLead(lead);
+    setShowUpdate(true);
+  };
+
+  const showPop = () => {
+    if (selectedRows.length === 0) {
+      toast.warning('Please Select At Least One Course', {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      setDeletePopUp(true);
+      setDisplayActivity(false)
+    }
+  };
+
+  const showUpdateScreen = () => {
+    if (selectedRows.length !== 1) {
+      toast.warning('Please Select Exactly One Course for Update', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      const selectedLead = records.find((record) => record.id === selectedRows[0]);
+      setSelectedLead(selectedLead);
+      setShowUpdate(true);
+      setDisplayActivity(false)
+    }
   };
 
   const confirmDelete = async () => {
@@ -130,64 +201,10 @@ export default function Courses() {
     }
   };
 
-  const showPop = () => {
-    if (selectedRows.length === 0) {
-      toast.warning('Please Select At Least One Course', {
-        position: "top-center",
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      setDeletePopUp(true);
-    }
-  };
-
-  const handleCheckBoxChange = (e, recordId) => {
-    e.stopPropagation();
-    setSelectedRows((prev) => {
-      if (prev.includes(recordId)) {
-        return prev.filter((id) => id !== recordId);
-      } else {
-        return [...prev, recordId];
-      }
-    });
-  };
-
-  const showUpdateScreen = () => {
-    if (selectedRows.length !== 1) {
-      toast.warning('Please Select Exactly One Course for Update', {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      const selectedLead = records.find((record) => record.id === selectedRows[0]);
-      setSelectedLead(selectedLead);
-      setShowUpdate(true);
-    }
-  };
-
-  const handlerowClick = (e, lead) => {
-    if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
-      return;
-    }
-    setSelectedLead(lead);
-    setShowUpdate(true);
-  };
-
   return (
     <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
       <ToastContainer />
+      
       <div className="w-[95%] max-w-full mx-auto border-2 border-indigo-300 p-4 rounded-lg shadow-lg bg-white">
         <div className="flex flex-col md:flex-row items-center w-full justify-between mb-6">
           <div className="flex w-full md:w-72 gap-x-4 items-center mb-4 md:mb-0">
@@ -214,7 +231,7 @@ export default function Courses() {
                 <FontAwesomeIcon icon={displayActivity ? faXmark : faChevronDown} className="ml-2" />
               </button>
               {displayActivity && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10">
                   <button className="w-full p-2 text-left hover:bg-indigo-100 text-indigo-800" onClick={showUpdateScreen}>
                     Update <FontAwesomeIcon icon={faPenToSquare} className="float-right" />
                   </button>
@@ -252,9 +269,22 @@ export default function Courses() {
               </tr>
             </thead>
             <tbody>
-              <AnimatePresence>
-                {records && records.length > 0 ? (
-                  records.map((record, index) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-4">
+                    <div className="flex flex-col items-center justify-center">
+                      <l-dot-spinner
+                        size="40"
+                        speed="0.9" 
+                        color="black" 
+                      ></l-dot-spinner>
+                      <p className="mt-4 text-lg font-semibold text-gray-600">Loading...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : records && records.length > 0 ? (
+                <AnimatePresence>
+                  {records.map((record, index) => (
                     <motion.tr
                       key={record.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -273,28 +303,28 @@ export default function Courses() {
                         />
                       </td>
                       <td className="p-3 text-sm text-gray-800">{record.courseName}</td>
-                      <td className="p-3 text-sm text-gray-800">{record.courseDescription}</td>
+                      <td className="p-3 text-sm text-gray-800">{record.description}</td>
                       <td className="p-3 text-sm text-gray-800">{record.courseFee}</td>
                     </motion.tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="text-center py-4">
-                      <div className="flex flex-col items-center justify-center">
-                        <img src="./images/nodata.svg" className="w-1/4 h-60 mb-4" alt="No data" />
-                        <h1 className="text-2xl font-semibold text-gray-500">No Data Found</h1>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </AnimatePresence>
+                  ))}
+                </AnimatePresence>
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center py-4">
+                    <div className="flex flex-col items-center justify-center">
+                      <img src="./images/nodata.svg" className="w-36 h-60 mb-4" alt="No data" />
+                      <h1 className="text-xl text-center font-semibold text-gray-500">No Data Found</h1>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
         {records.length > 0 && (
           <div className="mt-4 flex justify-center items-center space-x-2">
             <button
-              className={`p-2 px-4 rounded-full ${pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
+              className={`p-1 rounded-full ${pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay - 1)}
               disabled={!pageConfig.isPrevious}
             >
@@ -310,7 +340,7 @@ export default function Courses() {
               </button>
             ))}
             <button
-              className={`p-2 px-4 rounded-full ${pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
+              className={`p-2 px-4 rounded-full ${pageConfig.isNext ? 'bg-indigo-600  text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'}`}
               onClick={() => handlePageChange(pageDisplay + 1)}
               disabled={!pageConfig.isNext}
             >

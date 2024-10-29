@@ -6,81 +6,97 @@ import { faAddressCard, faXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Select from 'react-select';
-
-const courseOptions = [
-    { value: 'HR Business Partner', label: 'HR Business Partner' },
-    { value: 'HR Generalist', label: 'HR Generalist' },
-    { value: 'HR Analytics', label: 'HR Analytics' },
-    { value: 'Spoken English', label: 'Spoken English' },
-    { value: 'Public Speaking', label: 'Public Speaking' },
-    { value: 'Communication Skills', label: 'Communication Skills' },
-    { value: 'Soft Skills', label: 'Soft Skills' },
-    { value: 'Aptitude', label: 'Aptitude' },
-    { value: 'IELTS', label: 'IELTS' },
-    { value: 'TOFEL', label: 'TOFEL' },
-    { value: 'GRE', label: 'GRE' },
-    { value: 'JFS', label: 'JFS' },
-    { value: 'PFS', label: 'PFS' },
-    { value: 'MERN', label: 'MERN' },
-    { value: 'AWS + Devops', label: 'AWS + Devops' },
-    { value: 'Azure + Devops', label: 'Azure + Devops' },
-    { value: 'Devops', label: 'Devops' },
-];
 
 export default function CreateLead({ closeForm }) {
-    const [leadname, setLeadName] = useState('');
+    const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+    const [cc,setCc] = useState("+91 ")
     const [email, setEmail] = useState('');
     const [leadStatus, setLeadStatus] = useState('Not Contacted');
     const [leadSource, setLeadSource] = useState('Website');
     const [feeQuoted, setFeeQuoted] = useState('');
     const [batchTiming, setBatchTiming] = useState('7-8 AM');
-    const [selectedClassMode, setSelectedClassMode] = useState("HYD class");
-    const [selectedCourses, setSelectedCourses] = useState([]);
-    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [classMode, setClassMode] = useState("HYD class");
+    const [course, setCourse] = useState("");
+    const [description,setDescription] = useState("")
+    const [stack,setStack] = useState("")
+    const [nextFollowUp,setNextFollowUp] = useState("")
 
-    const handleCourseChange = (selectedOptions) => {
-        setSelectedCourses(selectedOptions);
-    };
+
+    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const handleFormSubmit = async (event) => {
         event.preventDefault();
 
         try {
             const formData = {
-                leadname,
+                name,
                 email,
+                cc:"+91",
                 phone: "+ 91 " + phone,
                 feeQuoted,
                 batchTiming,
                 leadStatus,
                 leadSource,
-                course: selectedCourses.map(course => ({ name: course.value })),
-                selectedClassMode
+                course,
+                // course: selectedCourses.map(course => ({ name: course.value })),
+                classMode,
+                stack,
+                classMode,
+                nextFollowUp,
+                description
             };
 
             console.log("Submitting data:", formData);
 
-            const response = await axios.post(`${ApiUrl}/api/leads`, formData);
+            const response = await axios.post(`${ApiUrl}/api/leads/register`, formData);
             console.log("Successfully submitted:", response.data);
+
+                if (response.status === 200) {
             toast.success('Lead Created Successfully!', {
-                position: "top-center",
-                autoClose: 1500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light"
+            position: "top-center",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light"
             });
+
             setTimeout(() => {
                 closeForm(); 
                 window.location.reload()
             }, 1500);
-        } catch (error) {
-            console.error("Error submitting data:", error.response?.data || error.message);
-            toast.error(`Failed to create Lead: ${error.response?.data?.error || error.message}`, {
+}
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+              if (error.response.status === 409) {
+                toast.warning('Lead already exists', {
+                  position: "top-center",
+                  autoClose: 1500,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light"
+                });
+              } else {
+                toast.error(`Failed to create Lead: ${error.response.data}`, {
+                  position: "top-center",
+                  autoClose: 1500,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light"
+                });
+              }
+            } else {
+              toast.error('An unexpected error occurred', {
                 position: "top-center",
                 autoClose: 1500,
                 hideProgressBar: false,
@@ -89,12 +105,15 @@ export default function CreateLead({ closeForm }) {
                 draggable: true,
                 progress: undefined,
                 theme: "light"
-            });
-        }
+              });
+            }
+            console.error("Error submitting data:", error);
+          }
+        
     };
 
     return (
-        <div className="w-full h-[100vh] absolute top-0 left-0 bg-black bg-opacity-70 flex justify-center items-start pt-[100px]">
+        <div className="w-full h-[130vh] absolute top-0 left-0 bg-black bg-opacity-70 flex justify-center items-start pt-[68px]">
             <ToastContainer />
             <div className="w-full max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="flex justify-between items-center p-4 bg-purple-200 border-b">
@@ -106,7 +125,7 @@ export default function CreateLead({ closeForm }) {
                         <FontAwesomeIcon icon={faXmark} className="text-2xl text-gray-600 hover:text-gray-800 transition" />
                     </button>
                 </div>
-                <div className="px-6 py-4 bg-gray-50">
+                <div className="px-6 py-4 bg-gray-50 h-[80vh] overflow-y-auto">
                     <form onSubmit={handleFormSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -114,13 +133,14 @@ export default function CreateLead({ closeForm }) {
                                 <input 
                                     type="text" 
                                     className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
-                                    value={leadname} 
-                                    onChange={(e) => setLeadName(e.target.value)} 
+                                    value={name} 
+                                    onChange={(e) => setName(e.target.value)} 
                                     required 
+                                    placeholder="name"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-600">Lead Status</label>
+                                <label className="block text-sm font-medium text-gray-600">Lead Status <span className="text-red-500">*</span></label>
                                 <select 
                                     className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
                                     value={leadStatus} 
@@ -141,6 +161,18 @@ export default function CreateLead({ closeForm }) {
                                     value={phone} 
                                     onChange={(e) => setPhone(e.target.value)} 
                                     required 
+                                    placeholder="phone"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">cc</label>
+                                <input 
+                                    type="text" 
+                                    
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={cc} 
+                                    onChange={(e) => setCc(e.target.value)} 
+                                    
                                 />
                             </div>
                             <div>
@@ -151,6 +183,7 @@ export default function CreateLead({ closeForm }) {
                                     value={email} 
                                     onChange={(e) => setEmail(e.target.value)} 
                                     required 
+                                    placeholder="email"
                                 />
                             </div>
                             <div>
@@ -173,14 +206,33 @@ export default function CreateLead({ closeForm }) {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-600">Course</label>
-                                <Select 
+                                <label className="block text-sm font-medium text-gray-600">stack <span className="text-red-400">*</span></label>
+                                <input 
+                                    type="text" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={stack} 
+                                    onChange={(e) => setStack(e.target.value)} 
+                                    placeholder="stack"
+                                
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Course <span className="text-red-400">*</span></label>
+                                {/* <Select 
                                     options={courseOptions}
                                     value={selectedCourses}
                                     onChange={handleCourseChange}
                                     isMulti={true}
                                     className="mt-1"
                                     classNamePrefix="select"
+                                /> */}
+                                <input 
+                                    type="text" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={course} 
+                                    onChange={(e) => setCourse(e.target.value)} 
+                                    placeholder="courses"
+                                    
                                 />
                             </div>
                             <div>
@@ -191,6 +243,7 @@ export default function CreateLead({ closeForm }) {
                                     value={feeQuoted} 
                                     onChange={(e) => setFeeQuoted(e.target.value)} 
                                     required 
+                                    placeholder="fee quoted"
                                 />
                             </div>
                             <div>
@@ -208,11 +261,21 @@ export default function CreateLead({ closeForm }) {
                                 </select>
                             </div>
                             <div>
+                                <label className="block text-sm font-medium text-gray-600">NextFollowUp</label>
+                                <input 
+                                    type="datetime-local" 
+                                    className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={nextFollowUp} 
+                                    onChange={(e) => setNextFollowUp(e.target.value)} 
+                                    
+                                />
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-600">Class Mode</label>
                                 <select 
                                     className="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
-                                    value={selectedClassMode} 
-                                    onChange={(e) => setSelectedClassMode(e.target.value)}
+                                    value={classMode} 
+                                    onChange={(e) => setClassMode(e.target.value)}
                                 >
                                     <option value="HYD class">HYD class</option>
                                     <option value="HYD Online">HYD Online</option>
@@ -222,6 +285,17 @@ export default function CreateLead({ closeForm }) {
                                     <option value="Vizag Online">Vizag Online</option>
                                     <option value="USA Online">USA Online</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Description</label>
+                                <input 
+                                    type="text" 
+                                    className="mt-1 p-2 block w-[208%] rounded-md border-gray-300 shadow-sm outline-none border border-b-2 border-b-purple-500" 
+                                    value={description} 
+                                    onChange={(e) => setDescription(e.target.value)} 
+                                    placeholder="Description"
+                                
+                                />
                             </div>
                         </div>
                         <div className="mt-6 flex justify-end">

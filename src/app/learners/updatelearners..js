@@ -16,12 +16,11 @@ export default function UpdateLearner(props) {
 
 
   const [formData, setFormData] = useState({
-    firstname : updateData.firstname || "",
-    lastname : updateData.lastname || "",
+    name : updateData.name || "",
     idProof : updateData.idProof || "",
      phone : updateData.phone || "",
     email : updateData.email || "",
-    DOB : updateData.DOB || "",
+    dob : updateData.dob || "",
     registeredDate : updateData.registeredDate || "",
     location : updateData.location || "",
     batchId : updateData.batchId || "",
@@ -33,9 +32,9 @@ export default function UpdateLearner(props) {
     learnerOwner : updateData.learnerOwner || "",
     learnerStage : updateData.learnerStage || "",
     currency : updateData.currency || "",
-    leadCreatedDate : updateData.leadCreatedDate || "",
-    CounselingDoneBy : updateData.CounselingDoneBy || "",
-    registeredCourse : updateData.registeredCourse || "",
+    leadCreatedTime : updateData.leadCreatedTime || "",
+    counsellingDoneBy : updateData.counsellingDoneBy || "",
+    courseDetails : updateData.courseDetails || "",
     techStack : updateData.techStack || "",
     courseComments : updateData.courseComments || "",
     slackAccess : updateData.slackAccess || "",
@@ -44,9 +43,9 @@ export default function UpdateLearner(props) {
     batchTiming : updateData.batchTiming || "",
     modeOfClass : updateData.modeOfClass || "",
     Comment : updateData.Comment || "",
-    nextFollowUp : updateData.nextFollowUp || "",
-    createdAt : updateData.createdAt || "",
-    updatedAt : updateData.updatedAt || ""
+    // nextFollowUp : updateData.nextFollowUp || "",
+    // createdAt : updateData.createdAt || "",
+    // updatedAt : updateData.updatedAt || ""
    
   })
 
@@ -65,7 +64,7 @@ export default function UpdateLearner(props) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${ApiUrl}/api/learner?page=1&limit=10`);
+      const response = await fetch(`${ApiUrl}/api/learners/all`);
       const data = await response.json();
       // You might want to do something with the data here
     } catch (err) {
@@ -76,7 +75,7 @@ export default function UpdateLearner(props) {
 
 const updateLearner =async () => {
     try{
-        await fetch(`${ApiUrl}/api/learner/${updateData.id}`, {
+        await fetch(`${ApiUrl}/api/learners/${updateData.id}`, {
             method: "PUT",
             headers: {
               'Content-Type': 'application/json',
@@ -124,7 +123,7 @@ const updateLearner =async () => {
                         <div className="flex gap-x-4 items-center">
                             <button className="text-lg" onClick={() => setShowUpdate(false)}><FontAwesomeIcon icon={faChevronLeft}/>Back</button>
                             <span className="bg-[#A594F9] text-xl text-white p-2  rounded-md px-3"><FontAwesomeIcon icon={faAddressCard}/></span>
-                            <h1 className="font-bold text-2xl">{updateData.firstname }</h1>
+                            <h1 className="font-bold text-2xl">{updateData.name }</h1>
                         </div>
                         <button className="w-32 border p-1 rounded-lg bg-purple-900 text-white" onClick={updateLearner}>Update</button>
                    </div>
@@ -132,12 +131,8 @@ const updateLearner =async () => {
                         <div className="w-full h-[65vh] border border-[#A594F9] rounded-md overflow-y-scroll p-2">
                            <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label>First Name</label> <br></br>
-                                        <input type="text" name="firstname" value={formData.firstname} onChange={handleInputChange}  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
-                                    </div>
-                                    <div>
-                                        <label>Last Name</label> <br></br>
-                                        <input type="text" name="lastname" value={formData.lastname} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="last name"></input>
+                                        <label>Name</label> <br></br>
+                                        <input type="text" name="name" value={formData.name} onChange={handleInputChange}  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
                                     </div>
                                     <div>
                                         <label>Id Proof</label> <br></br>
@@ -149,7 +144,7 @@ const updateLearner =async () => {
                                     </div>
                                     <div>
                                         <label>Date Of Birth</label> <br></br>
-                                        <input type="date" name="DOB" value={formData.DOB} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="DOB"></input>
+                                        <input type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="DOB"></input>
                                     </div>
                                     <div>
                                         <label>Email</label> <br></br>
@@ -193,7 +188,14 @@ const updateLearner =async () => {
                                     </div>
                                     <div>
                                         <label>Learner Stage</label> <br></br>
-                                        <input type="text" name="learnerStage" value={formData.learnerStage} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Learner Stage" ></input>
+                                        {/* <input type="text" name="learnerStage" value={formData.learnerStage} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Learner Stage" ></input> */}
+                                        <select name="learnerStage" value={formData.learnerStage} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none">
+                                            <option>select learner stage</option>
+                                            <option>Up coming</option>
+                                            <option>On going</option>
+                                            <option>On Hold</option>
+                                            <option>Completed</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label>Currency</label> <br></br>
@@ -201,18 +203,18 @@ const updateLearner =async () => {
                                     </div>
                                     <div>
                                         <label>Lead crated time</label> <br></br>
-                                        <input type="datetime-local" name="leadCreatedDate" value={formData.leadCreatedDate} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Source" ></input>
+                                        <input type="datetime-local" name="leadCreatedTime" value={formData.leadCreatedTime} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Source" ></input>
                                     </div>
                                     <div>
                                         <label>Counseling Done BY</label> <br></br>
-                                        <input type="number" name="CounselingDoneBy" value={formData.CounselingDoneBy} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Counseling Done BY" ></input>
+                                        <input type="number" name="counsellingDoneBy" value={formData.counsellingDoneBy} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Counseling Done BY" ></input>
                                     </div>
                            </div>
                            <h1 className="mt-4 text-xl font-semibold">Course Details</h1>
                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label>Registered Course</label> <br></br>
-                                    <input type="text" name="registeredCourse" value={formData.registeredCourse} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Registered Course"></input>
+                                    <input type="text" name="courseDetails" value={formData.courseDetails} onChange={handleInputChange} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Registered Course"></input>
                                 </div>
                                 <div>
                                     <label>Preferable Time</label> <br></br>

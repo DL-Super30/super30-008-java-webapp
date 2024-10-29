@@ -1,113 +1,60 @@
 'use client'
 
-import React from "react"
-import { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react"
 
-export default function Kanban(){
-    const [records , setRecords ] =useState([]);
+export default function Kanban() {
+  const [records, setRecords] = useState([]);
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    useEffect( () =>{ 
-        getRecords();
-        // console.log(getRecords())
-    },[])
+  useEffect(() => {
+    fetchData()
+  }, [])
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${ApiUrl}/api/leads/all`)
+      const data = await response.json()
+      setRecords(data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
-    const getRecords = async () => {
-    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const statusColumns = [
+    { title: "Not Contacted", color: "bg-[#D2E0FB]", border: "border-[#8EACCD]", recordColor: "bg-[#D1E9F6]" },
+    { title: "Attempted", color: "bg-[#8FD14F]", border: "border-[#6EC207]", recordColor: "bg-[#C1E2A4]" },
+    { title: "Warm Lead", color: "bg-[#FD8B51]", border: "border-[#FF6500]", recordColor: "bg-[#FF885B]" },
+    { title: "Cold Lead", color: "bg-[#FA7070]", border: "border-[#FF204E]", recordColor: "bg-red-300" },
+  ];
 
-        try {
-          let response = await fetch(
-            `${ApiUrl}/api/leads?page=1&limit=10`,{method: "GET",});
-        const data =await response.json();
-        setRecords(data.data)
-        // console.log(data)
-
-        }
-         catch (err) {
-          console.log(err);
-        }
-      };
-
-    return (
-        <div className="w-full grid grid-cols-4 gap-x-2 p-1">
-            <div className=" h-16 bg-[#FFBF78] rounded border-t-4 border-[#FF6600] border-b" >
-                <p className="font-semibold p-5">Not Contacted</p>
+  return (
+    <div className="w-full p-4 overflow-x-auto">
+      <div className="min-w-[1000px] md:w-full">
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {statusColumns.map((column, index) => (
+            <div key={index} className={`${column.color} ${column.border} border-t-4 h-20 p-3 font-semibold rounded`}>
+              <p>{column.title}</p>
             </div>
-            <div className=" h-16 bg-[#DCFCE7] rounded border-t-4 border-[#86EFAC] border-b" >
-                <p className="font-semibold p-5">Attempted</p>
-            </div>
-            <div className=" h-16 bg-[#FFF4B5] rounded border-t-4 border-[#FCDE70] border-b" >
-                <p className="font-semibold p-5">Warm Lead</p>
-            </div>
-            <div className=" h-16 bg-[#FA7070] rounded border-t-4 border-[#FF204E] border-b" >
-                <p className="font-semibold p-5">Cold Lead</p>
-            </div>
-            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
-                {
-                    records.map((record,i) =>
-                        record.leadStatus === 'Not Contacted' ?
-                        (
-                        <div key={i} className={`bg-[#FFCF81] m-1 rounded-md p-1 `}>
-                            <div className={`flex justify-between`}>
-                                <p  className="text-lg font-semibold">{record.leadname}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-            </div>
-            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
-            {
-                    records.map((record,i) =>
-                        
-                        record.leadStatus == 'Attempted' ? 
-                        (
-                        
-                        <div key={i} className={`bg-[#DCFCE7] m-1 rounded-md p-1`}>
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.leadname}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-            </div>
-            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-2" >
-            {
-                    records.map((record,i) =>
-                        record.leadStatus === 'Warm Lead' ?
-                        (
-                        <div key={i} className="bg-[#FFF4B5] rounded m-1 p-1">
-                            <div className="flex justify-between">
-                                <p  className="font-semibold text-lg">{record.leadname}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-            </div>
-            <div className=" h-[80vh] overflow-y-scroll bg-[#E5E7EB] rounded p-3" >
-            {
-                    records.map((record,i) =>
-                        record.leadStatus === 'Cold Lead' ?
-                        (
-                        <div key={i} className="bg-[#FA7070] rounded p-2 m-1">
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.leadname}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-            </div>
+          ))}
         </div>
-    )
+        <div className="grid grid-cols-4 gap-4">
+          {statusColumns.map((column, index) => (
+            <div key={index} className="border h-[80vh] rounded bg-[#E5E7EB] p-2 overflow-y-auto">
+              {records
+                .filter(record => record.leadStatus === column.title)
+                .map((record, i) => (
+                  <div key={i} className={`${column.recordColor} rounded p-2 m-1`}>
+                    <div className="flex justify-between">
+                      <p className="text-sm font-semibold">{record.name}</p>
+                      <p className="text-xs">{record.phone}</p>
+                    </div>
+                    <p className="text-xs mt-1">{record.email}</p>
+                  </div>
+                ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }

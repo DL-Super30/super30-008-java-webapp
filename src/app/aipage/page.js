@@ -74,16 +74,22 @@ export default function AiPage() {
       </motion.div>
       {
         showPop && (
-          <motion.div className='w-[51.5%] h-20 mx-auto bg-white rounded-lg shadow-md'
-        initial = {{opacity : 0}}
-        animate = {{opacity : 1}}
-        transition={{duration : 1}}
-      >
-        <div className='items-center mt-2 flex pt-6 justify-around'>
-            <h1 className='text-lg font-semibold text-indigo-500 '>It is under developing , Thank You for Choosing !!</h1>
-            <button onClick={() => setShowPop(false)}><FontAwesomeIcon icon={faXmark} className='text-2xl'/></button>
-        </div>
-      </motion.div>
+          <motion.div
+  className="w-full max-w-md h-20 mx-auto mt-4 bg-white rounded-lg shadow-md"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 1 }}
+>
+  <div className="flex items-center justify-between p-4">
+    <h1 className="text-lg font-semibold text-indigo-500 text-center flex-1">
+      It is under development, Thank You for Choosing!!
+    </h1>
+    <button onClick={() => setShowPop(false)} className="ml-4">
+      <FontAwesomeIcon icon={faXmark} className="text-2xl" />
+    </button>
+  </div>
+</motion.div>
+
         )
       }
     </div>

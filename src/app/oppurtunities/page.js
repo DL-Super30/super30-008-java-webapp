@@ -4,12 +4,16 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faChartBar } from "@fortawesome/free-regular-svg-icons";
-import { faChevronDown, faChevronLeft, faChevronRight, faTable, faPenToSquare, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronLeft, faChevronRight, faTable, faPenToSquare, faTrash, faXmark, faLink } from "@fortawesome/free-solid-svg-icons";
 import KanbanOppurtunity from "../kanban/oppurtunityKanban";
 import CreateOpportunity from "./createOppurtunity";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UpdateOppurtunity from "./updateoppurtunity";
+import { dotSpinner } from 'ldrs'
+import axios from "axios";
+
+dotSpinner.register()
 
 export default function Opportunities() {
   const [records, setRecords] = useState([]);
@@ -27,6 +31,8 @@ export default function Opportunities() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectLeadId, setSelectLeadId] = useState(null);
   const [opportunityData, setOpputunityData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showConvert,setShowConvert] = useState(false)
 
   const recordsPerPage = 10;
   const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -44,10 +50,12 @@ export default function Opportunities() {
   }, [pageDisplay, selectedFilter, searchTerm]);
 
   const getLastRecords = async () => {
+    setIsLoading(true);
     try {
-      let response = await fetch(`${ApiUrl}/api/opportunity?page=1&limit=10`, { method: "GET" });
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
+      let response = await fetch(`${ApiUrl}/api/opportunities/all`, { method: "GET" });
       const data = await response.json();
-      const sortedRecords = data.data.sort((a, b) => {
+      const sortedRecords = data.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateB - dateA;
@@ -70,6 +78,18 @@ export default function Opportunities() {
       setPages(tempArr);
     } catch (err) {
       console.log(err);
+      toast.error('Failed to fetch data', {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -114,7 +134,7 @@ export default function Opportunities() {
       case "Visited":
       case "Demo Attended":
       case "Lost Opportunity":
-        filteredRecords = filteredRecords.filter(record => record.opportunityStatus === selectedFilter);
+        filteredRecords = filteredRecords.filter(record => record.status === selectedFilter);
         break;
       default:
         break;
@@ -154,7 +174,7 @@ export default function Opportunities() {
 
   const confirmDelete = async () => {
     try {
-      await Promise.all(selectedRows.map(id => fetch(`${ApiUrl}/api/opportunity/${id}`, { method: "DELETE" })));
+      await Promise.all(selectedRows.map(id => fetch(`${ApiUrl}/api/opportunities/${id}`, { method: "DELETE" })));
       toast.success('Deleted successfully!', {
         position: "top-center",
         autoClose: 1500,
@@ -165,6 +185,7 @@ export default function Opportunities() {
         progress: undefined,
         theme: "light",
       });
+      setDisplayActivity(false)
       setTimeout(() => {
         getLastRecords();
         setDeletePopUp(false);
@@ -199,6 +220,7 @@ export default function Opportunities() {
       });
     } else {
       setDeletePopUp(true);
+      setDisplayActivity(false)
     }
   };
 
@@ -225,6 +247,7 @@ export default function Opportunities() {
         progress: undefined,
         theme: "light",
       });
+      setDisplayActivity(false)
     } else {
       const selectOpportunity = records.find(record => record.id === selectedRows[0]);
       setOpputunityData(selectOpportunity);
@@ -240,6 +263,122 @@ export default function Opportunities() {
     setShowUpdate(true);
   };
 
+  const handleConvertToLearners = async () => {
+    const selectedLeads = records.filter(record => selectedRows.includes(record.id))
+    let successCount = 0
+    let failCount = 0
+    let deletedLeadsCount = 0
+
+    for (const lead of selectedLeads) {
+      const dataLearners = {
+    name: lead.name || "",
+    idProof: lead.idProof || "",
+    phone: lead.phone || "",
+    dob: lead.dob || "",
+    email: lead.email || "",
+    registeredDate: lead.registeredDate || "",
+    location: lead.location || "",
+    batchId: lead.batchId || "",
+    alternatePhone: lead.alternatePhone || "",
+    description: lead.description || "",
+    exchangeRate: lead.exchangeRate || "",
+    source: lead.source || "",
+    attendedDemo: lead.attendedDemo || "",
+    learnerOwner: lead.learnerOwner || "",
+    learnerStage: lead.learnerStage || "",
+    currency: lead.currency || "",
+    leadCreatedTime: lead.leadCreatedTime || "",
+    counsellingDoneBy: lead.counsellingDoneBy || "",
+    courseDetails: lead.courseDetails || "",
+    preferableTime: lead.preferableTime || "",
+    techStack: lead.stack || "",
+    batchTiming: lead.batchTiming || "",
+    courseComments: lead.courseComments || "",
+    modeOfClass: lead.modeOfClass || "",
+    slackAccess: lead.slackAccess || "",
+    comment: lead.comment || "",
+    lmsAccess: lead.lmsAccess || ""
+      }
+
+      try {
+        // Convert lead to learners
+        const response = await axios.post(`${ApiUrl}/api/learners/register`, dataLearners)
+        console.log(response.data)
+        successCount++
+
+        // Delete the lead after successful conversion
+        try {
+          await axios.delete(`${ApiUrl}/api/opportunities/${lead.id}`)
+          deletedLeadsCount++
+        } catch (deleteErr) {
+          console.error(`Failed to delete lead ${lead.id}:`, deleteErr)
+        }
+      } catch (err) {
+        console.error(`Failed to convert lead ${lead.id}:`, err)
+        failCount++
+      }
+    }
+
+    if (successCount > 0) {
+      if (selectedLeads.length === 1) {
+        toast.success(`Lead ${selectedLeads[0].name} converted to learners !`, {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored"
+        })
+      } else {
+        toast.success(`${successCount} lead${successCount > 1 ? 's' : ''} converted to learners !`, {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored"
+        })
+      }
+    }
+
+    if (failCount > 0) {
+      toast.error(`Failed to convert ${failCount} opportunity ${failCount > 1 ? 's' : ''} to learners`, {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+      })
+    }
+
+    if (deletedLeadsCount !== successCount) {
+      toast.warning(`${successCount - deletedLeadsCount} lead${successCount - deletedLeadsCount > 1 ? 's were' : ' was'} converted but not removed from opportunitieis `, {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+      })
+    }
+
+    setShowConvert(false)
+    setSelectedRows([])
+    getLastRecords() 
+  }
+
+
+
+
   return (
     <div className="w-full p-4 min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200">
       <ToastContainer />
@@ -251,7 +390,7 @@ export default function Opportunities() {
               className="text-3xl bg-indigo-600 text-white p-2 rounded-full"
             />
             <select
-              className="w-full md:w-60 outline-none bg-transparent text-xl font-semibold text-indigo-800"
+              className="w-full md:w-72 outline-none bg-transparent text-xl font-semibold text-indigo-800"
               value={selectedFilter}
               onChange={handleFilterChange}
             >
@@ -279,12 +418,15 @@ export default function Opportunities() {
                 <FontAwesomeIcon icon={displayActivity ? faXmark : faChevronDown} className="ml-2" />
               </button>
               {displayActivity && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10">
                   <button className="w-full p-2 text-left hover:bg-indigo-100 text-indigo-800" onClick={showUpdateScreen}>
                     Update <FontAwesomeIcon icon={faPenToSquare} className="float-right" />
                   </button>
                   <button className="w-full p-2 text-left hover:bg-indigo-100 text-red-600" onClick={showPop}>
                     Delete <FontAwesomeIcon icon={faTrash} className="float-right" />
+                  </button>
+                  <button className="w-full p-2 text-left hover:bg-indigo-100 text-green-600" onClick={() =>setShowConvert(true)}>
+                    Convert <FontAwesomeIcon icon={faLink} className="float-right" />
                   </button>
                 </div>
               )}
@@ -328,7 +470,7 @@ export default function Opportunities() {
               <FontAwesomeIcon icon={faTable} className="mr-2" /> Table
             </button>
             <button
-              className={`px-4 py-2 text-sm font-medium rounded-r-md ${
+              className={`px-4 py-2 text-sm font-medium  rounded-r-md ${
                 showKanban
                   ? 'bg-indigo-600 text-white'
                   : 'bg-white text-indigo-600 hover:bg-indigo-50'
@@ -360,83 +502,98 @@ export default function Opportunities() {
                 </tr>
               </thead>
               <tbody>
-                <AnimatePresence>
-                  {records && records.length > 0 ? (
-                    records.map((d, i) => (
-                      <motion.tr
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, delay: i * 0.1 }}
-                        className="bg-white hover:bg-indigo-50 transition-colors duration-200"
-                        onClick={(e) => handleRowClick(e, d)}
-                      >
-                        <td className="p-3">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out accent-slate-500"
-                            checked={selectedRows.includes(d.id)}
-                            onChange={(e) => handleCheckboxChange(e, d.id)}
-                          />
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      <div className="flex flex-col items-center justify-center">
+                        <l-dot-spinner
+                          size="40"
+                          speed="0.9" 
+                          color="black" 
+                        ></l-dot-spinner>
+                        <p className="mt-4 text-lg font-semibold text-gray-600">Loading...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <AnimatePresence>
+                    {records && records.length > 0 ? (
+                      records.map((d, i) => (
+                        <motion.tr
+                          key={i}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, delay: i * 0.1 }}
+                          className="bg-white hover:bg-indigo-50 transition-colors duration-200"
+                          onClick={(e) => handleRowClick(e, d)}
+                        >
+                          <td className="p-3">
+                            <input
+                              type="checkbox"
+                              className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out accent-slate-500"
+                              checked={selectedRows.includes(d.id)}
+                              onChange={(e) => handleCheckboxChange(e, d.id)}
+                            />
+                          </td>
+                          <td className="p-3 text-sm text-gray-800">{formatDate(d.createdAt)}</td>
+                          <td className="p-3">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              d.status === 'Visited' ? 'bg-orange-100 text-orange-800' :
+                              d.status === 'Visiting' ? 'bg-green-100 text-green-800' :
+                              d.status === 'Demo Attended' ? 'bg-yellow-100 text-yellow-800' :
+                              d.status === 'Lost Opportunity' ? 'bg-red-100 text-red-800' : ''
+                            }`}>
+                              {d.status}
+                            </span>
+                          </td>
+                          <td className="p-3 text-sm text-gray-800">{d.name}</td>
+                          <td className="p-3 text-sm text-gray-800">{d.phone}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              d.stack === "Life Skill" ? 'bg-pink-100 text-pink-800' :
+                              d.stack === "Study Abroad" ? 'bg-teal-100 text-teal-800' :
+                              d.stack === "HR" ? 'bg-blue-100 text-blue-800' : ''
+                            }`}>
+                              {d.stack}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              d.course === 'MERN' ? 'bg-red-100 text-red-800' :
+                              d.course === 'TOFEL' ? 'bg-teal-100 text-teal-800' :
+                              d.course === 'AWS + Devops' ? 'bg-blue-100 text-blue-800' :
+                              d.course === 'JFS' ? 'bg-green-100 text-green-800' :
+                              d.course === "PFS" ? 'bg-orange-100 text-orange-800' :
+                              d.course === 'HR Business Partner' ? 'bg-indigo-100 text-indigo-800' :
+                              d.course === 'HR Generalist' ? 'bg-purple-100 text-purple-800' :
+                              d.course === 'HR Analytics' ? 'bg-pink-100 text-pink-800' :
+                              d.course === 'Spoken English' ? 'bg-yellow-100 text-yellow-800' :
+                              d.course === 'Public Speaking' ? 'bg-cyan-100 text-cyan-800' :
+                              d.course === 'Communication Skills' ? 'bg-lime-100 text-lime-800' :
+                              d.course === 'Soft Skills' ? 'bg-emerald-100 text-emerald-800' :
+                              d.course === 'Aptitude' ? 'bg-fuchsia-100 text-fuchsia-800' :
+                              d.course === 'IELTS' ? 'bg-amber-100 text-amber-800' :
+                              d.course === 'GRE' ? 'bg-violet-100 text-violet-800' :
+                              d.course === 'Azure + Devops' ? 'bg-sky-100 text-sky-800' : ''
+                            }`}>
+                              {d.course}
+                            </span>
+                          </td>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          <div className="flex flex-col items-center justify-center">
+                            <img src="./images/nodata.svg" className="w-1/4 h-60 mb-4" alt="No data" />
+                            <h1 className="text-2xl font-semibold text-gray-500">No Data Found</h1>
+                          </div>
                         </td>
-                        <td className="p-3 text-sm text-gray-800">{formatDate(d.createdAt)}</td>
-                        <td className="p-3">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            d.opportunityStatus === 'Visited' ? 'bg-orange-100 text-orange-800' :
-                            d.opportunityStatus === 'Visiting' ? 'bg-green-100 text-green-800' :
-                            d.opportunityStatus === 'Demo Attended' ? 'bg-yellow-100 text-yellow-800' :
-                            d.opportunityStatus === 'Lost Opportunity' ? 'bg-red-100 text-red-800' : ''
-                          }`}>
-                            {d.opportunityStatus}
-                          </span>
-                        </td>
-                        <td className="p-3 text-sm text-gray-800">{d.name}</td>
-                        <td className="p-3 text-sm text-gray-800">{d.phone}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            d.stack === "Life Skill" ? 'bg-pink-100 text-pink-800' :
-                            d.stack === "Study Abroad" ? 'bg-teal-100 text-teal-800' :
-                            d.stack === "HR" ? 'bg-blue-100 text-blue-800' : ''
-                          }`}>
-                            {d.stack}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            d.course === 'MERN' ? 'bg-red-100 text-red-800' :
-                            d.course === 'TOFEL' ? 'bg-teal-100 text-teal-800' :
-                            d.course === 'AWS + Devops' ? 'bg-blue-100 text-blue-800' :
-                            d.course === 'JFS' ? 'bg-green-100 text-green-800' :
-                            d.course === "PFS" ? 'bg-orange-100 text-orange-800' :
-                            d.course === 'HR Business Partner' ? 'bg-indigo-100 text-indigo-800' :
-                            d.course === 'HR Generalist' ? 'bg-purple-100 text-purple-800' :
-                            d.course === 'HR Analytics' ? 'bg-pink-100 text-pink-800' :
-                            d.course === 'Spoken English' ? 'bg-yellow-100 text-yellow-800' :
-                            d.course === 'Public Speaking' ? 'bg-cyan-100 text-cyan-800' :
-                            d.course === 'Communication Skills' ? 'bg-lime-100 text-lime-800' :
-                            d.course === 'Soft Skills' ? 'bg-emerald-100 text-emerald-800' :
-                            d.course === 'Aptitude' ? 'bg-fuchsia-100 text-fuchsia-800' :
-                            d.course === 'IELTS' ? 'bg-amber-100 text-amber-800' :
-                            d.course === 'GRE' ? 'bg-violet-100 text-violet-800' :
-                            d.course === 'Azure + Devops' ? 'bg-sky-100 text-sky-800' : ''
-                          }`}>
-                            {d.course}
-                          </span>
-                        </td>
-                      </motion.tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="text-center py-4">
-                        <div className="flex flex-col items-center justify-center">
-                          <img src="./images/nodata.svg" className="w-1/4 h-60 mb-4" alt="No data" />
-                          <h1 className="text-2xl font-semibold text-gray-500">No Data Found</h1>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </AnimatePresence>
+                      </tr>
+                    )}
+                  </AnimatePresence>
+                )}
               </tbody>
             </table>
           ) : (
@@ -504,6 +661,37 @@ export default function Opportunities() {
       )}
       {showCreateOpp && <CreateOpportunity setShowCreateOpp={setShowCreateOpp} />}
       {showUpdate && <UpdateOppurtunity setShowUpdate={setShowUpdate} opportunityData={opportunityData} />}
+      {showConvert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md overflow-hidden">
+            <div className="bg-indigo-100 p-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-indigo-800">Convert Lead</h2>
+              <button onClick={() => setShowConvert(false)}>
+                <FontAwesomeIcon icon={faXmark} className="text-2xl text-indigo-600 hover:text-indigo-800" />
+              </button>
+            </div>
+            <div className="p-6">
+              <img src="./images/convert.svg" alt="Convert" className="w-48 h-48 mx-auto mb-6" />
+              <p className="text-center text-gray-600 mb-6">Convert into corresponding</p>
+              <div className="flex justify-center space-x-4">
+               
+                <button
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200"
+                  onClick={() => {
+                    // console.log("Convert to Learner")
+                    // setShowConvert(false)
+                    handleConvertToLearners()
+                  }}
+                >
+                  To Learners
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }

@@ -1,110 +1,61 @@
 'use client'
 
-import React from "react";
-import { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react"
 
-export default function KanbanOppurtunity() {
-    const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+export default function KanbanOpportunity() {
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL
 
+  const [records, setRecords] = useState([])
 
-    const [records,setRecords] = useState([])
+  useEffect(() => {
+    fetchData()
+  }, [])
 
-    useEffect( () =>{
-        fetchData();
-    },[] );
-
-    const fetchData = async () =>{
-        try{
-            const response = await fetch(`${ApiUrl}/api/opportunity?page=1&limit=10`);
-            const data = await response.json()
-            setRecords(data.data)
-
-        }
-        catch (err){
-            console.log(err)
-        }
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${ApiUrl}/api/opportunities/all`)
+      const data = await response.json()
+      setRecords(data)
+    } catch (err) {
+      console.log(err)
     }
+  }
 
+  const statusColumns = [
+    { title: "Visiting", color: "bg-[#D2E0FB]", border: "border-[#8EACCD]", recordColor: "bg-[#D1E9F6]" },
+    { title: "Visited", color: "bg-[#8FD14F]", border: "border-[#6EC207]", recordColor: "bg-[#C1E2A4]" },
+    { title: "Demo Attended", color: "bg-[#FD8B51]", border: "border-[#FF6500]", recordColor: "bg-[#FF885B]" },
+    { title: "Lost Opportunity", color: "bg-[#FA7070]", border: "border-[#FF204E]", recordColor: "bg-red-300" },
+  ]
 
-
-    return (
-        <div className="grid grid-cols-4 gap-4 p-4">
-                <div className=" border-t-4 border-[#8EACCD] h-20 p-3 font-semibold rounded bg-[#D2E0FB]">
-                    <p>visiting</p>
-                </div>
-                <div className=" border-t-4 border-[#6EC207] h-20 p-3 font-semibold rounded bg-[#8FD14F]">
-                    <p>visited</p>
-                </div>
-                <div className=" border-t-4 border-[#FF6500] h-20 p-3 font-semibold rounded bg-[#FD8B51]">
-                    <p>Demo Attended</p>
-                </div>
-                <div className=" border-t-4 border-[#FF204E] h-20 p-3 font-semibold rounded bg-[#FA7070]">
-                    <p>Lost Oppurtunity</p>
-                </div>
-                <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
-                {
-                    records.map((record,i) =>
-                        record.opportunityStatus == 'Visiting' ?
-                        (
-                        <div key={i} className="bg-[#D1E9F6] rounded p-2 m-1">
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.name}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-                </div>
-                <div className=" border h-[80vh] rounded bg-[#E5E7EB] p-2">
-                {
-                    records.map((record,i) =>
-                        record.opportunityStatus == 'Visited' ?
-                        (
-                        <div key={i} className="bg-[#C1E2A4] rounded p-2 m-1">
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.name}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-                </div>
-                <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
-                {
-                    records.map((record,i) =>
-                        record.opportunityStatus == 'Demo Attended' ?
-                        (
-                        <div key={i} className="bg-[#FF885B] rounded p-2 m-1">
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.name}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-                </div>
-                <div className=" border h-auto rounded bg-[#E5E7EB] p-2">
-                {
-                    records.map((record,i) =>
-                        record.opportunityStatus == 'Lost Opportunity' ?
-                        (
-                        <div key={i} className="bg-red-300 rounded p-2 m-1">
-                            <div className="flex justify-between">
-                                <p  className="text-lg font-semibold">{record.name}</p>
-                                <p>{record.phone}</p>
-                            </div>
-                            <p>{record.email}</p>
-                        </div>
-                    ) : (<></>)
-                    )
-                }
-                </div>
+  return (
+    <div className="w-full p-4 overflow-x-auto">
+      <div className="min-w-[1000px] md:w-full">
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {statusColumns.map((column, index) => (
+            <div key={index} className={`${column.color} ${column.border} border-t-4 h-20 p-3 font-semibold rounded`}>
+              <p>{column.title}</p>
+            </div>
+          ))}
         </div>
-    )
+        <div className="grid grid-cols-4 gap-4">
+          {statusColumns.map((column, index) => (
+            <div key={index} className="border h-[80vh] rounded bg-[#E5E7EB] p-2 overflow-y-auto">
+              {records
+                .filter(record => record.status === column.title)
+                .map((record, i) => (
+                  <div key={i} className={`${column.recordColor} rounded p-2 m-1`}>
+                    <div className="flex justify-between">
+                      <p className="text-sm font-semibold">{record.name}</p>
+                      <p className="text-xs">{record.phone}</p>
+                    </div>
+                    <p className="text-xs mt-1">{record.email}</p>
+                  </div>
+                ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }

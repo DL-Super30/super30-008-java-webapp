@@ -11,21 +11,22 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function SignUp(props) {
   const router = useRouter();
 
-  const [leadname, setLeadName] = useState('');   
+  const [name, setName] = useState('');   
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [cc, setCc] = useState("")
             
   
   const { handleClose, setShowSignUp } = props;
 
-  // const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
   
     // Check if required fields are filled
-    if (!leadname || !phone || !email) {
+    if (!name || !phone || !email) {
       toast.error('Please enter Required Fields!', {
         position: "top-right",
         autoClose: 3000,
@@ -42,18 +43,22 @@ export default function SignUp(props) {
     try {
       // Create data object with only required fields
       const data = {
-        leadname: leadname,
-        phone: "+91" + phone,
+        name: name,
+        cc : cc,
+        phone: cc +" " + phone,
         email: email,
-        feeQuoted: "20000",         // Empty value
-        batchTiming: "",       // Empty value
-        leadStatus: "Not Contacted",        // Empty value
-        leadSource: "",        // Empty value
-        course: [{"name":"HR Generalist"}],            // Empty value
-        selectedClassMode: ""  // Empty value
+        feeQuoted: "", 
+        batchTiming: "",       
+        description:"",
+        leadStatus: "Not Contacted",       
+        leadSource: "",        
+        stack : "" ,
+        course : "",      
+        classMode: ""  ,
+        nextFollowUp: ""
       };
   
-      await axios.post(`http://localhost:4000/api/leads`, data); // Post data to the server
+      await axios.post(`${ApiUrl}/api/leads/register`, data); // Post data to the server
   
       toast.success('Registered Successfully!', {
         position: "top-right",
@@ -101,17 +106,25 @@ export default function SignUp(props) {
             </button>
           </div>
           <form onSubmit={handleSubmit} className="p-5">
-            <label>Lead Name *</label>
+            <label>Name <span className="text-red-500">*</span></label>
             <input
               type="text"
               className="w-full p-2 border mb-3 bg-[#F5F8FA] outline-none"
-              placeholder="Lead Name"
-              value={leadname}
-              onChange={(e) => setLeadName(e.target.value)}
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <label>Phone *</label>
             <div className="flex mb-3">
-              <input className="w-1/5 text-sm md:text-md border p-2 pl-5 bg-[#E9ECEF] outline-none" type="text" value={91} readOnly />
+              {/* <input className="w-1/5 text-sm md:text-md border p-2 pl-5 bg-[#E9ECEF] outline-none" type="text" value={cc} onChange={(e) =>setCc(e.target.value)} /> */}
+              <select className="w-1/5 text-sm md:text-md border p-2 bg-[#E9ECEF] outline-none" type="text" value={cc} onChange={(e) =>setCc(e.target.value)}>
+                <option>+ 91</option>
+                <option>+ 1</option>
+                <option>+ 44</option>
+                <option>+ 61</option>
+                <option>+ 49</option>
+
+              </select>
               <input
                 type="text"
                 className="w-4/5 p-2 border bg-[#F5F8FA] outline-none"
@@ -129,54 +142,7 @@ export default function SignUp(props) {
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
             />
-            {/* <label>Fee Quoted</label>
-            <input
-              type="number"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Fee Quoted"
-              value={feeQuoted}
-              onChange={(e) => setFeeQuoted(e.target.value)}
-            />
-            <label>Batch Timing</label>
-            <input
-              type="text"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Batch Timing"
-              value={batchTiming}
-              onChange={(e) => setBatchTiming(e.target.value)}
-            />
-            <label>Lead Status</label>
-            <input
-              type="text"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Lead Status"
-              value={leadStatus}
-              onChange={(e) => setLeadStatus(e.target.value)}
-            />
-            <label>Lead Source</label>
-            <input
-              type="text"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Lead Source"
-              value={leadSource}
-              onChange={(e) => setLeadSource(e.target.value)}
-            />
-            <label>Course</label>
-            <input
-              type="text"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Course"
-              value={course}
-              onChange={(e) => setCourse(e.target.value)}
-            />
-            <label>Class Mode</label>
-            <input
-              type="text"
-              className="w-full border p-2 rounded bg-[#F5F8FA] outline-none"
-              placeholder="Class Mode"
-              value={selectedClassMode}
-              onChange={(e) => setSelectedClassMode(e.target.value)}
-            /> */}
+            
             <button
               type="submit"
               className="w-full border bg-[#E4244B] p-3 mt-3 rounded text-white"

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
@@ -8,11 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useForm } from "react-hook-form";
 
 export default function Login() {
-  const { register, handleSubmit, formState: { errors }, setError, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
-  // Check if credentials are stored in localStorage
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedPassword = localStorage.getItem('password');
@@ -20,7 +19,7 @@ export default function Login() {
     if (storedUsername && storedPassword) {
       setValue('username', storedUsername);
       setValue('password', storedPassword);
-      setRememberMe(true); // Automatically check the box if credentials are stored
+      setRememberMe(true); 
     }
   }, [setValue]);
 
@@ -31,7 +30,7 @@ export default function Login() {
     const { username, password } = data;
 
     try {
-      if(username === "user1" && password === "password123!"){
+      if (username === "user1" && password === "password123!") {
         toast.success('Login Success!', {
           position: "top-right",
           autoClose: 3000,
@@ -43,56 +42,60 @@ export default function Login() {
           theme: "light",
         });
         setTimeout(() => {
-          router.push("/dashboard")
-        },3000)
-      }
-      else {
-      const response = await axios.post(`${ApiUrl}/api/users/login`, {
-        username,
-        password
-      });
-
-      console.log('Token:', response.data.token);
-      if (response.data.token) {
-        toast.success('Login Success!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-
-        // Store credentials if "Remember Me" is checked
-        if (rememberMe) {
-          localStorage.setItem('username', username);
-          localStorage.setItem('password', password);
-        } else {
-          localStorage.removeItem('username');
-          localStorage.removeItem('password');
-        }
-
-        // Redirect to dashboard after a short delay
-        setTimeout(() => {
-          router.push('/dashboard');
+          router.push("/dashboard");
         }, 3000);
       } else {
-        toast.error('Invalid Credentials', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        const response = await axios.post(`${ApiUrl}/api/auth/login`, {
+          username,
+          password,
+          
         });
+
+        // console.log('Token:', response.data.token);
+        if (response.data.token) {
+            // const id = response.data.token.userId
+            // console.log(id)
+            toast.success('Login Success!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+
+          // Store credentials if "Remember Me" is checked
+          if (rememberMe) {
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
+            localStorage.setItem('userId', id);
+            }
+            
+            else {
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
+            localStorage.removeItem('id');
+          }
+
+          // Redirect to dashboard after a short delay
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 3000);
+        } else {
+          toast.error('Invalid Credentials', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
       }
-    }
-
-
     } catch (error) {
       toast.error('Login failed. Please try again.', {
         position: "top-right",

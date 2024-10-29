@@ -9,8 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function CreateLearner(props) {
     const {setShowCreateLearner} = props;
-    const [firstname, setFirstname] = useState("")
-    const [lastname , setLastname] = useState("")
+    const [name, setName] = useState("")
     const [idProof,setIdProof] = useState("")
     const [phone,setPhone] = useState("")
     const [DOB,setDOB] = useState("")
@@ -39,8 +38,7 @@ export default function CreateLearner(props) {
     const [Comment,setComment] = useState("")
 
     const data = {
-        firstname : firstname,
-        lastname : lastname || "",
+        name : name,
         idProof : idProof || "",
         phone : "+ 91 "+phone || "",
         DOB : DOB || "",
@@ -73,7 +71,7 @@ export default function CreateLearner(props) {
 
     const postData = async () => {
         try {
-            const response = await axios.post(`${ApiUrl}/api/learner`, data);
+            const response = await axios.post(`${ApiUrl}/api/learners/register`, data);
             
             toast.success('Successfully created Learner!', {
                 position: "top-center",
@@ -119,7 +117,7 @@ export default function CreateLearner(props) {
     
    
     return (
-        <div className="w-full h-[100vh] bg-black bg-opacity-60 absolute top-0 left-0 pt-[68px]">
+        <div className="w-full h-[120vh] bg-black bg-opacity-60 absolute top-0 left-0 pt-[68px]">
             <ToastContainer />
             <div className="w-3/4 bg-[#F5EFFF] rounded h-[90vh] mx-auto ">
                    <div className="w-full p-4 bg-[#CDC1FF] p-2 items-center rounded-t-md flex justify-between">
@@ -131,15 +129,12 @@ export default function CreateLearner(props) {
                    </div>
                    <div className="p-4">
                         <div className="w-full h-[67vh] border border-[#A594F9] rounded-md overflow-y-scroll p-2">
-                           <div className="grid grid-cols-2 gap-4">
+                           <div className="grid grid-rows md:grid-cols-2 gap-4">
                                     <div>
-                                        <label>First Name <span className="text-red-500">*</span></label> <br></br>
-                                        <input value={firstname} onChange={(e) => setFirstname(e.target.value)} type="text"  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="first name"></input>
+                                        <label>Name <span className="text-red-500">*</span></label> <br></br>
+                                        <input value={name} onChange={(e) => setName(e.target.value)} type="text"  className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Name"></input>
                                     </div>
-                                    <div>
-                                        <label>Last Name</label> <br></br>
-                                        <input value={lastname} onChange={(e) => setLastname(e.target.value)} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="last name"></input>
-                                    </div>
+                                    
                                     <div>
                                         <label>Id Proof</label> <br></br>
                                         <input value={idProof} onChange={(e) => setIdProof(e.target.value)} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Id Proof"></input>
@@ -194,7 +189,14 @@ export default function CreateLearner(props) {
                                     </div>
                                     <div>
                                         <label>Learner Stage</label> <br></br>
-                                        <input value={learnerStage} onChange={(e) => setLearnerStage(e.target.value)} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Learner Stage" ></input>
+                                        {/* <input value={learnerStage} onChange={(e) => setLearnerStage(e.target.value)} type="text" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Learner Stage" ></input> */}
+                                        <select value={learnerStage} onChange={(e) => setLearnerStage(e.target.value)} className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none">
+                                            <option>select learner stage</option>
+                                            <option>Up coming</option>
+                                            <option>On going</option>
+                                            <option>On Hold</option>
+                                            <option>Completed</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label>Currency</label> <br></br>
@@ -210,7 +212,7 @@ export default function CreateLearner(props) {
                                     </div>
                            </div>
                            <h1 className="mt-4 text-xl font-semibold">Course Details</h1>
-                           <div className="grid grid-cols-2 gap-4">
+                           <div className="grid grid-rows md:grid-cols-2 gap-4">
                                 <div>
                                     <label>Registered Course</label> <br></br>
                                     <input value={registeredCourse} onChange={(e) => setRegisteredCourse(e.target.value)} type="number" className="w-full p-1 border-b-2 border-b-[#A594F9] rounded-md outline-none" placeholder="Registered Course"></input>

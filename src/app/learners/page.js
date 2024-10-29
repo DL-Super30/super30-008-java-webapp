@@ -10,6 +10,10 @@ import CreateLearner from "./createlearner";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UpdateLearner from "./updatelearners.";
+import { dotSpinner } from 'ldrs'
+
+dotSpinner.register()
+
 export default function Learners() {
   const [records, setRecords] = useState([]);
   const [pages, setPages] = useState([]);
@@ -25,6 +29,7 @@ export default function Learners() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLead, setSelectedLead] = useState(null)
   const [showUpdate , setShowUpdate] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
 
   const recordsPerPage = 10;
   const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -42,11 +47,13 @@ export default function Learners() {
   }, [pageDisplay, selectedFilter, searchTerm]);
 
   const fetchedData = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`${ApiUrl}/api/learner?page=1&limit=10`);
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      const response = await fetch(`${ApiUrl}/api/learners/all`);
       const data = await response.json();
 
-      const sortedRecords = data.data.sort((a, b) => {
+      const sortedRecords = data.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateB - dateA;
@@ -69,6 +76,18 @@ export default function Learners() {
       setPages(tempArr);
     } catch (err) {
       console.log(err);
+      toast.error('Failed to fetch data', {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,7 +135,7 @@ export default function Learners() {
 
     if (searchTerm) {
       filteredRecords = filteredRecords.filter((record) =>
-        record.firstname.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
+        record.name.toLowerCase().includes(searchTerm.toLowerCase()) || record.phone.includes(searchTerm)
       );
     }
 
@@ -143,6 +162,7 @@ export default function Learners() {
       });
     } else {
       setDeletePopUp(true);
+      setDisplayActivity(false)
     }
   };
 
@@ -166,7 +186,7 @@ export default function Learners() {
 
   const confirmDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => fetch(`${ApiUrl}/api/learner/${id}`, { method: "DELETE" })));
+      await Promise.all(selectedRows.map((id) => fetch(`${ApiUrl}/api/learners/${id}`, { method: "DELETE" })));
       setSelectedRows([]);
       fetchedData();
       toast.success('Deleted Successfully!', {
@@ -179,6 +199,7 @@ export default function Learners() {
         progress: undefined,
         theme: "light",
       });
+      setDisplayActivity(false)
       setTimeout(() => {
         setDeletePopUp(false);
       }, 1500);
@@ -209,8 +230,8 @@ export default function Learners() {
         progress: undefined,
         theme: "light",
       });
+      setDisplayActivity(false)
     } else {
-
       const selectedLead = records.find(record => record.id === selectedRows[0])
       setSelectedLead(selectedLead)
       setShowUpdate(true)
@@ -266,7 +287,7 @@ export default function Learners() {
                 <FontAwesomeIcon icon={displayActivity ? faXmark : faChevronDown} className="ml-2" />
               </button>
               {displayActivity && !showUpdate && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10">
                   <button className="w-full p-2 text-left hover:bg-indigo-100 text-indigo-800" onClick={updateModel}>
                     Update <FontAwesomeIcon icon={faPenToSquare} className="float-right" />
                   </button>
@@ -297,7 +318,7 @@ export default function Learners() {
               className={`px-4 w-1/2 py-2 ${showKanban ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}
               onClick={() => setShowKanban(true)}
             >
-              <FontAwesomeIcon icon={faChartBar} className="mr-2" /> Kanban
+              <FontAwesomeIcon icon={faChartBar} className="mr-1" /> Kanban
             </button>
           </div>
         </div>
@@ -315,66 +336,81 @@ export default function Learners() {
                   </th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Created Time</th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Registered Date</th>
-                  <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Name</th>
+                  <th className="p-3 text-left  text-xs font-medium text-indigo-800 uppercase tracking-wider">Name</th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Phone</th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Stack</th>
                   <th className="p-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">Course</th>
                 </tr>
               </thead>
               <tbody>
-                <AnimatePresence>
-                  {records && records.length > 0 ? (
-                    records.map((record, index) => (
-                      <motion.tr
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="bg-white hover:bg-indigo-50 transition-colors duration-200"
-                        onClick={(e) => handlerowClick(e,record) }
-                      >
-                        <td className="p-3">
-                          <input
-                            type="checkbox"
-                            className="accent-slate-100 form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
-                            checked={selectedRows.includes(record.id)}
-                            onChange={() => handleCheckboxChange(record.id)}
-                          />
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      <div className="flex flex-col items-center justify-center">
+                        <l-dot-spinner
+                          size="40"
+                          speed="0.9" 
+                          color="black" 
+                        ></l-dot-spinner>
+                        <p className="mt-4 text-lg font-semibold text-gray-600">Loading...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <AnimatePresence>
+                    {records && records.length > 0 ? (
+                      records.map((record, index) => (
+                        <motion.tr
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          className="bg-white hover:bg-indigo-50 transition-colors duration-200"
+                          onClick={(e) => handlerowClick(e,record) }
+                        >
+                          <td className="p-3">
+                            <input
+                              type="checkbox"
+                              className="accent-slate-100 form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
+                              checked={selectedRows.includes(record.id)}
+                              onChange={() => handleCheckboxChange(record.id)}
+                            />
+                          </td>
+                          <td className="p-3 text-sm text-gray-800">
+                            {new Date(record.createdAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                            })}
+                          </td>
+                          <td className="p-3 text-sm text-gray-800">{formatDate(record.registeredDate)}</td>
+                          <td className="p-3 text-sm text-gray-800">{record.name}</td>
+                          <td className="p-3 text-sm text-gray-800">{record.phone}</td>
+                          <td className="p-3">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                              {record.techStack}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                              {record.courseDetails}
+                            </span>
+                          </td>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          <div className="flex flex-col items-center justify-center">
+                            <img src="./images/nodata.svg" className="w-40 h-60 mb-4" alt="No data" />
+                            <h1 className="text-xl text-center font-semibold text-gray-500">No Data Found</h1>
+                          </div>
                         </td>
-                        <td className="p-3 text-sm text-gray-800">
-                          {new Date(record.createdAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                          })}
-                        </td>
-                        <td className="p-3 text-sm text-gray-800">{formatDate(record.createdAt)}</td>
-                        <td className="p-3 text-sm text-gray-800">{record.firstname}</td>
-                        <td className="p-3 text-sm text-gray-800">{record.phone}</td>
-                        <td className="p-3">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                            {record.techStack}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {record.registeredCourse}
-                          </span>
-                        </td>
-                      </motion.tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="text-center py-4">
-                        <div className="flex flex-col items-center justify-center">
-                          <img src="./images/nodata.svg" className="w-1/4 h-60 mb-4" alt="No data" />
-                          <h1 className="text-2xl font-semibold text-gray-500">No Data Found</h1>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </AnimatePresence>
+                      </tr>
+                    )}
+                  </AnimatePresence>
+                )}
               </tbody>
             </table>
           ) : (
@@ -384,7 +420,7 @@ export default function Learners() {
         {records.length > 0 && !showKanban && (
           <div className="mt-4 flex justify-center items-center space-x-2">
             <button
-              className={`p-2 rounded-full ${
+              className={`p-2 px-4 rounded-full ${
                 pageConfig.isPrevious ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay - 1)}
@@ -404,7 +440,7 @@ export default function Learners() {
               </button>
             ))}
             <button
-              className={`p-2 rounded-full ${
+              className={`p-2 px-4 rounded-full ${
                 pageConfig.isNext ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 cursor-not-allowed'
               }`}
               onClick={() => handlePageChange(pageDisplay + 1)}
@@ -442,7 +478,6 @@ export default function Learners() {
       )}
       {showCreateLearner && <CreateLearner setShowCreateLearner={setShowCreateLearner} />}
       {showUpdate && (<UpdateLearner setShowUpdate={setShowUpdate} updateData={selectedLead}/>)}
-
     </div>
   );
 }

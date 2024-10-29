@@ -19,10 +19,10 @@ export default function CreateOpportunity(props){
     const [batchTiming,setBatchTiming] = useState("")
     const [leadStatus, setLeadStatus] = useState("")
     const [stack,setStack] = useState("")
-    const [ClassMode,setClassMode] = useState("")
-    const [opportunityStatus, setOpportunityStatus] = useState("")
-    const [opportunitySatge, setOpportunitySatge] = useState("")
-    const [DemoAttendedStage,setDemoAttendedStage] = useState("")
+    const [classMode,setClassMode] = useState("")
+    const [status, setStatus] = useState("")
+    const [opportunityStage, setOpportunityStage] = useState("")
+    const [demoAttendedStage,setDemoAttendedStage] = useState("")
     const [visitedStage, setVisitedStage] = useState("")
     const [lostOpportunityReason, setLostOpportunityReason] = useState("")
     const [nextFollowUp,setNextFollowUp] = useState("")
@@ -43,10 +43,10 @@ export default function CreateOpportunity(props){
             batchTiming : batchTiming,
             leadStatus : leadStatus,
             stack : stack,
-            ClassMode : ClassMode,
-            opportunityStatus : opportunityStatus,
-            opportunitySatge : opportunitySatge,
-            DemoAttendedStage : DemoAttendedStage,
+            classMode : classMode,
+            status : status,
+            opportunityStage : opportunityStage,
+            demoAttendedStage : demoAttendedStage,
             visitedStage : visitedStage,
             lostOpportunityReason : lostOpportunityReason,
             nextFollowUp : nextFollowUp,
@@ -55,7 +55,7 @@ export default function CreateOpportunity(props){
             description : description
         }
         try{
-            await axios.post(`${ApiUrl}/api/opportunity`,data)
+            await axios.post(`${ApiUrl}/api/opportunities/register`,data)
             console.log("working")
             toast.success('Oppurtunity is created !', {
                 position: "top-center",
@@ -68,10 +68,10 @@ export default function CreateOpportunity(props){
                 theme: "colored",
                 // transition: Bounce,
                 });
-                setTimeout(() => {
-                    setShowCreateOpp(false)
-                    window.location.reload()
-                },1500)
+                // setTimeout(() => {
+                //     setShowCreateOpp(false)
+                //     window.location.reload()
+                // },1500)
             
         }
         catch (err) {
@@ -127,6 +127,7 @@ export default function CreateOpportunity(props){
                         <label className="ml-2 opacity-70">batchTiming <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="batchTiming" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={batchTiming} onChange={(e) => setBatchTiming(e.target.value)}>
+                            <option>select BatchTiming</option>
                             <option>7 - 8 AM</option>
                             <option>8 - 9 AM</option>
                             <option>9 - 10 AM</option>
@@ -146,6 +147,7 @@ export default function CreateOpportunity(props){
                         <label className="ml-2 opacity-70">leadStatus <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="leadStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}></input> */}
                         <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={leadStatus} onChange={(e) => setLeadStatus(e.target.value)}>
+                            <option>Select Lead Status</option>
                             <option>Not Contacted</option>
                             <option>Attempted</option>
                             <option>Warm Lead</option>
@@ -159,7 +161,8 @@ export default function CreateOpportunity(props){
                     <div>
                         <label className="ml-2 opacity-70">ClassMode <span className="text-red-500">*</span></label> <br></br>
                         {/* <input type="text" placeholder="ClassMode" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}></input> */}
-                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={ClassMode} onChange={(e) => setClassMode(e.target.value)}>
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={classMode} onChange={(e) => setClassMode(e.target.value)}>
+                            <option>Select class Mode</option>
                             <option>HYD classroom</option>
                             <option>Online</option>
                             <option>International classroom</option>
@@ -168,7 +171,7 @@ export default function CreateOpportunity(props){
                     <div>
                         <label className="ml-2 opacity-70">opportunityStatus<span className="text-red-500">*</span> </label> <br></br>
                         {/* <input type="text" placeholder="opportunityStatus" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}></input> */}
-                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStatus} onChange={(e) => setOpportunityStatus(e.target.value)}>
+                        <select className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={status} onChange={(e) => setStatus(e.target.value)}>
                             <option>Select Opputunity status</option>
                             <option>Visited</option>
                             <option>Visiting</option>
@@ -177,12 +180,12 @@ export default function CreateOpportunity(props){
                         </select>
                     </div>
                     <div>
-                        <label className="ml-2 opacity-70">opportunitySatge <span className="text-red-500">*</span></label> <br></br>
-                        <input type="text" placeholder="opportunitySatge" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunitySatge} onChange={(e) => setOpportunitySatge(e.target.value)}></input>
+                        <label className="ml-2 opacity-70">opportunityStage <span className="text-red-500">*</span></label> <br></br>
+                        <input type="text" placeholder="opportunityStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={opportunityStage} onChange={(e) => setOpportunityStage(e.target.value)}></input>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">DemoAttendedStage <span className="text-red-500">*</span></label> <br></br>
-                        <input type="text" placeholder="DemoAttendedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={DemoAttendedStage} onChange={(e) => setDemoAttendedStage(e.target.value)}></input>
+                        <input type="text" placeholder="DemoAttendedStage" className="border w-full p-1 rounded-md outline-none border-b-2 border-b-[#A594F9]" value={demoAttendedStage} onChange={(e) => setDemoAttendedStage(e.target.value)}></input>
                     </div>
                     <div>
                         <label className="ml-2 opacity-70">visitedStage <span className="text-red-500">*</span></label> <br></br>
